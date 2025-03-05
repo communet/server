@@ -16,3 +16,5 @@ export const ConfigSchema = z.object({
     port: z.number(),
   }),
 });
+
+export type Config = z.infer<typeof ConfigSchema>;
