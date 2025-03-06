@@ -1,4 +1,4 @@
-import { patchNestJsSwagger } from 'nestjs-zod';
+import { patchNestJsSwagger, ZodValidationPipe } from 'nestjs-zod';
 
 patchNestJsSwagger();
 
@@ -9,6 +9,8 @@ import { NestFactory } from '@nestjs/core';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ZodValidationPipe());
 
   setupDocumentation(app);
   setupCors(app);

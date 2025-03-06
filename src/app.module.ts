@@ -1,12 +1,9 @@
-import { AuthController } from '@/application/api/auth/auth.controller';
-import { AppService } from '@/app.service';
+import { AuthModule } from '@/application/api/auth/auth.module';
 import { Config, ConfigSchema } from '@/config/schema';
 import { RedisModule } from '@/infra/nest-redis-adapter/redis.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { APP_PIPE } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ZodValidationPipe } from 'nestjs-zod';
 
 @Module({
   imports: [
@@ -27,14 +24,9 @@ import { ZodValidationPipe } from 'nestjs-zod';
         database: configService.get('DB_NAME'),
       }),
     }),
+    AuthModule,
   ],
-  controllers: [AuthController],
-  providers: [
-    AppService,
-    {
-      provide: APP_PIPE,
-      useValue: ZodValidationPipe,
-    },
-  ],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

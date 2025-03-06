@@ -2,10 +2,7 @@ import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
 const RequestRegisterSchema = z.object({
-  email: z
-    .string({ required_error: 'Email is required field' })
-    .email({ message: 'Invalid email format' })
-    .nonempty('Email cannot be empty'),
+  email: z.string().email('Email is required and must be valid'),
 });
 
 export class RequestRegisterDTO extends createZodDto(RequestRegisterSchema) {}
