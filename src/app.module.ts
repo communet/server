@@ -1,4 +1,4 @@
-import { AppController } from '@/app.controller';
+import { AuthController } from '@/application/api/auth/auth.controller';
 import { AppService } from '@/app.service';
 import { Config, ConfigSchema } from '@/config/schema';
 import { RedisModule } from '@/infra/nest-redis-adapter/redis.module';
@@ -28,7 +28,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
       }),
     }),
   ],
-  controllers: [AppController],
+  controllers: [AuthController],
   providers: [
     AppService,
     {
