@@ -1,6 +1,7 @@
 import { AppController } from '@/app.controller';
 import { AppService } from '@/app.service';
 import { Config, ConfigSchema } from '@/config/schema';
+import { RedisModule } from '@/infra/nest-redis-adapter/redis.module';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_PIPE } from '@nestjs/core';
@@ -13,6 +14,7 @@ import { ZodValidationPipe } from 'nestjs-zod';
       isGlobal: true,
       validate: (config) => ConfigSchema.parse(config),
     }),
+    RedisModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

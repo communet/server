@@ -1,13 +1,20 @@
 import { AppPostDto } from '@/app.schema';
 import { AppService } from '@/app.service';
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { IRedisProvider } from '@/infra/nest-redis-adapter/redis.provider';
+import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 // NOTE: Swagger API example
 @ApiTags('App')
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    @Inject(AppService)
+    private readonly appService: AppService,
+
+    @Inject(IRedisProvider)
+    private readonly redis: IRedisProvider,
+  ) {}
 
   @Get()
   @ApiOperation({ summary: 'Get Hello' })
@@ -25,8 +32,13 @@ export class AppController {
     status: 200,
     description: 'Hello World',
   })
-  postHello(@Body() body: AppPostDto): string {
-    console.log(body);
+  async postHello(@Body() body: AppPostDto): Promise<string> {
+    await this.redis.connection.set('test', 'test');
+    console.log(await this.redis.connection.get('test'));
+    await this.redis.connection.del('test');
+
+    console.log(body.username);
+
     return this.appService.getHello();
   }
 }
