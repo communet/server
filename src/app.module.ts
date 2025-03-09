@@ -22,6 +22,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: configService.get('DB_USER'),
         password: configService.get('DB_PASSWORD'),
         database: configService.get('DB_NAME'),
+        entities: ['src/infra/database/models/**/*.models{.ts,.js}'],
+        migrations: ['dist/infra/database/migrations/**/*{.ts,.js}'],
       }),
     }),
     AuthModule,
