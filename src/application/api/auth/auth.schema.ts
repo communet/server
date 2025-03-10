@@ -1,8 +1,42 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
-const RequestRegisterSchema = z.object({
-  email: z.string().email('Email is required and must be valid'),
-});
+export function onlyAlphaNumeric(value: string): boolean {
+  const regExp = /^[a-zA-Z0-9_]*$/;
+  return regExp.test(value);
+}
+
+const RequestRegisterSchema = z
+  .object({
+    username: z
+      .string()
+      .trim()
+      .toLowerCase()
+      .min(3, 'Username must be greater or equal 3 characters')
+      .max(32, 'Username must be less or equal 32 characters')
+      .refine(
+        onlyAlphaNumeric,
+        'Username must contains symbols A-z, 0-9 and _ (underscore)',
+      ),
+    email: z.string().email('Email is required and must be valid'),
+    password: z
+      .string()
+      .min(8, 'Password must be greater or equal 8 characters'),
+    confirm: z.string(),
+  })
+  .refine((value) => value.password === value.confirm, {
+    message: "Passwords doesn't match",
+    path: ['confirm'],
+  });
 
 export class RequestRegisterDTO extends createZodDto(RequestRegisterSchema) {}
+
+const ResponseRegisterSchema = z.object({
+  id: z.string().uuid(),
+  username: z.string(),
+  email: z.string().email(),
+  created_at: z.date(),
+  updated_at: z.date(),
+});
+
+export class ResponseRegisterDTO extends createZodDto(ResponseRegisterSchema) {}

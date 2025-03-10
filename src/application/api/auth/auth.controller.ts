@@ -1,16 +1,58 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Inject,
+  Post,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { RequestRegisterDTO } from '@/application/api/auth/auth.schema';
+import {
+  RequestRegisterDTO,
+  ResponseRegisterDTO,
+} from '@/application/api/auth/auth.schema';
+import { RegisterCommand } from '@/logic/commands/auth.command';
+import { IRegisterCommandHandler } from '@/infra/nest-providers/auth-handlers.providers';
+import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 
 @ApiTags('Auth')
 @Controller('/api/auth')
 export class AuthController {
+  constructor(
+    @Inject(IRegisterCommandHandler)
+    private readonly registerCommandHandler: IRegisterCommandHandler,
+  ) {}
+
   @ApiResponse({
     status: 201,
     description: 'Register new user in application',
   })
   @Post('/register')
-  register(@Body() body: RequestRegisterDTO): string {
-    return body.email;
+  async register(
+    @Body() body: RequestRegisterDTO,
+  ): Promise<ResponseRegisterDTO> {
+    try {
+      const command = new RegisterCommand(
+        body.username,
+        body.email,
+        body.password,
+      );
+      const credentials = await this.registerCommandHandler.execute(command);
+      return {
+        id: String(credentials.oid),
+        username: credentials.username,
+        email: credentials.email,
+        created_at: credentials.createdAt,
+        updated_at: credentials.updatedAt,
+      };
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
