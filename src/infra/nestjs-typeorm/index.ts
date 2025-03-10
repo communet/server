@@ -10,11 +10,14 @@ export const registerTypeOrmModule = (): DynamicModule =>
     useFactory: (configService: ConfigService<Config>) => ({
       type: 'postgres',
       host: configService.get('DB_HOST'),
-      port: configService.get('DB_PORT'),
+      port: parseInt(configService.get('DB_PORT')!, 10),
       username: configService.get('DB_USER'),
       password: configService.get('DB_PASSWORD'),
       database: configService.get('DB_NAME'),
-      entities: ['src/infra/database/models/**/*.models.{ts,js}'],
-      migrations: ['src/infra/database/migrations/*.{ts,js}'],
+      entities: ['dist/**/*.model.js'],
+      migrations: ['dist/migrations/*.js'],
+      synchronize: false,
+      autoLoadEntities: true,
+      logging: true,
     }),
   });
