@@ -14,6 +14,7 @@ import {
 import { RegisterCommand } from '@/logic/commands/auth.command';
 import { IRegisterCommandHandler } from '@/infra/nest-providers/auth-handlers.providers';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
+import { ResponseErrorDTO } from '@/application/api/base.schemas';
 
 @ApiTags('Auth')
 @Controller('/api/auth')
@@ -23,11 +24,17 @@ export class AuthController {
     private readonly registerCommandHandler: IRegisterCommandHandler,
   ) {}
 
+  @Post('/register')
   @ApiResponse({
     status: 201,
     description: 'Register new user in application',
+    type: ResponseRegisterDTO,
   })
-  @Post('/register')
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
   async register(
     @Body() body: RequestRegisterDTO,
   ): Promise<ResponseRegisterDTO> {
