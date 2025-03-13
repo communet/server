@@ -1,7 +1,5 @@
 import { z } from 'zod';
 
-// NOTE: Подключишь схему конфига как удобно, там много разных способов
-// Один из них - это использовать @nestjs/config
 export const ConfigSchema = z.object({
   PORT: z.string().default('3535'),
   DB_HOST: z.string(),
@@ -10,6 +8,10 @@ export const ConfigSchema = z.object({
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
   REDIS_URL: z.string(),
+  JWT_SECRET: z.string(),
+  JWT_ACCESS_EXPIRES_IN_MINUTES: z.string().default('15'),
+  JWT_REFRESH_EXPIRES_IN_DAYS: z.string().default('7'),
+  JWT_ALGORITHM: z.string().default('HS256'),
 });
 
 export type Config = z.infer<typeof ConfigSchema>;
