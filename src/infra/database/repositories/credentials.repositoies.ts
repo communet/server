@@ -10,10 +10,11 @@ export class CredentialsRepository {
   }
 
   async findByEmailOrUsername(
-    credentials: Credentials,
+    email: string | undefined,
+    username: string | undefined,
   ): Promise<CredentialsModel | null> {
     return await this.credentialsRepository.findOne({
-      where: [{ email: credentials.email }, { username: credentials.username }],
+      where: [{ email: email }, { username: username }],
     });
   }
 
