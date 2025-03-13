@@ -1,6 +1,6 @@
 import { RedisClientType, createClient } from 'redis';
 
-export class RedisWrapper {
+export class RedisService {
   private redis: RedisClientType;
 
   constructor(url: string) {
