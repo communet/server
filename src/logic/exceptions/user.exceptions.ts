@@ -5,3 +5,9 @@ export class UserAlreadyExistsError extends LogicError {
     super('UserAlreadyExists', message);
   }
 }
+
+export class InvalidCredentialsError extends LogicError {
+  constructor(message: string) {
+    super('InvalidCredentials', message);
+  }
+}
