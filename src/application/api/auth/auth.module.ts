@@ -3,10 +3,12 @@ import {
   CredentialsRepositoryProvider,
   ILoginCommandHandler,
   IRedisProvider,
+  IRefreshCommandHandler,
   IRegisterCommandHandler,
   JWTServiceProvider,
   NestJsLoginCommandHandlerProvider,
   NestJsRedisProvider,
+  NestJsRefreshCommandHandlerProvider,
   NestJsRegisterCommandHandlerProvider,
 } from '@/infra/nest-providers/auth.providers';
 import { Module } from '@nestjs/common';
@@ -16,10 +18,16 @@ import { Module } from '@nestjs/common';
   providers: [
     CredentialsRepositoryProvider,
     JWTServiceProvider,
+    NestJsRedisProvider,
     NestJsRegisterCommandHandlerProvider,
     NestJsLoginCommandHandlerProvider,
-    NestJsRedisProvider,
+    NestJsRefreshCommandHandlerProvider,
   ],
-  exports: [IRegisterCommandHandler, ILoginCommandHandler, IRedisProvider],
+  exports: [
+    IRegisterCommandHandler,
+    ILoginCommandHandler,
+    IRefreshCommandHandler,
+    IRedisProvider,
+  ],
 })
 export class AuthModule {}

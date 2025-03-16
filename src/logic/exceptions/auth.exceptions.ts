@@ -11,3 +11,9 @@ export class InvalidCredentialsError extends LogicError {
     super('InvalidCredentials', message);
   }
 }
+
+export class InvalidRefreshTokenError extends LogicError {
+  constructor(message: string) {
+    super('InvalidRefreshToken', message);
+  }
+}

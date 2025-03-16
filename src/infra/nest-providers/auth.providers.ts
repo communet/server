@@ -2,6 +2,8 @@ import { Credentials } from '@/domain/entities/user.entities';
 import {
   LoginCommand,
   LoginCommandHandler,
+  RefreshCommand,
+  RefreshCommandHandler,
   RegisterCommand,
   RegisterCommandHandler,
 } from '@/logic/commands/auth.command';
@@ -87,4 +89,17 @@ export const NestJsLoginCommandHandlerProvider: Provider = {
     );
   },
   inject: [CredentialsRepository, JWTService, IRedisProvider],
+};
+
+export abstract class IRefreshCommandHandler extends ICommandHandler<
+  RefreshCommand,
+  AuthTokens
+> {}
+
+export const NestJsRefreshCommandHandlerProvider: Provider = {
+  provide: IRefreshCommandHandler,
+  useFactory: (jwtService: JWTService, redisService: IRedisProvider) => {
+    return new RefreshCommandHandler(jwtService, redisService);
+  },
+  inject: [JWTService, IRedisProvider],
 };

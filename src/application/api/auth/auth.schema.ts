@@ -72,3 +72,10 @@ const ResponseLoginSchema = z.object({
 });
 
 export class ResponseLoginDTO extends createZodDto(ResponseLoginSchema) {}
+
+const ResponseRefreshSchema = z.object({
+  access_token: z.string(),
+  access_expires: z.date(),
+});
+
+export class ResponseRefreshDTO extends createZodDto(ResponseRefreshSchema) {}

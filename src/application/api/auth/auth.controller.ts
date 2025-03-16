@@ -6,22 +6,29 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  Req,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   RequestLoginDTO,
   RequestRegisterDTO,
   ResponseLoginDTO,
+  ResponseRefreshDTO,
   ResponseRegisterDTO,
 } from '@/application/api/auth/auth.schema';
-import { LoginCommand, RegisterCommand } from '@/logic/commands/auth.command';
+import {
+  LoginCommand,
+  RefreshCommand,
+  RegisterCommand,
+} from '@/logic/commands/auth.command';
 import {
   ILoginCommandHandler,
+  IRefreshCommandHandler,
   IRegisterCommandHandler,
 } from '@/infra/nest-providers/auth.providers';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 
 @ApiTags('Auth')
 @Controller('/api/auth')
@@ -32,6 +39,9 @@ export class AuthController {
 
     @Inject(ILoginCommandHandler)
     private readonly loginCommandHandler: ILoginCommandHandler,
+
+    @Inject(IRefreshCommandHandler)
+    private readonly refreshCommandHandler: IRefreshCommandHandler,
   ) {}
 
   @Post('/register')
@@ -101,7 +111,6 @@ export class AuthController {
         secure: true,
         sameSite: 'strict',
         maxAge: authData.refreshExpires * 1000,
-        path: '/api/auth',
       });
 
       return {
@@ -111,6 +120,55 @@ export class AuthController {
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/refresh')
+  @ApiResponse({
+    status: 200,
+    description: 'Refresh auth tokens by refresh token from cookies',
+    type: ResponseLoginDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Some error with refresh token',
+    type: ResponseErrorDTO,
+  })
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<ResponseRefreshDTO> {
+    try {
+      const token = (req.cookies as Record<string, string>)['refresh_token'];
+      if (!token) {
+        throw new ApplicationError(
+          'EmptyRefreshToken ',
+          'Refresh token is empty',
+        );
+      }
+
+      const command = new RefreshCommand(token);
+      const newAuthData = await this.refreshCommandHandler.execute(command);
+
+      res.cookie('refresh_token', newAuthData.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: newAuthData.refreshExpires * 1000,
+      });
+
+      return {
+        access_token: newAuthData.accessToken,
+        access_expires: newAuthData.accessExpires,
+      };
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
         'Internal server error',

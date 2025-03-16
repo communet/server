@@ -9,7 +9,8 @@ import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import {
   UserAlreadyExistsError,
   InvalidCredentialsError,
-} from '@/logic/exceptions/user.exceptions';
+  InvalidRefreshTokenError,
+} from '@/logic/exceptions/auth.exceptions';
 
 export class RegisterCommand extends BaseCommand {
   constructor(
@@ -101,11 +102,47 @@ export class LoginCommandHandler extends ICommandHandler<
       },
     );
 
-    return new AuthTokens(
-      authData.accessToken,
-      authData.accessExpires,
-      authData.refreshToken,
-      authData.refreshExpires,
+    return authData;
+  }
+}
+
+export class RefreshCommand extends BaseCommand {
+  constructor(public readonly refreshToken: string) {
+    super();
+  }
+}
+
+export class RefreshCommandHandler extends ICommandHandler<
+  RefreshCommand,
+  AuthTokens
+> {
+  constructor(
+    protected readonly jwtService: JWTService,
+    protected readonly redisService: IRedisProvider,
+  ) {
+    super();
+  }
+
+  async execute(command: RefreshCommand): Promise<AuthTokens> {
+    const credentialsId = await this.redisService.connection.get(
+      command.refreshToken,
     );
+
+    if (!credentialsId) {
+      throw new InvalidRefreshTokenError('Invalid refresh token');
+    }
+
+    const authData = this.jwtService.generateAuthTokens(credentialsId);
+    await this.redisService.connection.del(command.refreshToken);
+
+    await this.redisService.connection.set(
+      authData.refreshToken,
+      credentialsId,
+      {
+        EX: authData.refreshExpires,
+      },
+    );
+
+    return authData;
   }
 }
