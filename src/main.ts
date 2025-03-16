@@ -1,4 +1,5 @@
 import { patchNestJsSwagger, ZodValidationPipe } from 'nestjs-zod';
+import * as cookieParser from 'cookie-parser';
 
 patchNestJsSwagger();
 
@@ -11,6 +12,7 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(new ZodValidationPipe());
+  app.use(cookieParser());
 
   setupDocumentation(app);
   setupCors(app);
