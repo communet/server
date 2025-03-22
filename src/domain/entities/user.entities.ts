@@ -11,8 +11,6 @@ export class Credentials extends BaseEntity {
     protected _username: Username,
     protected _email: Email,
     protected _password: Password,
-    protected _createdAt: Date = new Date(),
-    protected _updatedAt: Date = new Date(),
   ) {
     super();
   }
@@ -28,14 +26,6 @@ export class Credentials extends BaseEntity {
   public get password(): string {
     return this._password.getValue();
   }
-
-  public get createdAt(): Date {
-    return this._createdAt;
-  }
-
-  public get updatedAt(): Date {
-    return this._updatedAt;
-  }
 }
 
 export class Profile extends BaseEntity {
@@ -43,8 +33,6 @@ export class Profile extends BaseEntity {
     protected _displayName: DisplayName,
     protected _credentials: Credentials,
     protected _avatarUrl: string | undefined = undefined,
-    protected _createdAt: Date = new Date(),
-    protected _updatedAt: Date = new Date(),
   ) {
     super();
   }
@@ -59,13 +47,5 @@ export class Profile extends BaseEntity {
 
   public get avatarUrl(): string | undefined {
     return this._avatarUrl;
-  }
-
-  public get createdAt(): Date {
-    return this._createdAt;
-  }
-
-  public get updatedAt(): Date {
-    return this._updatedAt;
   }
 }
