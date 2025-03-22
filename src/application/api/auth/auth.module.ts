@@ -1,10 +1,6 @@
 import { AuthController } from '@/application/api/auth/auth.controller';
 import {
   CredentialsRepositoryProvider,
-  ILoginCommandHandler,
-  IRedisProvider,
-  IRefreshCommandHandler,
-  IRegisterCommandHandler,
   JWTServiceProvider,
   NestJsLoginCommandHandlerProvider,
   NestJsRedisProvider,
@@ -26,12 +22,6 @@ import { Module } from '@nestjs/common';
     NestJsRegisterCommandHandlerProvider,
     NestJsLoginCommandHandlerProvider,
     NestJsRefreshCommandHandlerProvider,
-  ],
-  exports: [
-    IRegisterCommandHandler,
-    ILoginCommandHandler,
-    IRefreshCommandHandler,
-    IRedisProvider,
   ],
 })
 export class AuthModule {}
