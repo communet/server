@@ -1,4 +1,4 @@
-import { Credentials } from '@/domain/entities/user.entities';
+import { Profile } from '@/domain/entities/user.entities';
 import {
   LoginCommand,
   LoginCommandHandler,
@@ -22,12 +22,26 @@ import {
   ITransactionManager,
   TypeOrmTransactionManager,
 } from '@/infra/database/repositories/transaction.repositories';
+import {
+  IProfileRepository,
+  ProfileRepository,
+} from '@/infra/database/repositories/profile.repositories';
+import { ProfileModel } from '@/infra/database/models/profile.model';
 
 export const CredentialsRepositoryProvider: Provider = {
   provide: CredentialsRepository,
   useFactory: (dataSource: DataSource) => {
     const repository = dataSource.getRepository(CredentialsModel);
     return new CredentialsRepository(repository);
+  },
+  inject: [DataSource],
+};
+
+export const ProfileRepositoryProvider: Provider = {
+  provide: IProfileRepository,
+  useFactory: (DataSource: DataSource) => {
+    const repository = DataSource.getRepository(ProfileModel);
+    return new ProfileRepository(repository);
   },
   inject: [DataSource],
 };
@@ -52,21 +66,23 @@ export const TransactionManagerProvider: Provider = {
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
-  Credentials
+  Profile
 > {}
 
 export const NestJsRegisterCommandHandlerProvider: Provider = {
   provide: IRegisterCommandHandler,
   useFactory: (
     credentialsRepository: CredentialsRepository,
+    profileRepository: IProfileRepository,
     transactionManager: ITransactionManager,
   ) => {
     return new RegisterCommandHandler(
       credentialsRepository,
+      profileRepository,
       transactionManager,
     );
   },
-  inject: [CredentialsRepository, ITransactionManager],
+  inject: [CredentialsRepository, IProfileRepository, ITransactionManager],
 };
 
 export abstract class IRedisProvider {

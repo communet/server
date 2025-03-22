@@ -64,13 +64,14 @@ export class AuthController {
         body.email,
         body.password,
       );
-      const credentials = await this.registerCommandHandler.execute(command);
+      const profile = await this.registerCommandHandler.execute(command);
       return {
-        id: String(credentials.oid),
-        username: credentials.username,
-        email: credentials.email,
-        created_at: credentials.createdAt,
-        updated_at: credentials.updatedAt,
+        id: String(profile.oid),
+        display_name: profile.displayName,
+        username: profile.credentials.username,
+        email: profile.credentials.email,
+        avatar_url: profile.avatarUrl ?? null,
+        created_at: profile.createdAt,
       };
     } catch (error) {
       if (error instanceof ApplicationError) {

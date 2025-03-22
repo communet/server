@@ -41,3 +41,21 @@ export class EmptyPasswordError extends ApplicationError {
     super('EmptyPasswordError', message);
   }
 }
+
+export class DisplayNameEmptyError extends ApplicationError {
+  constructor(message: string) {
+    super('DisplayNameEmptyError', message);
+  }
+}
+
+export class DisplayNameTooShortError extends ApplicationError {
+  constructor(message: string) {
+    super('DisplayNameTooShortError', message);
+  }
+}
+
+export class DisplayNameTooLongError extends ApplicationError {
+  constructor(message: string) {
+    super('DisplayNameTooLongError', message);
+  }
+}

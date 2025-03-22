@@ -1,7 +1,13 @@
 import { AuthTokens } from '@/domain/entities/auth.entities';
-import { Credentials } from '@/domain/entities/user.entities';
-import { Email, Password, Username } from '@/domain/values/user.values';
+import { Credentials, Profile } from '@/domain/entities/user.entities';
+import {
+  DisplayName,
+  Email,
+  Password,
+  Username,
+} from '@/domain/values/user.values';
 import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
+import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/auth.providers';
 import { JWTService } from '@/infra/services/jwt.services';
@@ -25,39 +31,51 @@ export class RegisterCommand extends BaseCommand {
 
 export class RegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
-  Credentials
+  Profile
 > {
   constructor(
     private readonly credentialsRepository: CredentialsRepository,
+    private readonly profileRepository: IProfileRepository,
     private readonly transationManager: ITransactionManager,
   ) {
     super();
   }
 
-  async execute(command: RegisterCommand): Promise<Credentials> {
+  async execute(command: RegisterCommand): Promise<Profile> {
+    console.log('НАЧАЛО МЕТОДА');
     const username = new Username(command.username);
     const email = new Email(command.email);
     const hashedPassword = await hashPassword(command.password);
     const password = new Password(hashedPassword);
     const credentials = new Credentials(username, email, password);
+    const displayName = new DisplayName(credentials.username);
+    const profile = new Profile(displayName, credentials);
 
-    return await this.transationManager.transaction(async () => {
-      const existingUser =
-        await this.credentialsRepository.findByEmailOrUsername(
-          credentials.email,
-          credentials.username,
-        );
+    console.log('ПЕРЕД ВХОДОМ В ТРАНЗАКЦИЮ');
+    return await this.transationManager
+      .transaction(async () => {
+        console.log('ПОПАЛИ В ТРАНЗАКЦИЮ');
+        const existingUser =
+          await this.credentialsRepository.findByEmailOrUsername(
+            credentials.email,
+            credentials.username,
+          );
 
-      if (existingUser) {
-        throw new UserAlreadyExistsError(
-          'User with given username or email already exists',
-        );
-      }
+        if (existingUser) {
+          throw new UserAlreadyExistsError(
+            'User with given username or email already exists',
+          );
+        }
 
-      await this.credentialsRepository.create(credentials);
+        await this.credentialsRepository.create(credentials);
+        await this.profileRepository.create(profile);
 
-      return credentials;
-    });
+        return profile;
+      })
+      .catch((error) => {
+        console.error('Ошибка в транзакции', error);
+        throw error;
+      });
   }
 }
 

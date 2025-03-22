@@ -1,5 +1,8 @@
 import { BaseValue } from '@/domain/values/base.values';
 import {
+  DisplayNameEmptyError,
+  DisplayNameTooLongError,
+  DisplayNameTooShortError,
   EmailEmptyError,
   EmptyPasswordError,
   InvalidEmailFormatError,
@@ -63,6 +66,31 @@ export class Password extends BaseValue<string> {
   protected validate(): undefined {
     if (!this.value) {
       throw new EmptyPasswordError('Password cannot be empty');
+    }
+  }
+}
+
+export class DisplayName extends BaseValue<string> {
+  constructor(value: string) {
+    super(value);
+  }
+
+  protected validate(): undefined {
+    const min_length = 3;
+    const max_length = 32;
+
+    if (!this.value) {
+      throw new DisplayNameEmptyError('Display name cannot be empty');
+    }
+    if (this.value.length < min_length) {
+      throw new DisplayNameTooShortError(
+        `Display name must be greater or equal to ${min_length} characters`,
+      );
+    }
+    if (this.validate.length > max_length) {
+      throw new DisplayNameTooLongError(
+        `Display name must be less or equal to ${max_length} characters`,
+      );
     }
   }
 }
