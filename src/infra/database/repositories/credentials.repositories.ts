@@ -23,6 +23,7 @@ export class CredentialsRepository {
     manager?: EntityManager,
   ): Promise<CredentialsModel> {
     const credentialsModel = {
+      id: String(credentials.oid),
       username: credentials.username,
       email: credentials.email,
       password: credentials.password,
@@ -33,6 +34,6 @@ export class CredentialsRepository {
     const repository =
       manager?.getRepository(CredentialsModel) ?? this.credentialsRepository;
     const newCredentials = repository.create(credentialsModel);
-    return await this.credentialsRepository.save(newCredentials);
+    return await repository.save(newCredentials);
   }
 }

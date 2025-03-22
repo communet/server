@@ -42,7 +42,6 @@ export class RegisterCommandHandler extends ICommandHandler<
   }
 
   async execute(command: RegisterCommand): Promise<Profile> {
-    console.log('НАЧАЛО МЕТОДА');
     const username = new Username(command.username);
     const email = new Email(command.email);
     const hashedPassword = await hashPassword(command.password);

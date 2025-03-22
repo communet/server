@@ -19,9 +19,10 @@ export class ProfileRepository extends IProfileRepository {
     manager?: EntityManager,
   ): Promise<ProfileModel> {
     const profileModel = {
+      id: String(profile.oid),
       display_username: profile.displayName,
       avatar_url: profile.avatarUrl,
-      credentials: profile.credentials,
+      credentials: { id: String(profile.credentials.oid) },
       created_at: profile.createdAt,
       updated_at: profile.updatedAt,
     };
@@ -29,6 +30,6 @@ export class ProfileRepository extends IProfileRepository {
     const repository =
       manager?.getRepository(ProfileModel) ?? this.profileRepository;
     const newProfile = repository.create(profileModel);
-    return await this.profileRepository.save(newProfile);
+    return await repository.save(newProfile);
   }
 }
