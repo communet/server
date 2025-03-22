@@ -1,7 +1,7 @@
 import { AuthTokens } from '@/domain/entities/auth.entities';
 import { Credentials } from '@/domain/entities/user.entities';
 import { Email, Password, Username } from '@/domain/values/user.values';
-import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositoies';
+import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/auth.providers';
 import { JWTService } from '@/infra/services/jwt.services';
 import { hashPassword, verifyPassword } from '@/infra/utils/password.utils';

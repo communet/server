@@ -9,7 +9,7 @@ import {
 } from '@/logic/commands/auth.command';
 import { ICommandHandler } from '@/logic/commands/base.command';
 import { Provider } from '@nestjs/common';
-import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositoies';
+import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
 import { DataSource } from 'typeorm';
 import { CredentialsModel } from '@/infra/database/models/credentials.model';
 import { AuthTokens } from '@/domain/entities/auth.entities';
