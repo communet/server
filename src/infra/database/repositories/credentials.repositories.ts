@@ -15,6 +15,7 @@ export class CredentialsRepository {
   ): Promise<CredentialsModel | null> {
     return await this.credentialsRepository.findOne({
       where: [{ email: email }, { username: username }],
+      relations: ['profile'],
     });
   }
 
@@ -27,8 +28,6 @@ export class CredentialsRepository {
       username: credentials.username,
       email: credentials.email,
       password: credentials.password,
-      created_at: credentials.createdAt,
-      updated_at: credentials.updatedAt,
     };
 
     const repository =

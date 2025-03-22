@@ -21,7 +21,9 @@ export class ProfileModel {
   @Column({ type: 'varchar', nullable: true, default: undefined })
   avatar_url?: string | undefined;
 
-  @OneToOne(() => CredentialsModel, (credentials) => credentials.profile)
+  @OneToOne(() => CredentialsModel, (credentials) => credentials.profile, {
+    eager: true,
+  })
   @JoinColumn()
   credentials!: CredentialsModel;
 

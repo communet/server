@@ -10,9 +10,8 @@ export class JWTService {
     protected readonly refreshExpiresInDays: number,
   ) {}
 
-  generateAuthTokens(credentialsId: string): AuthTokens {
-    const { accessToken, accessExpires } =
-      this.generateAccessToken(credentialsId);
+  generateAuthTokens(profileId: string): AuthTokens {
+    const { accessToken, accessExpires } = this.generateAccessToken(profileId);
     const { refreshToken, refreshExpires } = this.generateRefreshToken();
 
     return new AuthTokens(
@@ -23,7 +22,7 @@ export class JWTService {
     );
   }
 
-  protected generateAccessToken(credentialsId: string): {
+  protected generateAccessToken(profileId: string): {
     accessToken: string;
     accessExpires: Date;
   } {
@@ -33,7 +32,7 @@ export class JWTService {
     try {
       const token = jwt.sign(
         {
-          credentialsId,
+          profileId,
           exp: Math.floor(expires.getTime() / 1000),
         },
         this.jwtSecretKey,

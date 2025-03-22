@@ -23,8 +23,6 @@ export class ProfileRepository extends IProfileRepository {
       display_username: profile.displayName,
       avatar_url: profile.avatarUrl,
       credentials: { id: String(profile.credentials.oid) },
-      created_at: profile.createdAt,
-      updated_at: profile.updatedAt,
     };
 
     const repository =

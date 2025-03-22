@@ -110,10 +110,10 @@ export class LoginCommandHandler extends ICommandHandler<
       throw new InvalidCredentialsError('Invalid credentials');
     }
 
-    const authData = this.jwtService.generateAuthTokens(credentials.id);
+    const authData = this.jwtService.generateAuthTokens(credentials.profile.id);
     await this.redisService.connection.set(
       authData.refreshToken,
-      credentials.id,
+      credentials.profile.id,
       {
         EX: authData.refreshExpires,
       },
@@ -141,24 +141,20 @@ export class RefreshCommandHandler extends ICommandHandler<
   }
 
   async execute(command: RefreshCommand): Promise<AuthTokens> {
-    const credentialsId = await this.redisService.connection.get(
+    const profileId = await this.redisService.connection.get(
       command.refreshToken,
     );
 
-    if (!credentialsId) {
+    if (!profileId) {
       throw new InvalidRefreshTokenError('Invalid refresh token');
     }
 
-    const authData = this.jwtService.generateAuthTokens(credentialsId);
-    await this.redisService.connection.del(command.refreshToken);
+    const authData = this.jwtService.generateAuthTokens(profileId);
 
-    await this.redisService.connection.set(
-      authData.refreshToken,
-      credentialsId,
-      {
-        EX: authData.refreshExpires,
-      },
-    );
+    await this.redisService.connection.del(command.refreshToken);
+    await this.redisService.connection.set(authData.refreshToken, profileId, {
+      EX: authData.refreshExpires,
+    });
 
     return authData;
   }

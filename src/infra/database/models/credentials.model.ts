@@ -23,7 +23,9 @@ export class CredentialsModel {
   @Column()
   password!: string;
 
-  @OneToOne(() => ProfileModel, (profile) => profile.credentials)
+  @OneToOne(() => ProfileModel, (profile) => profile.credentials, {
+    eager: false,
+  })
   profile!: ProfileModel;
 
   @CreateDateColumn({ type: 'timestamp' })
