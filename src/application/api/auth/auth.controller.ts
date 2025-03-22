@@ -57,21 +57,44 @@ export class AuthController {
   })
   async register(
     @Body() body: RequestRegisterDTO,
+    @Res({ passthrough: true }) res: Response,
   ): Promise<ResponseRegisterDTO> {
     try {
-      const command = new RegisterCommand(
+      const registerCommand = new RegisterCommand(
         body.username,
         body.email,
         body.password,
       );
-      const profile = await this.registerCommandHandler.execute(command);
+      const profile =
+        await this.registerCommandHandler.execute(registerCommand);
+
+      const loginCommand = new LoginCommand(
+        profile.credentials.username,
+        profile.credentials.email,
+        body.password,
+      );
+      const authData = await this.loginCommandHandler.execute(loginCommand);
+
+      res.cookie('refresh_token', authData.refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: authData.refreshExpires * 1000,
+      });
+
       return {
-        id: String(profile.oid),
-        display_name: profile.displayName,
-        username: profile.credentials.username,
-        email: profile.credentials.email,
-        avatar_url: profile.avatarUrl ?? null,
-        created_at: profile.createdAt,
+        profile: {
+          id: String(profile.oid),
+          display_name: profile.displayName,
+          username: profile.credentials.username,
+          email: profile.credentials.email,
+          avatar_url: profile.avatarUrl ?? null,
+          created_at: profile.createdAt,
+        },
+        access: {
+          token: authData.accessToken,
+          expires: authData.accessExpires,
+        },
       };
     } catch (error) {
       if (error instanceof ApplicationError) {

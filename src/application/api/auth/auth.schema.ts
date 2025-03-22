@@ -32,12 +32,18 @@ const RequestRegisterSchema = z
 export class RequestRegisterDTO extends createZodDto(RequestRegisterSchema) {}
 
 const ResponseRegisterSchema = z.object({
-  id: z.string().uuid(),
-  display_name: z.string(),
-  username: z.string(),
-  email: z.string().email(),
-  avatar_url: z.string().nullable(),
-  created_at: z.date(),
+  profile: z.object({
+    id: z.string().uuid(),
+    display_name: z.string(),
+    username: z.string(),
+    email: z.string().email(),
+    avatar_url: z.string().nullable(),
+    created_at: z.date(),
+  }),
+  access: z.object({
+    token: z.string(),
+    expires: z.date(),
+  }),
 });
 
 export class ResponseRegisterDTO extends createZodDto(ResponseRegisterSchema) {}
