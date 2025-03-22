@@ -1,4 +1,4 @@
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { CredentialsModel } from '@/infra/database/models/credentials.model';
 import { Credentials } from '@/domain/entities/user.entities';
 
@@ -18,7 +18,10 @@ export class CredentialsRepository {
     });
   }
 
-  async create(credentials: Credentials): Promise<CredentialsModel> {
+  async create(
+    credentials: Credentials,
+    manager?: EntityManager,
+  ): Promise<CredentialsModel> {
     const credentialsModel = {
       username: credentials.username,
       email: credentials.email,
@@ -27,7 +30,9 @@ export class CredentialsRepository {
       updated_at: credentials.updatedAt,
     };
 
-    const newCredentials = this.credentialsRepository.create(credentialsModel);
+    const repository =
+      manager?.getRepository(CredentialsModel) ?? this.credentialsRepository;
+    const newCredentials = repository.create(credentialsModel);
     return await this.credentialsRepository.save(newCredentials);
   }
 }

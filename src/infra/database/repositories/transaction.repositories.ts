@@ -3,7 +3,7 @@ import { EntityManager } from 'typeorm';
 
 export abstract class ITransactionManager {
   abstract transaction<T>(
-    operation: (manager: unknown) => Promise<T>,
+    operation: (manager: EntityManager) => Promise<T>,
   ): Promise<T>;
 }
 
@@ -16,7 +16,7 @@ export class TypeOrmTransactionManager extends ITransactionManager {
   }
 
   async transaction<T>(
-    operation: (manager: unknown) => Promise<T>,
+    operation: (manager: EntityManager) => Promise<T>,
   ): Promise<T> {
     return this.entityManager.transaction(operation);
   }

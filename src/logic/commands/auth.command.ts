@@ -51,31 +51,24 @@ export class RegisterCommandHandler extends ICommandHandler<
     const displayName = new DisplayName(credentials.username);
     const profile = new Profile(displayName, credentials);
 
-    console.log('ПЕРЕД ВХОДОМ В ТРАНЗАКЦИЮ');
-    return await this.transationManager
-      .transaction(async () => {
-        console.log('ПОПАЛИ В ТРАНЗАКЦИЮ');
-        const existingUser =
-          await this.credentialsRepository.findByEmailOrUsername(
-            credentials.email,
-            credentials.username,
-          );
+    return await this.transationManager.transaction(async (manager) => {
+      const existingUser =
+        await this.credentialsRepository.findByEmailOrUsername(
+          credentials.email,
+          credentials.username,
+        );
 
-        if (existingUser) {
-          throw new UserAlreadyExistsError(
-            'User with given username or email already exists',
-          );
-        }
+      if (existingUser) {
+        throw new UserAlreadyExistsError(
+          'User with given username or email already exists',
+        );
+      }
 
-        await this.credentialsRepository.create(credentials);
-        await this.profileRepository.create(profile);
+      await this.credentialsRepository.create(credentials, manager);
+      await this.profileRepository.create(profile, manager);
 
-        return profile;
-      })
-      .catch((error) => {
-        console.error('Ошибка в транзакции', error);
-        throw error;
-      });
+      return profile;
+    });
   }
 }
 

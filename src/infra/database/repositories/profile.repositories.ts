@@ -1,9 +1,12 @@
-import { Repository } from 'typeorm';
+import { EntityManager, Repository } from 'typeorm';
 import { Profile } from '@/domain/entities/user.entities';
 import { ProfileModel } from '@/infra/database/models/profile.model';
 
 export abstract class IProfileRepository {
-  abstract create(profile: Profile): Promise<ProfileModel>;
+  abstract create(
+    profile: Profile,
+    manager?: EntityManager,
+  ): Promise<ProfileModel>;
 }
 
 export class ProfileRepository extends IProfileRepository {
@@ -11,7 +14,10 @@ export class ProfileRepository extends IProfileRepository {
     super();
   }
 
-  async create(profile: Profile): Promise<ProfileModel> {
+  async create(
+    profile: Profile,
+    manager?: EntityManager,
+  ): Promise<ProfileModel> {
     const profileModel = {
       display_username: profile.displayName,
       avatar_url: profile.avatarUrl,
@@ -20,7 +26,9 @@ export class ProfileRepository extends IProfileRepository {
       updated_at: profile.updatedAt,
     };
 
-    const newProfile = this.profileRepository.create(profileModel);
+    const repository =
+      manager?.getRepository(ProfileModel) ?? this.profileRepository;
+    const newProfile = repository.create(profileModel);
     return await this.profileRepository.save(newProfile);
   }
 }
