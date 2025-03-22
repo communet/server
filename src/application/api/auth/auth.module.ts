@@ -10,6 +10,7 @@ import {
   NestJsRedisProvider,
   NestJsRefreshCommandHandlerProvider,
   NestJsRegisterCommandHandlerProvider,
+  TransactionManagerProvider,
 } from '@/infra/nest-providers/auth.providers';
 import { Module } from '@nestjs/common';
 
@@ -18,6 +19,7 @@ import { Module } from '@nestjs/common';
   providers: [
     CredentialsRepositoryProvider,
     JWTServiceProvider,
+    TransactionManagerProvider,
     NestJsRedisProvider,
     NestJsRegisterCommandHandlerProvider,
     NestJsLoginCommandHandlerProvider,

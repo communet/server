@@ -2,6 +2,7 @@ import { AuthTokens } from '@/domain/entities/auth.entities';
 import { Credentials } from '@/domain/entities/user.entities';
 import { Email, Password, Username } from '@/domain/values/user.values';
 import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
+import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/auth.providers';
 import { JWTService } from '@/infra/services/jwt.services';
 import { hashPassword, verifyPassword } from '@/infra/utils/password.utils';
@@ -26,7 +27,10 @@ export class RegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
   Credentials
 > {
-  constructor(private readonly credentialsRepository: CredentialsRepository) {
+  constructor(
+    private readonly credentialsRepository: CredentialsRepository,
+    private readonly transationManager: ITransactionManager,
+  ) {
     super();
   }
 
@@ -37,20 +41,23 @@ export class RegisterCommandHandler extends ICommandHandler<
     const password = new Password(hashedPassword);
     const credentials = new Credentials(username, email, password);
 
-    const existingUser = await this.credentialsRepository.findByEmailOrUsername(
-      credentials.email,
-      credentials.username,
-    );
+    return await this.transationManager.transaction(async () => {
+      const existingUser =
+        await this.credentialsRepository.findByEmailOrUsername(
+          credentials.email,
+          credentials.username,
+        );
 
-    if (existingUser) {
-      throw new UserAlreadyExistsError(
-        'User with given username or email already exists',
-      );
-    }
+      if (existingUser) {
+        throw new UserAlreadyExistsError(
+          'User with given username or email already exists',
+        );
+      }
 
-    await this.credentialsRepository.create(credentials);
+      await this.credentialsRepository.create(credentials);
 
-    return credentials;
+      return credentials;
+    });
   }
 }
 

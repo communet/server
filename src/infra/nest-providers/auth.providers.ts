@@ -18,6 +18,10 @@ import { ConfigService } from '@nestjs/config';
 import { Config } from '@/config/schema';
 import { RedisClientType } from 'redis';
 import { RedisService } from '@/infra/services/redis.service';
+import {
+  ITransactionManager,
+  TypeOrmTransactionManager,
+} from '@/infra/database/repositories/transaction.repositories';
 
 export const CredentialsRepositoryProvider: Provider = {
   provide: CredentialsRepository,
@@ -41,6 +45,11 @@ export const JWTServiceProvider: Provider = {
   inject: [ConfigService],
 };
 
+export const TransactionManagerProvider: Provider = {
+  provide: ITransactionManager,
+  useClass: TypeOrmTransactionManager,
+};
+
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
   Credentials
@@ -48,10 +57,16 @@ export abstract class IRegisterCommandHandler extends ICommandHandler<
 
 export const NestJsRegisterCommandHandlerProvider: Provider = {
   provide: IRegisterCommandHandler,
-  useFactory: (credentialsRepository: CredentialsRepository) => {
-    return new RegisterCommandHandler(credentialsRepository);
+  useFactory: (
+    credentialsRepository: CredentialsRepository,
+    transactionManager: ITransactionManager,
+  ) => {
+    return new RegisterCommandHandler(
+      credentialsRepository,
+      transactionManager,
+    );
   },
-  inject: [CredentialsRepository],
+  inject: [CredentialsRepository, ITransactionManager],
 };
 
 export abstract class IRedisProvider {
