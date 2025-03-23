@@ -66,12 +66,11 @@ export class AuthController {
         body.email,
         body.password,
       );
-      const profile =
-        await this.registerCommandHandler.execute(registerCommand);
+      await this.registerCommandHandler.execute(registerCommand);
 
       const loginCommand = new LoginCommand(
-        profile.credentials.username,
-        profile.credentials.email,
+        body.username,
+        body.email,
         body.password,
       );
       const authData = await this.loginCommandHandler.execute(loginCommand);
@@ -84,18 +83,8 @@ export class AuthController {
       });
 
       return {
-        profile: {
-          id: String(profile.oid),
-          display_name: profile.displayName,
-          username: profile.credentials.username,
-          email: profile.credentials.email,
-          avatar_url: profile.avatarUrl ?? null,
-          created_at: profile.createdAt,
-        },
-        access: {
-          token: authData.accessToken,
-          expires: authData.accessExpires,
-        },
+        access_token: authData.accessToken,
+        access_expires: authData.accessExpires,
       };
     } catch (error) {
       if (error instanceof InvalidCredentialsError) {
