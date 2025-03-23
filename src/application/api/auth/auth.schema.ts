@@ -6,28 +6,20 @@ export function onlyAlphaNumeric(value: string): boolean {
   return regExp.test(value);
 }
 
-const RequestRegisterSchema = z
-  .object({
-    username: z
-      .string()
-      .trim()
-      .toLowerCase()
-      .min(3, 'Username must be greater or equal 3 characters')
-      .max(32, 'Username must be less or equal 32 characters')
-      .refine(
-        onlyAlphaNumeric,
-        'Username must contains symbols A-z, 0-9 and _ (underscore)',
-      ),
-    email: z.string().email('Email is required and must be valid'),
-    password: z
-      .string()
-      .min(8, 'Password must be greater or equal 8 characters'),
-    confirm: z.string(),
-  })
-  .refine((value) => value.password === value.confirm, {
-    message: "Passwords doesn't match",
-    path: ['confirm'],
-  });
+const RequestRegisterSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, 'Username must be greater or equal 3 characters')
+    .max(32, 'Username must be less or equal 32 characters')
+    .refine(
+      onlyAlphaNumeric,
+      'Username must contains symbols A-z, 0-9 and _ (underscore)',
+    ),
+  email: z.string().email('Email is required and must be valid'),
+  password: z.string().min(8, 'Password must be greater or equal 8 characters'),
+});
 
 export class RequestRegisterDTO extends createZodDto(RequestRegisterSchema) {}
 
