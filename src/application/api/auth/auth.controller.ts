@@ -29,6 +29,7 @@ import {
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
 import { Response, Request } from 'express';
+import { InvalidCredentialsError } from '@/logic/exceptions/auth.exceptions';
 
 @ApiTags('Auth')
 @Controller('/api/auth')
@@ -97,7 +98,9 @@ export class AuthController {
         },
       };
     } catch (error) {
-      if (error instanceof ApplicationError) {
+      if (error instanceof InvalidCredentialsError) {
+        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      } else if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       throw new HttpException(
@@ -142,8 +145,8 @@ export class AuthController {
         access_expires: authData.accessExpires,
       };
     } catch (error) {
-      if (error instanceof ApplicationError) {
-        throw new HttpException('Invalid credentials', HttpStatus.BAD_REQUEST);
+      if (error instanceof InvalidCredentialsError) {
+        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
       throw new HttpException(
         'Internal server error',
