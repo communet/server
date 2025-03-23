@@ -15,7 +15,7 @@ async function bootstrap(): Promise<void> {
   app.use(cookieParser());
 
   setupDocumentation(app);
-  setupCors(app);
+  setupCors(app, process.env.ORIGIN_ADDRESS ?? 'http://localhost:5173');
 
   await app.listen(process.env.PORT ?? 3000);
 }

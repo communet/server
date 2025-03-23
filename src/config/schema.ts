@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const ConfigSchema = z.object({
   PORT: z.string().default('3535'),
+  ORIGIN_ADDRESS: z.string(),
   DB_HOST: z.string(),
   DB_PORT: z.string(),
   DB_USER: z.string(),

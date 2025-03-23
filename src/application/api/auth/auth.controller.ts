@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Res,
   Req,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
@@ -46,6 +47,7 @@ export class AuthController {
   ) {}
 
   @Post('/register')
+  @HttpCode(201)
   @ApiResponse({
     status: 201,
     description: 'Register new user in application',
@@ -78,8 +80,10 @@ export class AuthController {
       res.cookie('refresh_token', authData.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: authData.refreshExpires * 1000,
+        path: '/',
+        domain: 'localhost',
       });
 
       return {
@@ -100,6 +104,7 @@ export class AuthController {
   }
 
   @Post('/login')
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Authorization user in application',
@@ -125,8 +130,10 @@ export class AuthController {
       res.cookie('refresh_token', authData.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: authData.refreshExpires * 1000,
+        path: '/',
+        domain: 'localhost',
       });
 
       return {
@@ -145,6 +152,7 @@ export class AuthController {
   }
 
   @Post('/refresh')
+  @HttpCode(200)
   @ApiResponse({
     status: 200,
     description: 'Refresh auth tokens by refresh token from cookies',
@@ -174,8 +182,10 @@ export class AuthController {
       res.cookie('refresh_token', newAuthData.refreshToken, {
         httpOnly: true,
         secure: true,
-        sameSite: 'strict',
+        sameSite: 'none',
         maxAge: newAuthData.refreshExpires * 1000,
+        path: '/',
+        domain: 'localhost',
       });
 
       return {
