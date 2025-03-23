@@ -33,7 +33,7 @@ export class RequestRegisterDTO extends createZodDto(RequestRegisterSchema) {}
 
 const ResponseRegisterSchema = z.object({
   access_token: z.string(),
-  access_expires: z.date(),
+  access_expires: z.string(),
 });
 
 export class ResponseRegisterDTO extends createZodDto(ResponseRegisterSchema) {}
@@ -65,14 +65,14 @@ export class RequestLoginDTO extends createZodDto(RequestLoginSchema) {}
 
 const ResponseLoginSchema = z.object({
   access_token: z.string(),
-  access_expires: z.date(),
+  access_expires: z.string(),
 });
 
 export class ResponseLoginDTO extends createZodDto(ResponseLoginSchema) {}
 
 const ResponseRefreshSchema = z.object({
   access_token: z.string(),
-  access_expires: z.date(),
+  access_expires: z.string(),
 });
 
 export class ResponseRefreshDTO extends createZodDto(ResponseRefreshSchema) {}

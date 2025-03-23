@@ -84,7 +84,7 @@ export class AuthController {
 
       return {
         access_token: authData.accessToken,
-        access_expires: authData.accessExpires,
+        access_expires: authData.accessExpires.toISOString(),
       };
     } catch (error) {
       if (error instanceof InvalidCredentialsError) {
@@ -131,7 +131,7 @@ export class AuthController {
 
       return {
         access_token: authData.accessToken,
-        access_expires: authData.accessExpires,
+        access_expires: authData.accessExpires.toISOString(),
       };
     } catch (error) {
       if (error instanceof InvalidCredentialsError) {
@@ -148,7 +148,7 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Refresh auth tokens by refresh token from cookies',
-    type: ResponseLoginDTO,
+    type: ResponseRefreshDTO,
   })
   @ApiResponse({
     status: 400,
@@ -180,7 +180,7 @@ export class AuthController {
 
       return {
         access_token: newAuthData.accessToken,
-        access_expires: newAuthData.accessExpires,
+        access_expires: newAuthData.accessExpires.toISOString(),
       };
     } catch (error) {
       if (error instanceof ApplicationError) {
