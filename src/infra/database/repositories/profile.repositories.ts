@@ -7,6 +7,8 @@ export abstract class IProfileRepository {
     profile: Profile,
     manager?: EntityManager,
   ): Promise<ProfileModel>;
+
+  abstract findById(profileId: string): Promise<ProfileModel | null>;
 }
 
 export class ProfileRepository extends IProfileRepository {
@@ -29,5 +31,14 @@ export class ProfileRepository extends IProfileRepository {
       manager?.getRepository(ProfileModel) ?? this.profileRepository;
     const newProfile = repository.create(profileModel);
     return await repository.save(newProfile);
+  }
+
+  async findById(profileId: string): Promise<ProfileModel | null> {
+    const profile = await this.profileRepository.findOne({
+      where: { id: profileId },
+      relations: ['credentials'],
+    });
+
+    return profile;
   }
 }

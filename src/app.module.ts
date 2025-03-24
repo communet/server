@@ -1,4 +1,4 @@
-import { AuthModule } from '@/application/api/auth/auth.module';
+import { AuthModule } from '@/application/api/auth/module.auth';
 import { ConfigSchema } from '@/config/schema';
 import { registerTypeOrmModule } from '@/infra/nestjs-typeorm';
 import { Module } from '@nestjs/common';

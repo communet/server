@@ -1,4 +1,4 @@
-import { AuthController } from '@/application/api/auth/auth.controller';
+import { AuthController } from '@/application/api/auth/controller.auth';
 import {
   CredentialsRepositoryProvider,
   JWTServiceProvider,
@@ -8,6 +8,7 @@ import {
   NestJsRegisterCommandHandlerProvider,
   ProfileRepositoryProvider,
   TransactionManagerProvider,
+  JwtStrategyProvider,
 } from '@/infra/nest-providers/auth.providers';
 import { Module } from '@nestjs/common';
 
@@ -22,6 +23,7 @@ import { Module } from '@nestjs/common';
     NestJsRegisterCommandHandlerProvider,
     NestJsLoginCommandHandlerProvider,
     NestJsRefreshCommandHandlerProvider,
+    JwtStrategyProvider,
   ],
 })
 export class AuthModule {}

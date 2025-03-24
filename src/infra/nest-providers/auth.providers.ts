@@ -27,6 +27,7 @@ import {
   ProfileRepository,
 } from '@/infra/database/repositories/profile.repositories';
 import { ProfileModel } from '@/infra/database/models/profile.model';
+import { JwtStrategy } from '@/application/api/auth/guards.auth';
 
 export const CredentialsRepositoryProvider: Provider = {
   provide: CredentialsRepository,
@@ -133,4 +134,19 @@ export const NestJsRefreshCommandHandlerProvider: Provider = {
     return new RefreshCommandHandler(jwtService, redisService);
   },
   inject: [JWTService, IRedisProvider],
+};
+
+export const JwtStrategyProvider: Provider = {
+  provide: JwtStrategy,
+  useFactory: (
+    profileRepository: IProfileRepository,
+    configService: ConfigService<Config>,
+  ) => {
+    return new JwtStrategy(
+      profileRepository,
+      configService.get('JWT_SECRET')!,
+      configService.get('JWT_ALGORITHM')!,
+    );
+  },
+  inject: [IProfileRepository, ConfigService],
 };

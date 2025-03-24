@@ -16,7 +16,7 @@ import {
   ResponseLoginDTO,
   ResponseRefreshDTO,
   ResponseRegisterDTO,
-} from '@/application/api/auth/auth.schema';
+} from '@/application/api/auth/schema.auth';
 import {
   LoginCommand,
   RefreshCommand,
