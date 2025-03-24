@@ -1,4 +1,5 @@
 import { AuthModule } from '@/application/api/auth/module.auth';
+import { UsersModule } from '@/application/api/users/module.users';
 import { ConfigSchema } from '@/config/schema';
 import { registerTypeOrmModule } from '@/infra/nestjs-typeorm';
 import { Module } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { ConfigModule } from '@nestjs/config';
     }),
     registerTypeOrmModule(),
     AuthModule,
+    UsersModule,
   ],
   controllers: [],
   providers: [],
