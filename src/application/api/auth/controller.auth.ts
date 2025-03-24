@@ -26,7 +26,7 @@ import {
   ILoginCommandHandler,
   IRefreshCommandHandler,
   IRegisterCommandHandler,
-} from '@/infra/nest-providers/auth.providers';
+} from '@/infra/nest-providers/command.providers';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
 import { Response, Request } from 'express';

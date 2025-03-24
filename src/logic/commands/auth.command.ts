@@ -9,7 +9,7 @@ import {
 import { ICredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
-import { IRedisProvider } from '@/infra/nest-providers/auth.providers';
+import { IRedisProvider } from '@/infra/nest-providers/service.providers';
 import { IJWTService } from '@/infra/services/jwt.services';
 import { hashPassword, verifyPassword } from '@/infra/utils/password.utils';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';

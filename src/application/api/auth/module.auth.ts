@@ -1,15 +1,19 @@
 import { AuthController } from '@/application/api/auth/controller.auth';
 import {
-  CredentialsRepositoryProvider,
-  JWTServiceProvider,
   NestJsLoginCommandHandlerProvider,
-  NestJsRedisProvider,
   NestJsRefreshCommandHandlerProvider,
   NestJsRegisterCommandHandlerProvider,
+} from '@/infra/nest-providers/command.providers';
+import {
+  CredentialsRepositoryProvider,
   ProfileRepositoryProvider,
   TransactionManagerProvider,
+} from '@/infra/nest-providers/repository.providers';
+import {
+  JWTServiceProvider,
   JwtStrategyProvider,
-} from '@/infra/nest-providers/auth.providers';
+  NestJsRedisProvider,
+} from '@/infra/nest-providers/service.providers';
 import { Module } from '@nestjs/common';
 
 @Module({

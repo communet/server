@@ -1,0 +1,39 @@
+import { Provider } from '@nestjs/common';
+import {
+  CredentialsRepository,
+  ICredentialsRepository,
+} from '@/infra/database/repositories/credentials.repositories';
+import { DataSource } from 'typeorm';
+import { CredentialsModel } from '@/infra/database/models/credentials.model';
+import { ProfileModel } from '@/infra/database/models/profile.model';
+import {
+  ProfileRepository,
+  IProfileRepository,
+} from '@/infra/database/repositories/profile.repositories';
+import {
+  ITransactionManager,
+  TypeOrmTransactionManager,
+} from '@/infra/database/repositories/transaction.repositories';
+
+export const TransactionManagerProvider: Provider = {
+  provide: ITransactionManager,
+  useClass: TypeOrmTransactionManager,
+};
+
+export const CredentialsRepositoryProvider: Provider = {
+  provide: ICredentialsRepository,
+  useFactory: (dataSource: DataSource) => {
+    const repository = dataSource.getRepository(CredentialsModel);
+    return new CredentialsRepository(repository);
+  },
+  inject: [DataSource],
+};
+
+export const ProfileRepositoryProvider: Provider = {
+  provide: IProfileRepository,
+  useFactory: (DataSource: DataSource) => {
+    const repository = DataSource.getRepository(ProfileModel);
+    return new ProfileRepository(repository);
+  },
+  inject: [DataSource],
+};
