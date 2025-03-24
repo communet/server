@@ -2,11 +2,23 @@ import { EntityManager, Repository } from 'typeorm';
 import { CredentialsModel } from '@/infra/database/models/credentials.model';
 import { Credentials } from '@/domain/entities/user.entities';
 
-export class CredentialsRepository {
-  private readonly credentialsRepository: Repository<CredentialsModel>;
+export abstract class ICredentialsRepository {
+  abstract findByEmailOrUsername(
+    email: string | undefined,
+    username: string | undefined,
+  ): Promise<CredentialsModel | null>;
 
-  constructor(repository: Repository<CredentialsModel>) {
-    this.credentialsRepository = repository;
+  abstract create(
+    credentials: Credentials,
+    manager?: EntityManager,
+  ): Promise<CredentialsModel>;
+}
+
+export class CredentialsRepository extends ICredentialsRepository {
+  constructor(
+    protected readonly credentialsRepository: Repository<CredentialsModel>,
+  ) {
+    super();
   }
 
   async findByEmailOrUsername(

@@ -6,11 +6,11 @@ import {
   Password,
   Username,
 } from '@/domain/values/user.values';
-import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
+import { ICredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/auth.providers';
-import { JWTService } from '@/infra/services/jwt.services';
+import { IJWTService } from '@/infra/services/jwt.services';
 import { hashPassword, verifyPassword } from '@/infra/utils/password.utils';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import {
@@ -34,7 +34,7 @@ export class RegisterCommandHandler extends ICommandHandler<
   Profile
 > {
   constructor(
-    private readonly credentialsRepository: CredentialsRepository,
+    private readonly credentialsRepository: ICredentialsRepository,
     private readonly profileRepository: IProfileRepository,
     private readonly transationManager: ITransactionManager,
   ) {
@@ -86,8 +86,8 @@ export class LoginCommandHandler extends ICommandHandler<
   AuthTokens
 > {
   constructor(
-    protected readonly credentialsRepository: CredentialsRepository,
-    protected readonly jwtService: JWTService,
+    protected readonly credentialsRepository: ICredentialsRepository,
+    protected readonly jwtService: IJWTService,
     protected readonly redisService: IRedisProvider,
   ) {
     super();
@@ -134,7 +134,7 @@ export class RefreshCommandHandler extends ICommandHandler<
   AuthTokens
 > {
   constructor(
-    protected readonly jwtService: JWTService,
+    protected readonly jwtService: IJWTService,
     protected readonly redisService: IRedisProvider,
   ) {
     super();

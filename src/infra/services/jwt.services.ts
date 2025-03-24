@@ -2,13 +2,19 @@ import { AuthTokens } from '@/domain/entities/auth.entities';
 import { v4 as uuid4 } from 'uuid';
 import * as jwt from 'jsonwebtoken';
 
-export class JWTService {
+export abstract class IJWTService {
+  abstract generateAuthTokens(profileId: string): AuthTokens;
+}
+
+export class JWTService extends IJWTService {
   constructor(
     protected readonly jwtSecretKey: string,
     protected readonly jwtAlgorithm: string,
     protected readonly jwtExpiresInMinutes: number,
     protected readonly refreshExpiresInDays: number,
-  ) {}
+  ) {
+    super();
+  }
 
   generateAuthTokens(profileId: string): AuthTokens {
     const { accessToken, accessExpires } = this.generateAccessToken(profileId);

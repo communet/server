@@ -9,11 +9,14 @@ import {
 } from '@/logic/commands/auth.command';
 import { ICommandHandler } from '@/logic/commands/base.command';
 import { Provider } from '@nestjs/common';
-import { CredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
+import {
+  CredentialsRepository,
+  ICredentialsRepository,
+} from '@/infra/database/repositories/credentials.repositories';
 import { DataSource } from 'typeorm';
 import { CredentialsModel } from '@/infra/database/models/credentials.model';
 import { AuthTokens } from '@/domain/entities/auth.entities';
-import { JWTService } from '@/infra/services/jwt.services';
+import { JWTService, IJWTService } from '@/infra/services/jwt.services';
 import { ConfigService } from '@nestjs/config';
 import { Config } from '@/config/schema';
 import { RedisClientType } from 'redis';
@@ -30,7 +33,7 @@ import { ProfileModel } from '@/infra/database/models/profile.model';
 import { JwtStrategy } from '@/application/api/auth/guards.auth';
 
 export const CredentialsRepositoryProvider: Provider = {
-  provide: CredentialsRepository,
+  provide: ICredentialsRepository,
   useFactory: (dataSource: DataSource) => {
     const repository = dataSource.getRepository(CredentialsModel);
     return new CredentialsRepository(repository);
@@ -48,7 +51,7 @@ export const ProfileRepositoryProvider: Provider = {
 };
 
 export const JWTServiceProvider: Provider = {
-  provide: JWTService,
+  provide: IJWTService,
   useFactory: (configService: ConfigService<Config>) => {
     return new JWTService(
       configService.get('JWT_SECRET')!,
@@ -73,7 +76,7 @@ export abstract class IRegisterCommandHandler extends ICommandHandler<
 export const NestJsRegisterCommandHandlerProvider: Provider = {
   provide: IRegisterCommandHandler,
   useFactory: (
-    credentialsRepository: CredentialsRepository,
+    credentialsRepository: ICredentialsRepository,
     profileRepository: IProfileRepository,
     transactionManager: ITransactionManager,
   ) => {
@@ -83,7 +86,7 @@ export const NestJsRegisterCommandHandlerProvider: Provider = {
       transactionManager,
     );
   },
-  inject: [CredentialsRepository, IProfileRepository, ITransactionManager],
+  inject: [ICredentialsRepository, IProfileRepository, ITransactionManager],
 };
 
 export abstract class IRedisProvider {
@@ -110,8 +113,8 @@ export abstract class ILoginCommandHandler extends ICommandHandler<
 export const NestJsLoginCommandHandlerProvider: Provider = {
   provide: ILoginCommandHandler,
   useFactory: (
-    credentialsRepository: CredentialsRepository,
-    jwtService: JWTService,
+    credentialsRepository: ICredentialsRepository,
+    jwtService: IJWTService,
     redisService: IRedisProvider,
   ) => {
     return new LoginCommandHandler(
@@ -120,7 +123,7 @@ export const NestJsLoginCommandHandlerProvider: Provider = {
       redisService,
     );
   },
-  inject: [CredentialsRepository, JWTService, IRedisProvider],
+  inject: [ICredentialsRepository, IJWTService, IRedisProvider],
 };
 
 export abstract class IRefreshCommandHandler extends ICommandHandler<
@@ -130,10 +133,10 @@ export abstract class IRefreshCommandHandler extends ICommandHandler<
 
 export const NestJsRefreshCommandHandlerProvider: Provider = {
   provide: IRefreshCommandHandler,
-  useFactory: (jwtService: JWTService, redisService: IRedisProvider) => {
+  useFactory: (jwtService: IJWTService, redisService: IRedisProvider) => {
     return new RefreshCommandHandler(jwtService, redisService);
   },
-  inject: [JWTService, IRedisProvider],
+  inject: [IJWTService, IRedisProvider],
 };
 
 export const JwtStrategyProvider: Provider = {
