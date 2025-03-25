@@ -14,7 +14,14 @@ export function convertCredentialsModelToEntity(
   const username = new Username(model.username);
   const email = new Email(model.email);
   const password = new Password(model.password);
-  return new Credentials(username, email, password);
+  return new Credentials(
+    username,
+    email,
+    password,
+    model.created_at,
+    model.updated_at,
+    model.id,
+  );
 }
 
 export function convertProfileModelToEntity(model: ProfileModel): Profile {
@@ -23,5 +30,8 @@ export function convertProfileModelToEntity(model: ProfileModel): Profile {
     displayName,
     convertCredentialsModelToEntity(model.credentials),
     model.avatar_url,
+    model.created_at,
+    model.updated_at,
+    model.id,
   );
 }

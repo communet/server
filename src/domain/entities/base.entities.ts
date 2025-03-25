@@ -2,9 +2,9 @@ import { v4 as uuid4, UUIDTypes as UUID } from 'uuid';
 
 export abstract class BaseEntity {
   constructor(
-    protected _oid: UUID = uuid4(),
     protected _createdAt: Date = new Date(),
     protected _updatedAt: Date = new Date(),
+    protected _oid: UUID = uuid4(),
   ) {}
 
   public get oid(): UUID {
