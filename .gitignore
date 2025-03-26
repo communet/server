@@ -57,3 +57,5 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # Docker data
 redis_data/
+minio_data/
+pgdata/
