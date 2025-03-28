@@ -6,6 +6,8 @@ import { JwtStrategy } from '@/application/api/auth/guards.auth';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { RedisClientType } from 'redis';
 import { RedisService } from '@/infra/services/redis.service';
+import { IFileService, FileService } from '@/infra/services/minio.services';
+import { Client } from 'minio';
 
 export const JWTServiceProvider: Provider = {
   provide: IJWTService,
@@ -16,6 +18,21 @@ export const JWTServiceProvider: Provider = {
       Number(configService.get('JWT_ACCESS_EXPIRES_IN_MINUTES')),
       Number(configService.get('JWT_REFRESH_EXPIRES_IN_DAYS')),
     );
+  },
+  inject: [ConfigService],
+};
+
+export const FileServiceProvider: Provider = {
+  provide: IFileService,
+  useFactory: (configService: ConfigService<Config>) => {
+    const minioClient = new Client({
+      endPoint: configService.get('MINIO_HOST')!,
+      port: Number(configService.get('MINIO_API_PORT')),
+      useSSL: false,
+      accessKey: configService.get('MINIO_ACCESS_KEY'),
+      secretKey: configService.get('MINIO_SECRET_KEY'),
+    });
+    return new FileService(minioClient);
   },
   inject: [ConfigService],
 };
