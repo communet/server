@@ -48,11 +48,19 @@ export class Profile extends BaseEntity {
     return this._displayName.getValue();
   }
 
+  public set displayName(value: DisplayName | undefined) {
+    this._displayName = value ?? this._displayName;
+  }
+
   public get credentials(): Credentials {
     return this._credentials;
   }
 
   public get avatarUrl(): string | undefined {
     return this._avatarUrl;
+  }
+
+  public set avatarUrl(value: string | undefined) {
+    this._avatarUrl = value;
   }
 }

@@ -8,6 +8,8 @@ export abstract class IProfileRepository {
     manager?: EntityManager,
   ): Promise<ProfileModel>;
 
+  abstract update(profile: Profile): Promise<ProfileModel | null>;
+
   abstract findById(profileId: string): Promise<ProfileModel | null>;
 }
 
@@ -31,6 +33,16 @@ export class ProfileRepository extends IProfileRepository {
       manager?.getRepository(ProfileModel) ?? this.profileRepository;
     const newProfile = repository.create(profileModel);
     return await repository.save(newProfile);
+  }
+
+  async update(profile: Profile): Promise<ProfileModel | null> {
+    const existingProfile = await this.findById(String(profile.oid));
+    if (!existingProfile) {
+      return null;
+    }
+    existingProfile.display_username = profile.displayName;
+    existingProfile.avatar_url = profile.avatarUrl;
+    return await this.profileRepository.save(existingProfile);
   }
 
   async findById(profileId: string): Promise<ProfileModel | null> {

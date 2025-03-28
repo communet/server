@@ -7,6 +7,10 @@ import {
   RegisterCommand,
   RegisterCommandHandler,
 } from '@/logic/commands/auth.command';
+import {
+  UpdateCurrentUserCommand,
+  UpdateCurrentUserCommandHandler,
+} from '@/logic/commands/users.command';
 import { ICommandHandler } from '@/logic/commands/base.command';
 import { Provider } from '@nestjs/common';
 import { ICredentialsRepository } from '@/infra/database/repositories/credentials.repositories';
@@ -15,6 +19,7 @@ import { IJWTService } from '@/infra/services/jwt.services';
 import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/service.providers';
+import { IFileService } from '@/infra/services/minio.services';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -69,4 +74,20 @@ export const NestJsRefreshCommandHandlerProvider: Provider = {
     return new RefreshCommandHandler(jwtService, redisService);
   },
   inject: [IJWTService, IRedisProvider],
+};
+
+export abstract class IUpdateCurrentUserCommandHandler extends ICommandHandler<
+  UpdateCurrentUserCommand,
+  Profile
+> {}
+
+export const NestJsUpdateCurrentUserCommandHandlerProvider: Provider = {
+  provide: IUpdateCurrentUserCommandHandler,
+  useFactory: (
+    profileRepository: IProfileRepository,
+    fileService: IFileService,
+  ) => {
+    return new UpdateCurrentUserCommandHandler(profileRepository, fileService);
+  },
+  inject: [IProfileRepository, IFileService],
 };
