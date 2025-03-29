@@ -4,6 +4,7 @@ import { ConfigSchema } from '@/config/schema';
 import { registerTypeOrmModule } from '@/infra/nestjs-typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ChannelsModule } from '@/application/api/channels/module.channels';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ConfigModule } from '@nestjs/config';
     registerTypeOrmModule(),
     AuthModule,
     UsersModule,
+    ChannelsModule,
   ],
   controllers: [],
   providers: [],
