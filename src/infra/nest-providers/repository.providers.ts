@@ -14,6 +14,11 @@ import {
   ITransactionManager,
   TypeOrmTransactionManager,
 } from '@/infra/database/repositories/transaction.repositories';
+import {
+  ChannelsRepository,
+  IChannelsRepository,
+} from '@/infra/database/repositories/channels.repositories';
+import { ChannelsModel } from '@/infra/database/models/channel.model';
 
 export const TransactionManagerProvider: Provider = {
   provide: ITransactionManager,
@@ -34,6 +39,15 @@ export const ProfileRepositoryProvider: Provider = {
   useFactory: (DataSource: DataSource) => {
     const repository = DataSource.getRepository(ProfileModel);
     return new ProfileRepository(repository);
+  },
+  inject: [DataSource],
+};
+
+export const ChannelsRepositoryProvider: Provider = {
+  provide: IChannelsRepository,
+  useFactory: (DataSource: DataSource) => {
+    const repository = DataSource.getRepository(ChannelsModel);
+    return new ChannelsRepository(repository);
   },
   inject: [DataSource],
 };

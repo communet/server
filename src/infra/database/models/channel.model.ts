@@ -7,7 +7,7 @@ import {
 } from 'typeorm';
 
 @Entity('channel')
-export class CredentialsModel {
+export class ChannelsModel {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
