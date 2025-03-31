@@ -20,6 +20,12 @@ import { ITransactionManager } from '@/infra/database/repositories/transaction.r
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import { IRedisProvider } from '@/infra/nest-providers/service.providers';
 import { IFileService } from '@/infra/services/minio.services';
+import {
+  CreateChannelCommand,
+  CreateChannelCommandHandler,
+} from '@/logic/commands/channels.command';
+import { Channel } from '@/domain/entities/channels.entities';
+import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -90,4 +96,20 @@ export const NestJsUpdateCurrentUserCommandHandlerProvider: Provider = {
     return new UpdateCurrentUserCommandHandler(profileRepository, fileService);
   },
   inject: [IProfileRepository, IFileService],
+};
+
+export abstract class ICreateChannelCommandHandler extends ICommandHandler<
+  CreateChannelCommand,
+  Channel
+> {}
+
+export const NestJsCreateChannelCommandHandlerProvider: Provider = {
+  provide: ICreateChannelCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    fileService: IFileService,
+  ) => {
+    return new CreateChannelCommandHandler(channelsRepository, fileService);
+  },
+  inject: [IChannelsRepository, IFileService],
 };
