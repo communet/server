@@ -6,6 +6,7 @@ const ReponseGetCurrentUserSchema = z.object({
   display_name: z.string(),
   username: z.string(),
   email: z.string().email(),
+  avatar: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -19,6 +20,7 @@ const ReponseUpdateCurrentUserSchema = z.object({
   display_name: z.string(),
   username: z.string(),
   email: z.string().email(),
+  avatar: z.string().nullable(),
   created_at: z.string(),
   updated_at: z.string(),
 });

@@ -57,6 +57,7 @@ export class UsersController {
         display_name: currentUser.displayName,
         username: currentUser.credentials.username,
         email: currentUser.credentials.email,
+        avatar: currentUser.avatarUrl ?? null,
         updated_at: currentUser.updatedAt.toISOString(),
         created_at: currentUser.createdAt.toISOString(),
       };
@@ -110,6 +111,7 @@ export class UsersController {
         display_name: updatedProfile.displayName,
         username: updatedProfile.credentials.username,
         email: updatedProfile.credentials.email,
+        avatar: updatedProfile.avatarUrl ?? null,
         created_at: updatedProfile.createdAt.toISOString(),
         updated_at: updatedProfile.updatedAt.toISOString(),
       };
