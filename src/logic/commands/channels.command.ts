@@ -1,8 +1,10 @@
 import { Channel } from '@/domain/entities/channels.entities';
 import { ChannelName } from '@/domain/values/channels.values';
+import { convertChannelModelToEntity } from '@/infra/database/converters/channel.converters';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
 import { IFileService } from '@/infra/services/minio.services';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
+import { ChannelDoesNotExistError } from '@/logic/exceptions/channels.exceptions';
 
 export class CreateChannelCommand extends BaseCommand {
   constructor(
@@ -45,5 +47,33 @@ export class CreateChannelCommandHandler extends ICommandHandler<
 
     await this.channelsRepository.create(channel);
     return channel;
+  }
+}
+
+export class DeleteChannelCommand extends BaseCommand {
+  constructor(public readonly channelId: string) {
+    super();
+  }
+}
+
+export class DeleteChannelCommandHandler extends ICommandHandler<
+  DeleteChannelCommand,
+  Channel
+> {
+  constructor(protected readonly channelRepository: IChannelsRepository) {
+    super();
+  }
+
+  async execute(command: DeleteChannelCommand): Promise<Channel> {
+    const deletedChannelModel = await this.channelRepository.deleteById(
+      command.channelId,
+    );
+    if (!deletedChannelModel) {
+      throw new ChannelDoesNotExistError(
+        'Channel with given id does not exist',
+      );
+    }
+
+    return convertChannelModelToEntity(deletedChannelModel);
   }
 }

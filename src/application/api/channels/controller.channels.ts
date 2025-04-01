@@ -1,24 +1,35 @@
 import {
   Body,
   Controller,
+  Delete,
+  HttpCode,
   HttpException,
   HttpStatus,
   Inject,
+  Param,
   Post,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from '@/application/api/auth/guards.auth';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
-import { ICreateChannelCommandHandler } from '@/infra/nest-providers/command.providers';
-import { CreateChannelCommand } from '@/logic/commands/channels.command';
+import {
+  ICreateChannelCommandHandler,
+  IDeleteChannelCommandHandler,
+} from '@/infra/nest-providers/command.providers';
+import {
+  CreateChannelCommand,
+  DeleteChannelCommand,
+} from '@/logic/commands/channels.command';
 import {
   RequestCreateChannelDTO,
+  RequestDeleteChannelParamsDTO,
   ResponseCreateChannelDTO,
 } from '@/application/api/channels/schemas.channels';
+import { ResponseErrorDTO } from '@/application/api/base.schemas';
 
 @ApiTags('Channels')
 @Controller('/api/channels')
@@ -26,6 +37,7 @@ export class ChannelsController {
   constructor(
     @Inject(ICreateChannelCommandHandler)
     private readonly createChannelCommandHandler: ICreateChannelCommandHandler,
+    private readonly deleteChannelCommandHandler: IDeleteChannelCommandHandler,
   ) {}
 
   @Post()
@@ -75,6 +87,36 @@ export class ChannelsController {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       console.error(error);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description: 'Delete channel by id',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  async getCurrentUser(
+    @Param() params: RequestDeleteChannelParamsDTO,
+  ): Promise<undefined> {
+    try {
+      const { id } = params;
+      const command = new DeleteChannelCommand(id);
+      await this.deleteChannelCommandHandler.execute(command);
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,

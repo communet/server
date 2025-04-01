@@ -23,3 +23,11 @@ const ResponseCreateChannelSchema = z.object({
 export class ResponseCreateChannelDTO extends createZodDto(
   ResponseCreateChannelSchema,
 ) {}
+
+const RequestDeleteChannelParamsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export class RequestDeleteChannelParamsDTO extends createZodDto(
+  RequestDeleteChannelParamsSchema,
+) {}

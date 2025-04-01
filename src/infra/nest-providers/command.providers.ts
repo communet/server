@@ -23,6 +23,8 @@ import { IFileService } from '@/infra/services/minio.services';
 import {
   CreateChannelCommand,
   CreateChannelCommandHandler,
+  DeleteChannelCommand,
+  DeleteChannelCommandHandler,
 } from '@/logic/commands/channels.command';
 import { Channel } from '@/domain/entities/channels.entities';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
@@ -112,4 +114,17 @@ export const NestJsCreateChannelCommandHandlerProvider: Provider = {
     return new CreateChannelCommandHandler(channelsRepository, fileService);
   },
   inject: [IChannelsRepository, IFileService],
+};
+
+export abstract class IDeleteChannelCommandHandler extends ICommandHandler<
+  DeleteChannelCommand,
+  Channel
+> {}
+
+export const NestJsDeleteChannelCommandHandlerProvider: Provider = {
+  provide: IDeleteChannelCommandHandler,
+  useFactory: (channelsRepository: IChannelsRepository) => {
+    return new DeleteChannelCommandHandler(channelsRepository);
+  },
+  inject: [IChannelsRepository],
 };
