@@ -25,6 +25,7 @@ export class ChannelsRepository extends IChannelsRepository {
       name: channel.name,
       description: channel.description,
       avatar_url: channel.avatarUrl,
+      is_deleted: channel.isDeleted,
     };
 
     const repository =

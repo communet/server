@@ -66,6 +66,7 @@ export class ChannelsController {
         name: channel.name,
         description: channel.description ?? null,
         avatar: channel.avatarUrl ?? null,
+        is_deleted: channel.isDeleted,
         created_at: channel.createdAt.toISOString(),
         updated_at: channel.updatedAt.toISOString(),
       };

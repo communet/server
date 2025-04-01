@@ -20,6 +20,9 @@ export class ChannelsModel {
   @Column({ type: 'varchar', nullable: true, default: undefined })
   avatar_url?: string | undefined;
 
+  @Column({ default: false })
+  is_deleted!: boolean;
+
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;
 

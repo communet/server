@@ -7,6 +7,7 @@ export class Channel extends BaseEntity {
     protected _name: ChannelName,
     protected _description: string | undefined = undefined,
     protected _avatarUrl: string | undefined = undefined,
+    protected _isDeleted: boolean = false,
     protected _createdAt: Date = new Date(),
     protected _updatedAt: Date = new Date(),
     protected _oid: UUID = uuid4(),
@@ -20,6 +21,10 @@ export class Channel extends BaseEntity {
 
   public get description(): string | undefined {
     return this._description;
+  }
+
+  public get isDeleted(): boolean {
+    return this._isDeleted;
   }
 
   public get avatarUrl(): string | undefined {
