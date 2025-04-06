@@ -19,8 +19,21 @@ export class Channel extends BaseEntity {
     return this._name.getValue();
   }
 
+  public set name(value: string | undefined) {
+    if (value) {
+      const channelName = new ChannelName(value);
+      this._name = channelName;
+    }
+  }
+
   public get description(): string | undefined {
     return this._description;
+  }
+
+  public set description(value: string | undefined) {
+    if (value) {
+      this._description = value;
+    }
   }
 
   public get isDeleted(): boolean {
