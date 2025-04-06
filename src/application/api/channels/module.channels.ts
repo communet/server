@@ -4,6 +4,7 @@ import { ChannelsRepositoryProvider } from '@/infra/nest-providers/repository.pr
 import {
   NestJsCreateChannelCommandHandlerProvider,
   NestJsDeleteChannelCommandHandlerProvider,
+  NestJsUpdateChannelCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
 
@@ -13,6 +14,7 @@ import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
     ChannelsRepositoryProvider,
     FileServiceProvider,
     NestJsCreateChannelCommandHandlerProvider,
+    NestJsUpdateChannelCommandHandlerProvider,
     NestJsDeleteChannelCommandHandlerProvider,
   ],
 })

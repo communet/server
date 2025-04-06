@@ -10,6 +10,8 @@ export abstract class IChannelsRepository {
     manager?: EntityManager,
   ): Promise<ChannelsModel>;
 
+  abstract update(channel: Channel): Promise<ChannelsModel | null>;
+
   abstract deleteById(channelId: string): Promise<ChannelsModel | null>;
 }
 
@@ -43,6 +45,19 @@ export class ChannelsRepository extends IChannelsRepository {
       manager?.getRepository(ChannelsModel) ?? this.credentialsRepository;
     const newChannel = repository.create(channelModel);
     return await repository.save(newChannel);
+  }
+
+  async update(channel: Channel): Promise<ChannelsModel | null> {
+    const existingChannel = await this.findById(String(channel.oid));
+    if (!existingChannel) {
+      return null;
+    }
+
+    existingChannel.name = channel.name;
+    existingChannel.description = channel.description;
+    existingChannel.avatar_url = channel.avatarUrl;
+
+    return await this.credentialsRepository.save(existingChannel);
   }
 
   async deleteById(channelId: string): Promise<ChannelsModel | null> {

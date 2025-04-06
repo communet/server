@@ -31,3 +31,34 @@ const RequestDeleteChannelParamsSchema = z.object({
 export class RequestDeleteChannelParamsDTO extends createZodDto(
   RequestDeleteChannelParamsSchema,
 ) {}
+
+const RequestUpdateChannelSchema = z.object({
+  name: z.string().nullish(),
+  description: z.string().nullish(),
+});
+
+export class RequestUpdateChannelDTO extends createZodDto(
+  RequestUpdateChannelSchema,
+) {}
+
+const ResponseUpdateChannelSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable(),
+  avatar: z.string().nullable(),
+  is_deleted: z.boolean(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export class ResponseUpdateChannelDTO extends createZodDto(
+  ResponseUpdateChannelSchema,
+) {}
+
+const RequestUpdateChannelParamsSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export class RequestUpdateChannelParamsDTO extends createZodDto(
+  RequestUpdateChannelParamsSchema,
+) {}

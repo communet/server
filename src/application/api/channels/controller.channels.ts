@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Inject,
   Param,
+  Patch,
   Post,
   UploadedFile,
   UseGuards,
@@ -19,15 +20,20 @@ import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
   ICreateChannelCommandHandler,
   IDeleteChannelCommandHandler,
+  IUpdateChannelCommandHandler,
 } from '@/infra/nest-providers/command.providers';
 import {
   CreateChannelCommand,
   DeleteChannelCommand,
+  UpdateChannelCommand,
 } from '@/logic/commands/channels.command';
 import {
   RequestCreateChannelDTO,
   RequestDeleteChannelParamsDTO,
+  RequestUpdateChannelDTO,
+  RequestUpdateChannelParamsDTO,
   ResponseCreateChannelDTO,
+  ResponseUpdateChannelDTO,
 } from '@/application/api/channels/schemas.channels';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
 
@@ -37,6 +43,11 @@ export class ChannelsController {
   constructor(
     @Inject(ICreateChannelCommandHandler)
     private readonly createChannelCommandHandler: ICreateChannelCommandHandler,
+
+    @Inject(IUpdateChannelCommandHandler)
+    private readonly updateChannelCommandHandler: IUpdateChannelCommandHandler,
+
+    @Inject(IDeleteChannelCommandHandler)
     private readonly deleteChannelCommandHandler: IDeleteChannelCommandHandler,
   ) {}
 
@@ -57,7 +68,7 @@ export class ChannelsController {
     },
   })
   @UseInterceptors(FileInterceptor('avatar'))
-  async updateCurrentUser(
+  async createChannel(
     @Body() body: RequestCreateChannelDTO,
     @UploadedFile() avatar?: Express.Multer.File,
   ): Promise<ResponseCreateChannelDTO> {
@@ -106,13 +117,69 @@ export class ChannelsController {
     description: 'Invalid input data',
     type: ResponseErrorDTO,
   })
-  async getCurrentUser(
+  async deleteChannelById(
     @Param() params: RequestDeleteChannelParamsDTO,
   ): Promise<undefined> {
     try {
       const { id } = params;
       const command = new DeleteChannelCommand(id);
       await this.deleteChannelCommandHandler.execute(command);
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Patch('/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        name: { type: 'string' },
+        description: { type: 'string' },
+        avatar: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @UseInterceptors(FileInterceptor('avatar'))
+  async updateChannelById(
+    @Param() params: RequestUpdateChannelParamsDTO,
+    @Body() body: RequestUpdateChannelDTO,
+    @UploadedFile() avatar?: Express.Multer.File,
+  ): Promise<ResponseUpdateChannelDTO> {
+    try {
+      const { id } = params;
+      const avatarBuffer: Buffer | undefined = avatar?.buffer;
+      const avatarFileName: string | undefined = avatar?.originalname;
+
+      const command = new UpdateChannelCommand(
+        id,
+        body.name ?? undefined,
+        body.description ?? undefined,
+        avatarBuffer,
+        avatarFileName,
+      );
+      const channel = await this.updateChannelCommandHandler.execute(command);
+
+      return {
+        id: String(channel.oid),
+        name: channel.name,
+        description: channel.description ?? null,
+        avatar: channel.avatarUrl ?? null,
+        is_deleted: channel.isDeleted,
+        created_at: channel.createdAt.toISOString(),
+        updated_at: channel.updatedAt.toISOString(),
+      };
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

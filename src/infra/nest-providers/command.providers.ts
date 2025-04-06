@@ -25,6 +25,8 @@ import {
   CreateChannelCommandHandler,
   DeleteChannelCommand,
   DeleteChannelCommandHandler,
+  UpdateChannelCommand,
+  UpdateChannelCommandHandler,
 } from '@/logic/commands/channels.command';
 import { Channel } from '@/domain/entities/channels.entities';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
@@ -112,6 +114,22 @@ export const NestJsCreateChannelCommandHandlerProvider: Provider = {
     fileService: IFileService,
   ) => {
     return new CreateChannelCommandHandler(channelsRepository, fileService);
+  },
+  inject: [IChannelsRepository, IFileService],
+};
+
+export abstract class IUpdateChannelCommandHandler extends ICommandHandler<
+  UpdateChannelCommand,
+  Channel
+> {}
+
+export const NestJsUpdateChannelCommandHandlerProvider: Provider = {
+  provide: IUpdateChannelCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    fileService: IFileService,
+  ) => {
+    return new UpdateChannelCommandHandler(channelsRepository, fileService);
   },
   inject: [IChannelsRepository, IFileService],
 };
