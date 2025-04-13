@@ -7,7 +7,7 @@ import { IProfileRepository } from '@/infra/database/repositories/profile.reposi
 import { RedisClientType } from 'redis';
 import { RedisService } from '@/infra/services/redis.service';
 import { IFileService, FileService } from '@/infra/services/minio.services';
-import { Client } from 'minio';
+import { S3Client } from '@aws-sdk/client-s3';
 
 export const JWTServiceProvider: Provider = {
   provide: IJWTService,
@@ -25,14 +25,17 @@ export const JWTServiceProvider: Provider = {
 export const FileServiceProvider: Provider = {
   provide: IFileService,
   useFactory: (configService: ConfigService<Config>) => {
-    const minioClient = new Client({
-      endPoint: configService.get('MINIO_HOST')!,
-      port: Number(configService.get('MINIO_API_PORT')),
-      useSSL: false,
-      accessKey: configService.get('MINIO_ACCESS_KEY'),
-      secretKey: configService.get('MINIO_SECRET_KEY'),
+    const s3Client = new S3Client({
+      endpoint: `http://${configService.get('MINIO_HOST')}:${configService.get('MINIO_API_PORT')}`,
+      region: 'us-east-1',
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: configService.get('MINIO_ACCESS_KEY')!,
+        secretAccessKey: configService.get('MINIO_SECRET_KEY')!,
+      },
+      disableHostPrefix: true,
     });
-    return new FileService(minioClient);
+    return new FileService(s3Client);
   },
   inject: [ConfigService],
 };

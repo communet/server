@@ -1,6 +1,5 @@
-import mime from 'mime-types';
 import { v4 as uuid4 } from 'uuid';
-import { Client } from 'minio';
+import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
 export abstract class IFileService {
   abstract uploadFile(
@@ -11,7 +10,7 @@ export abstract class IFileService {
 }
 
 export class FileService extends IFileService {
-  constructor(protected readonly minioClient: Client) {
+  constructor(protected readonly s3Client: S3Client) {
     super();
   }
 
@@ -21,23 +20,20 @@ export class FileService extends IFileService {
     buffer: Buffer,
   ): Promise<string> {
     try {
-      const defaultContentType = 'application/octet-stream';
-      const contentType = mime.lookup(fileName) || defaultContentType;
       const newFileName = this.changeFileName(fileName);
-      await this.minioClient.putObject(
-        bucketName,
-        newFileName,
-        buffer,
-        buffer.length,
-        { 'Content-Type': contentType },
-      );
+      const uploadCommand = new PutObjectCommand({
+        Bucket: bucketName,
+        Key: newFileName,
+        Body: buffer,
+      });
+      await this.s3Client.send(uploadCommand);
       return newFileName;
     } catch {
       return fileName;
     }
   }
 
-  changeFileName(oldFileName: string): string {
+  protected changeFileName(oldFileName: string): string {
     const lastDotIndex = oldFileName.lastIndexOf('.');
     const fileExtension =
       lastDotIndex !== -1 ? oldFileName.slice(lastDotIndex + 1) : '';
