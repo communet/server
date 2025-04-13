@@ -1,4 +1,4 @@
-import mime from 'mime';
+import mime from 'mime-types';
 import { v4 as uuid4 } from 'uuid';
 import { Client } from 'minio';
 
@@ -22,7 +22,7 @@ export class FileService extends IFileService {
   ): Promise<string> {
     try {
       const defaultContentType = 'application/octet-stream';
-      const contentType = mime.getType(fileName) || defaultContentType;
+      const contentType = mime.lookup(fileName) || defaultContentType;
       const newFileName = this.changeFileName(fileName);
       await this.minioClient.putObject(
         bucketName,

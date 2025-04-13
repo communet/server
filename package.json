@@ -37,7 +37,6 @@
     "argon2": "^0.41.1",
     "cookie-parser": "^1.4.7",
     "jsonwebtoken": "^9.0.2",
-    "mime": "^4.0.6",
     "mime-types": "^3.0.1",
     "minio": "^8.0.5",
     "nestjs-zod": "^4.3.1",
