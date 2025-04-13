@@ -5,6 +5,7 @@ import { IChannelsRepository } from '@/infra/database/repositories/channels.repo
 import { IFileService } from '@/infra/services/minio.services';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import { ChannelDoesNotExistError } from '@/logic/exceptions/channels.exceptions';
+import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions';
 
 export class CreateChannelCommand extends BaseCommand {
   constructor(
@@ -42,6 +43,9 @@ export class CreateChannelCommandHandler extends ICommandHandler<
         command.avatarFilename,
         command.avatarBuffer,
       );
+      if (!avatarUrl) {
+        throw new InvalidFileExtensionError('Invalid extension file format');
+      }
       channel.avatarUrl = avatarUrl;
     }
 
@@ -122,6 +126,9 @@ export class UpdateChannelCommandHandler extends ICommandHandler<
         command.avatarFilename,
         command.avatarBuffer,
       );
+      if (!avatarUrl) {
+        throw new InvalidFileExtensionError('Invalid extension file format');
+      }
       channel.avatarUrl = avatarUrl;
     }
 

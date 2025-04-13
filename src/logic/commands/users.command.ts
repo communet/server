@@ -5,6 +5,7 @@ import { UserDoesNotExistError } from '@/logic/exceptions/users.exceptions';
 import { convertProfileModelToEntity } from '@/infra/database/converters/user.converters';
 import { DisplayName } from '@/domain/values/user.values';
 import { IFileService } from '@/infra/services/minio.services';
+import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions';
 
 export class UpdateCurrentUserCommand extends BaseCommand {
   constructor(
@@ -43,6 +44,9 @@ export class UpdateCurrentUserCommandHandler extends ICommandHandler<
         command.avatarFilename,
         command.avatarBuffer,
       );
+      if (!avatarUrl) {
+        throw new InvalidFileExtensionError('Invalid extension file format');
+      }
       profile.avatarUrl = avatarUrl;
     }
 
