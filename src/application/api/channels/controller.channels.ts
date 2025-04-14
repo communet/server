@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -8,14 +9,20 @@ import {
   HttpStatus,
   Inject,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
+  Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { JwtAuthGuard } from '@/application/api/auth/guards.auth';
+import {
+  JwtAuthGuard,
+  RequestWithUser,
+} from '@/application/api/auth/guards.auth';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
@@ -36,11 +43,18 @@ import {
   RequestUpdateChannelParamsDTO,
   ResponseCreateChannelDTO,
   ResponseGetChannelByIdDTO,
+  ResponseGetChannelsDTO,
   ResponseUpdateChannelDTO,
 } from '@/application/api/channels/schemas.channels';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
-import { GetChannelByIdQuery } from '@/logic/queries/channels.queries';
-import { IGetChannelByIdQueryHandler } from '@/infra/nest-providers/query.providers';
+import {
+  GetChannelByIdQuery,
+  GetChannelsQuery,
+} from '@/logic/queries/channels.queries';
+import {
+  IGetChannelByIdQueryHandler,
+  IGetChannelsQueryHandler,
+} from '@/infra/nest-providers/query.providers';
 
 @ApiTags('Channels')
 @Controller('/api/channels')
@@ -57,7 +71,56 @@ export class ChannelsController {
 
     @Inject(IGetChannelByIdQueryHandler)
     private readonly getChannelByIdQueryHandler: IGetChannelByIdQueryHandler,
+
+    @Inject(IGetChannelsQueryHandler)
+    private readonly getChannelsQueryHandler: IGetChannelsQueryHandler,
   ) {}
+
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get all channels',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  async getChannels(
+    @Req() req: RequestWithUser,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number,
+  ): Promise<ResponseGetChannelsDTO> {
+    try {
+      const query = new GetChannelsQuery(limit, offset, req.user);
+      const [channels, count] =
+        await this.getChannelsQueryHandler.execute(query);
+      return {
+        channels: channels.map((channel) => ({
+          id: String(channel.oid),
+          name: channel.name,
+          description: channel.description ?? null,
+          avatar: channel.avatarUrl ?? null,
+          is_deleted: channel.isDeleted,
+          created_at: channel.createdAt.toISOString(),
+          updated_at: channel.updatedAt.toISOString(),
+        })),
+        count: count,
+        limit: limit,
+        offset: offset,
+      };
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   @Post()
   @UseGuards(JwtAuthGuard)

@@ -7,7 +7,10 @@ import {
   NestJsUpdateChannelCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
-import { NestJsGetChannelByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
+import {
+  NestJsGetChannelByIdQueryHandlerProvider,
+  NestJsGetChannelsQueryHandlerProvider,
+} from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [ChannelsController],
@@ -18,6 +21,7 @@ import { NestJsGetChannelByIdQueryHandlerProvider } from '@/infra/nest-providers
     NestJsUpdateChannelCommandHandlerProvider,
     NestJsDeleteChannelCommandHandlerProvider,
     NestJsGetChannelByIdQueryHandlerProvider,
+    NestJsGetChannelsQueryHandlerProvider,
   ],
 })
 export class ChannelsModule {}

@@ -24,6 +24,27 @@ export class ResponseCreateChannelDTO extends createZodDto(
   ResponseCreateChannelSchema,
 ) {}
 
+const ResponseGetChannelsSchema = z.object({
+  channels: z.array(
+    z.object({
+      id: z.string().uuid(),
+      name: z.string(),
+      description: z.string().nullable(),
+      avatar: z.string().nullable(),
+      is_deleted: z.boolean(),
+      created_at: z.string(),
+      updated_at: z.string(),
+    }),
+  ),
+  count: z.number(),
+  limit: z.number(),
+  offset: z.number(),
+});
+
+export class ResponseGetChannelsDTO extends createZodDto(
+  ResponseGetChannelsSchema,
+) {}
+
 const RequestGetChannelByIdSchema = z.object({
   id: z.string().uuid(),
 });
