@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -30,12 +31,16 @@ import {
 import {
   RequestCreateChannelDTO,
   RequestDeleteChannelParamsDTO,
+  RequestGetChannelByIdDTO,
   RequestUpdateChannelDTO,
   RequestUpdateChannelParamsDTO,
   ResponseCreateChannelDTO,
+  ResponseGetChannelByIdDTO,
   ResponseUpdateChannelDTO,
 } from '@/application/api/channels/schemas.channels';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
+import { GetChannelByIdQuery } from '@/logic/queries/channels.queries';
+import { IGetChannelByIdQueryHandler } from '@/infra/nest-providers/query.providers';
 
 @ApiTags('Channels')
 @Controller('/api/channels')
@@ -49,6 +54,9 @@ export class ChannelsController {
 
     @Inject(IDeleteChannelCommandHandler)
     private readonly deleteChannelCommandHandler: IDeleteChannelCommandHandler,
+
+    @Inject(IGetChannelByIdQueryHandler)
+    private readonly getChannelByIdQueryHandler: IGetChannelByIdQueryHandler,
   ) {}
 
   @Post()
@@ -98,6 +106,45 @@ export class ChannelsController {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
       console.error(error);
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('/:id')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get channel by id',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  async getChannelById(
+    @Param() params: RequestGetChannelByIdDTO,
+  ): Promise<ResponseGetChannelByIdDTO> {
+    try {
+      const { id } = params;
+      const query = new GetChannelByIdQuery(id);
+      const channel = await this.getChannelByIdQueryHandler.execute(query);
+      return {
+        id: String(channel.oid),
+        name: channel.name,
+        description: channel.description,
+        avatar: channel.avatarUrl,
+        is_deleted: channel.isDeleted,
+        created_at: channel.createdAt.toISOString(),
+        updated_at: channel.updatedAt.toISOString(),
+      };
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
       throw new HttpException(
         'Internal server error',
         HttpStatus.INTERNAL_SERVER_ERROR,

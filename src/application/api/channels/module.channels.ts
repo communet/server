@@ -7,6 +7,7 @@ import {
   NestJsUpdateChannelCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
+import { NestJsGetChannelByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [ChannelsController],
@@ -16,6 +17,7 @@ import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
     NestJsCreateChannelCommandHandlerProvider,
     NestJsUpdateChannelCommandHandlerProvider,
     NestJsDeleteChannelCommandHandlerProvider,
+    NestJsGetChannelByIdQueryHandlerProvider,
   ],
 })
 export class ChannelsModule {}

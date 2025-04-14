@@ -3,7 +3,7 @@ import { z } from 'zod';
 
 const RequestCreateChannelSchema = z.object({
   name: z.string(),
-  description: z.string().nullable(),
+  description: z.string().nullish(),
 });
 
 export class RequestCreateChannelDTO extends createZodDto(
@@ -22,6 +22,28 @@ const ResponseCreateChannelSchema = z.object({
 
 export class ResponseCreateChannelDTO extends createZodDto(
   ResponseCreateChannelSchema,
+) {}
+
+const RequestGetChannelByIdSchema = z.object({
+  id: z.string().uuid(),
+});
+
+export class RequestGetChannelByIdDTO extends createZodDto(
+  RequestGetChannelByIdSchema,
+) {}
+
+const ResponseGetChannelByIdSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullish(),
+  avatar: z.string().nullish(),
+  is_deleted: z.boolean(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+export class ResponseGetChannelByIdDTO extends createZodDto(
+  ResponseGetChannelByIdSchema,
 ) {}
 
 const RequestDeleteChannelParamsSchema = z.object({
