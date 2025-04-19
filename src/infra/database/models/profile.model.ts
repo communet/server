@@ -6,9 +6,12 @@ import {
   UpdateDateColumn,
   JoinColumn,
   OneToOne,
+  OneToMany,
 } from 'typeorm';
 // eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
 import { CredentialsModel } from './credentials.model';
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
+import { ChannelMemberModel } from './member.model';
 
 @Entity('profiles')
 export class ProfileModel {
@@ -26,6 +29,9 @@ export class ProfileModel {
   })
   @JoinColumn()
   credentials!: CredentialsModel;
+
+  @OneToMany(() => ChannelMemberModel, (member) => member.profile)
+  channels!: ChannelMemberModel[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;

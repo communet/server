@@ -4,7 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
+import { ChannelMemberModel } from './member.model';
 
 @Entity('channel')
 export class ChannelsModel {
@@ -22,6 +25,9 @@ export class ChannelsModel {
 
   @Column({ default: false })
   is_deleted!: boolean;
+
+  @OneToMany(() => ChannelMemberModel, (member) => member.channel)
+  members!: ChannelMemberModel[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;
