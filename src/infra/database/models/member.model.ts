@@ -21,11 +21,11 @@ export class ChannelMemberModel {
 
   @ManyToOne(() => ProfileModel, (profile) => profile.channels)
   @JoinColumn({ name: 'profile_id' })
-  profile!: string;
+  profile!: ProfileModel;
 
   @ManyToOne(() => ChannelsModel, (channel) => channel.members)
   @JoinColumn({ name: 'channel_id' })
-  channel!: string;
+  channel!: ChannelsModel;
 
   @Column({ default: true })
   is_connected!: boolean;

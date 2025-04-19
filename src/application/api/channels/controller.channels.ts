@@ -26,6 +26,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
+  IConnectToChannelCommandHandler,
   ICreateChannelCommandHandler,
   IDeleteChannelCommandHandler,
   IUpdateChannelCommandHandler,
@@ -36,6 +37,7 @@ import {
   UpdateChannelCommand,
 } from '@/logic/commands/channels.command';
 import {
+  RequestConnectToChannelParamsDTO,
   RequestCreateChannelDTO,
   RequestDeleteChannelParamsDTO,
   RequestGetChannelByIdDTO,
@@ -55,6 +57,7 @@ import {
   IGetChannelByIdQueryHandler,
   IGetChannelsQueryHandler,
 } from '@/infra/nest-providers/query.providers';
+import { ConnectToChannelCommand } from '@/logic/commands/members.command';
 
 @ApiTags('Channels')
 @Controller('/api/channels')
@@ -74,6 +77,9 @@ export class ChannelsController {
 
     @Inject(IGetChannelsQueryHandler)
     private readonly getChannelsQueryHandler: IGetChannelsQueryHandler,
+
+    @Inject(IConnectToChannelCommandHandler)
+    private readonly connectToChannelCommandHandler: IConnectToChannelCommandHandler,
   ) {}
 
   @Get()
@@ -140,6 +146,7 @@ export class ChannelsController {
   })
   @UseInterceptors(FileInterceptor('avatar'))
   async createChannel(
+    @Req() req: RequestWithUser,
     @Body() body: RequestCreateChannelDTO,
     @UploadedFile() avatar?: Express.Multer.File,
   ): Promise<ResponseCreateChannelDTO> {
@@ -148,6 +155,7 @@ export class ChannelsController {
       const avatarFileName: string | undefined = avatar?.originalname;
 
       const command = new CreateChannelCommand(
+        String(req.user.oid),
         body.name,
         body.description ?? undefined,
         avatarBuffer,
@@ -293,6 +301,40 @@ export class ChannelsController {
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/:channelId/join')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Connect to channel',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User already joined to channel',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async connectToChannel(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestConnectToChannelParamsDTO,
+  ): Promise<undefined> {
+    try {
+      const { channelId } = params;
+      const command = new ConnectToChannelCommand(
+        String(req.user.oid),
+        channelId,
+      );
+      await this.connectToChannelCommandHandler.execute(command);
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.CONFLICT);
       }
       throw new HttpException(
         'Internal server error',

@@ -54,6 +54,7 @@ export class GetChannelsQueryHandler extends IQueryHandler<
   async execute(query: GetChannelsQuery): Promise<[Array<Channel>, number]> {
     const [channelsModels, count] =
       await this.channelsRepository.findAllByProfileId(
+        query.profile,
         query.limit,
         query.offset,
       );

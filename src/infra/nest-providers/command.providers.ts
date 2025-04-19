@@ -30,6 +30,11 @@ import {
 } from '@/logic/commands/channels.command';
 import { Channel } from '@/domain/entities/channels.entities';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
+import {
+  ConnectToChannelCommand,
+  ConnectToChannelCommandHandler,
+} from '@/logic/commands/members.command';
+import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -111,11 +116,23 @@ export const NestJsCreateChannelCommandHandlerProvider: Provider = {
   provide: ICreateChannelCommandHandler,
   useFactory: (
     channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
     fileService: IFileService,
+    transactionManager: ITransactionManager,
   ) => {
-    return new CreateChannelCommandHandler(channelsRepository, fileService);
+    return new CreateChannelCommandHandler(
+      channelsRepository,
+      membersRepository,
+      fileService,
+      transactionManager,
+    );
   },
-  inject: [IChannelsRepository, IFileService],
+  inject: [
+    IChannelsRepository,
+    IChannelMembersRepository,
+    IFileService,
+    ITransactionManager,
+  ],
 };
 
 export abstract class IUpdateChannelCommandHandler extends ICommandHandler<
@@ -145,4 +162,23 @@ export const NestJsDeleteChannelCommandHandlerProvider: Provider = {
     return new DeleteChannelCommandHandler(channelsRepository);
   },
   inject: [IChannelsRepository],
+};
+
+export abstract class IConnectToChannelCommandHandler extends ICommandHandler<
+  ConnectToChannelCommand,
+  undefined
+> {}
+
+export const NestJsConnectToChannelCommandHandlerProvider: Provider = {
+  provide: IConnectToChannelCommandHandler,
+  useFactory: (
+    channelRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+  ) => {
+    return new ConnectToChannelCommandHandler(
+      channelRepository,
+      membersRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository],
 };

@@ -1,10 +1,11 @@
 import { Channel } from '@/domain/entities/channels.entities';
 import { EntityManager, Repository } from 'typeorm';
 import { ChannelsModel } from '@/infra/database/models/channel.model';
+import { Profile } from '@/domain/entities/user.entities';
 
 export abstract class IChannelsRepository {
-  // TODO: provide profile id after subsrcribe logic
   abstract findAllByProfileId(
+    profile: Profile,
     limit: number,
     offset: number,
   ): Promise<[Array<ChannelsModel>, number]>;
@@ -28,22 +29,42 @@ export class ChannelsRepository extends IChannelsRepository {
     super();
   }
 
-  // TODO: provide profile id after subsrcribe logic
   async findAllByProfileId(
+    profile: Profile,
     limit: number,
     offset: number,
   ): Promise<[Array<ChannelsModel>, number]> {
-    const channelsCount = await this.channelsRepository.count();
+    const channelsCount = await this.channelsRepository.count({
+      where: {
+        is_deleted: false,
+        members: {
+          profile: { id: String(profile.oid) },
+          is_connected: true,
+        },
+      },
+    });
+
     const channels = await this.channelsRepository.find({
+      where: {
+        is_deleted: false,
+        members: {
+          profile: { id: String(profile.oid) },
+          is_connected: true,
+        },
+      },
       skip: offset,
       take: limit,
     });
+
     return [channels, channelsCount];
   }
 
   async findById(channelId: string): Promise<ChannelsModel | null> {
     const channel = await this.channelsRepository.findOne({
-      where: { id: channelId },
+      where: {
+        id: channelId,
+        is_deleted: false,
+      },
     });
     return channel;
   }

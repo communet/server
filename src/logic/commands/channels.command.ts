@@ -2,6 +2,8 @@ import { Channel } from '@/domain/entities/channels.entities';
 import { ChannelName } from '@/domain/values/channels.values';
 import { convertChannelModelToEntity } from '@/infra/database/converters/channel.converters';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
+import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
+import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IFileService } from '@/infra/services/minio.services';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import { ChannelDoesNotExistError } from '@/logic/exceptions/channels.exceptions';
@@ -9,6 +11,7 @@ import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions'
 
 export class CreateChannelCommand extends BaseCommand {
   constructor(
+    public readonly profileId: string,
     public readonly name: string,
     public readonly description?: string,
     public readonly avatarBuffer?: Buffer,
@@ -24,33 +27,46 @@ export class CreateChannelCommandHandler extends ICommandHandler<
 > {
   constructor(
     protected readonly channelsRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
     protected readonly fileService: IFileService,
+    private readonly transationManager: ITransactionManager,
   ) {
     super();
   }
 
   async execute(command: CreateChannelCommand): Promise<Channel> {
-    const channelName = new ChannelName(command.name);
-    const channel = new Channel(
-      channelName,
-      command.description,
-      command.avatarFilename,
-    );
-
-    if (command.avatarBuffer && command.avatarFilename) {
-      const avatarUrl = await this.fileService.uploadFile(
-        'avatars',
+    return await this.transationManager.transaction(async (manager) => {
+      const channelName = new ChannelName(command.name);
+      const channel = new Channel(
+        channelName,
+        command.description,
         command.avatarFilename,
-        command.avatarBuffer,
       );
-      if (!avatarUrl) {
-        throw new InvalidFileExtensionError('Invalid extension file format');
-      }
-      channel.avatarUrl = avatarUrl;
-    }
 
-    await this.channelsRepository.create(channel);
-    return channel;
+      if (command.avatarBuffer && command.avatarFilename) {
+        const avatarUrl = await this.fileService.uploadFile(
+          'avatars',
+          command.avatarFilename,
+          command.avatarBuffer,
+        );
+        if (!avatarUrl) {
+          throw new InvalidFileExtensionError('Invalid extension file format');
+        }
+        channel.avatarUrl = avatarUrl;
+      }
+
+      const channelModel = await this.channelsRepository.create(
+        channel,
+        manager,
+      );
+      await this.membersRepository.connectToChannel(
+        command.profileId,
+        channelModel.id,
+        manager,
+      );
+
+      return channel;
+    });
   }
 }
 

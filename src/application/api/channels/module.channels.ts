@@ -1,7 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ChannelsController } from '@/application/api/channels/controller.channels';
-import { ChannelsRepositoryProvider } from '@/infra/nest-providers/repository.providers';
 import {
+  ChannelMembersRepositoryProvider,
+  ChannelsRepositoryProvider,
+  TransactionManagerProvider,
+} from '@/infra/nest-providers/repository.providers';
+import {
+  NestJsConnectToChannelCommandHandlerProvider,
   NestJsCreateChannelCommandHandlerProvider,
   NestJsDeleteChannelCommandHandlerProvider,
   NestJsUpdateChannelCommandHandlerProvider,
@@ -16,12 +21,15 @@ import {
   controllers: [ChannelsController],
   providers: [
     ChannelsRepositoryProvider,
+    ChannelMembersRepositoryProvider,
+    TransactionManagerProvider,
     FileServiceProvider,
     NestJsCreateChannelCommandHandlerProvider,
     NestJsUpdateChannelCommandHandlerProvider,
     NestJsDeleteChannelCommandHandlerProvider,
     NestJsGetChannelByIdQueryHandlerProvider,
     NestJsGetChannelsQueryHandlerProvider,
+    NestJsConnectToChannelCommandHandlerProvider,
   ],
 })
 export class ChannelsModule {}

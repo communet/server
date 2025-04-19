@@ -5,3 +5,12 @@ export class ChannelDoesNotExistError extends LogicError {
     super('ChannelDoesNotExist', message);
   }
 }
+
+export class UserAlreadyConnectedError extends LogicError {
+  constructor() {
+    super(
+      'UserAlreadyConnected',
+      'User already connected to channel with given id',
+    );
+  }
+}
