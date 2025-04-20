@@ -88,6 +88,11 @@ export class UsersController {
     },
   })
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiResponse({
+    status: 200,
+    description: 'Update current user',
+    type: ReponseUpdateCurrentUserDTO,
+  })
   async updateCurrentUser(
     @Req() req: RequestWithUser,
     @Body() body: { display_name: string | undefined },
