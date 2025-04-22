@@ -133,6 +133,7 @@ export class ChannelsController {
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['name'],
       properties: {
         name: { type: 'string' },
         description: { type: 'string' },
@@ -144,6 +145,16 @@ export class ChannelsController {
     },
   })
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiResponse({
+    status: 201,
+    description: 'Create new channel',
+    type: ResponseCreateChannelDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
   async createChannel(
     @Req() req: RequestWithUser,
     @Body() body: RequestCreateChannelDTO,
@@ -189,6 +200,7 @@ export class ChannelsController {
   @ApiResponse({
     status: 200,
     description: 'Get channel by id',
+    type: ResponseGetChannelByIdDTO,
   })
   @ApiResponse({
     status: 400,
@@ -259,6 +271,7 @@ export class ChannelsController {
   @ApiBody({
     schema: {
       type: 'object',
+      required: ['name'],
       properties: {
         name: { type: 'string' },
         description: { type: 'string' },
@@ -270,6 +283,16 @@ export class ChannelsController {
     },
   })
   @UseInterceptors(FileInterceptor('avatar'))
+  @ApiResponse({
+    status: 200,
+    description: 'Update channel by id',
+    type: ResponseUpdateChannelDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
   async updateChannelById(
     @Req() req: RequestWithUser,
     @Param() params: RequestUpdateChannelParamsDTO,
