@@ -29,6 +29,7 @@ import {
   IConnectToChannelCommandHandler,
   ICreateChannelCommandHandler,
   IDeleteChannelCommandHandler,
+  IDisconnectFromChannelCommandHandler,
   IUpdateChannelCommandHandler,
 } from '@/infra/nest-providers/command.providers';
 import {
@@ -40,6 +41,7 @@ import {
   RequestConnectToChannelParamsDTO,
   RequestCreateChannelDTO,
   RequestDeleteChannelParamsDTO,
+  RequestDisconnectFromChannelParamsDTO,
   RequestGetChannelByIdDTO,
   RequestUpdateChannelDTO,
   RequestUpdateChannelParamsDTO,
@@ -57,7 +59,10 @@ import {
   IGetChannelByIdQueryHandler,
   IGetChannelsQueryHandler,
 } from '@/infra/nest-providers/query.providers';
-import { ConnectToChannelCommand } from '@/logic/commands/members.command';
+import {
+  ConnectToChannelCommand,
+  DisconnectFromChannelCommand,
+} from '@/logic/commands/members.command';
 
 @ApiTags('Channels')
 @Controller('/api/channels')
@@ -80,6 +85,9 @@ export class ChannelsController {
 
     @Inject(IConnectToChannelCommandHandler)
     private readonly connectToChannelCommandHandler: IConnectToChannelCommandHandler,
+
+    @Inject(IDisconnectFromChannelCommandHandler)
+    private readonly disconnectFromChannelCommandHandler: IDisconnectFromChannelCommandHandler,
   ) {}
 
   @Get()
@@ -332,6 +340,40 @@ export class ChannelsController {
         channelId,
       );
       await this.connectToChannelCommandHandler.execute(command);
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.CONFLICT);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Post('/:channelId/disconnect')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Disconnect from channel',
+  })
+  @ApiResponse({
+    status: 409,
+    description: 'User already disconnected from channel',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async disconnectFromChannel(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestDisconnectFromChannelParamsDTO,
+  ): Promise<undefined> {
+    try {
+      const { channelId } = params;
+      const command = new DisconnectFromChannelCommand(
+        String(req.user.oid),
+        channelId,
+      );
+      await this.disconnectFromChannelCommandHandler.execute(command);
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.CONFLICT);

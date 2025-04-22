@@ -33,6 +33,8 @@ import { IChannelsRepository } from '@/infra/database/repositories/channels.repo
 import {
   ConnectToChannelCommand,
   ConnectToChannelCommandHandler,
+  DisconnectFromChannelCommand,
+  DisconnectFromChannelCommandHandler,
 } from '@/logic/commands/members.command';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 
@@ -176,6 +178,25 @@ export const NestJsConnectToChannelCommandHandlerProvider: Provider = {
     membersRepository: IChannelMembersRepository,
   ) => {
     return new ConnectToChannelCommandHandler(
+      channelRepository,
+      membersRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository],
+};
+
+export abstract class IDisconnectFromChannelCommandHandler extends ICommandHandler<
+  DisconnectFromChannelCommand,
+  undefined
+> {}
+
+export const NestJsDisconnectFromChannelCommandHandlerProvider: Provider = {
+  provide: IDisconnectFromChannelCommandHandler,
+  useFactory: (
+    channelRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+  ) => {
+    return new DisconnectFromChannelCommandHandler(
       channelRepository,
       membersRepository,
     );

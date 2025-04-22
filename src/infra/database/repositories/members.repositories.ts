@@ -7,6 +7,11 @@ export abstract class IChannelMembersRepository {
     channelId: string,
     manager?: EntityManager,
   ): Promise<boolean>;
+
+  abstract disconnectFromChannel(
+    profileId: string,
+    channelId: string,
+  ): Promise<boolean>;
 }
 
 export class ChannelMembersRepository extends IChannelMembersRepository {
@@ -44,6 +49,28 @@ export class ChannelMembersRepository extends IChannelMembersRepository {
         manager?.getRepository(ChannelMemberModel) ?? this.membersRepository;
       const newMember = repository.create(memberModel);
       await repository.save(newMember);
+    }
+
+    return result;
+  }
+
+  async disconnectFromChannel(
+    profileId: string,
+    channelId: string,
+  ): Promise<boolean> {
+    let result = true;
+
+    const existingMemberRow = await this.membersRepository
+      .createQueryBuilder('member')
+      .where('member.profile_id = :profileId', { profileId })
+      .andWhere('member.channel_id = :channelId', { channelId })
+      .getOne();
+
+    if (existingMemberRow && existingMemberRow.is_connected) {
+      existingMemberRow.is_connected = false;
+      await this.membersRepository.save(existingMemberRow);
+    } else {
+      result = false;
     }
 
     return result;

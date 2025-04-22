@@ -14,3 +14,12 @@ export class UserAlreadyConnectedError extends LogicError {
     );
   }
 }
+
+export class UserAlreadyDisconnectedFromChannelError extends LogicError {
+  constructor() {
+    super(
+      'UserAlreadyDisconnectedFromChannel',
+      'User already disconnected from channel with given id',
+    );
+  }
+}

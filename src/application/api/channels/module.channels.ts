@@ -9,6 +9,7 @@ import {
   NestJsConnectToChannelCommandHandlerProvider,
   NestJsCreateChannelCommandHandlerProvider,
   NestJsDeleteChannelCommandHandlerProvider,
+  NestJsDisconnectFromChannelCommandHandlerProvider,
   NestJsUpdateChannelCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import { FileServiceProvider } from '@/infra/nest-providers/service.providers';
@@ -30,6 +31,7 @@ import {
     NestJsGetChannelByIdQueryHandlerProvider,
     NestJsGetChannelsQueryHandlerProvider,
     NestJsConnectToChannelCommandHandlerProvider,
+    NestJsDisconnectFromChannelCommandHandlerProvider,
   ],
 })
 export class ChannelsModule {}

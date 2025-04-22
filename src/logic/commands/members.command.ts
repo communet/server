@@ -4,6 +4,7 @@ import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import {
   ChannelDoesNotExistError,
   UserAlreadyConnectedError,
+  UserAlreadyDisconnectedFromChannelError,
 } from '@/logic/exceptions/channels.exceptions';
 
 export class ConnectToChannelCommand extends BaseCommand {
@@ -42,6 +43,46 @@ export class ConnectToChannelCommandHandler extends ICommandHandler<
     );
     if (!joinStatus) {
       throw new UserAlreadyConnectedError();
+    }
+  }
+}
+
+export class DisconnectFromChannelCommand extends BaseCommand {
+  constructor(
+    public readonly profileId: string,
+    public readonly channelId: string,
+  ) {
+    super();
+  }
+}
+
+export class DisconnectFromChannelCommandHandler extends ICommandHandler<
+  DisconnectFromChannelCommand,
+  undefined
+> {
+  constructor(
+    protected readonly channelRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
+  ) {
+    super();
+  }
+
+  async execute(command: DisconnectFromChannelCommand): Promise<undefined> {
+    const channelModel = await this.channelRepository.findById(
+      command.channelId,
+    );
+    if (!channelModel) {
+      throw new ChannelDoesNotExistError(
+        `Channel with ${command.channelId} does not exist`,
+      );
+    }
+
+    const disconnectStatus = await this.membersRepository.disconnectFromChannel(
+      command.profileId,
+      command.channelId,
+    );
+    if (!disconnectStatus) {
+      throw new UserAlreadyDisconnectedFromChannelError();
     }
   }
 }

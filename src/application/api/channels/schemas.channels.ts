@@ -113,3 +113,11 @@ const RequestConnectToChannelParamsSchema = z.object({
 export class RequestConnectToChannelParamsDTO extends createZodDto(
   RequestConnectToChannelParamsSchema,
 ) {}
+
+const RequestDisconnectFromChannelParamsSchema = z.object({
+  channelId: z.string().uuid(),
+});
+
+export class RequestDisconnectFromChannelParamsDTO extends createZodDto(
+  RequestDisconnectFromChannelParamsSchema,
+) {}
