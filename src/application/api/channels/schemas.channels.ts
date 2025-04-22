@@ -68,7 +68,7 @@ export class ResponseGetChannelByIdDTO extends createZodDto(
 ) {}
 
 const RequestDeleteChannelParamsSchema = z.object({
-  id: z.string().uuid(),
+  channelId: z.string().uuid(),
 });
 
 export class RequestDeleteChannelParamsDTO extends createZodDto(
@@ -99,7 +99,7 @@ export class ResponseUpdateChannelDTO extends createZodDto(
 ) {}
 
 const RequestUpdateChannelParamsSchema = z.object({
-  id: z.string().uuid(),
+  channelId: z.string().uuid(),
 });
 
 export class RequestUpdateChannelParamsDTO extends createZodDto(

@@ -17,9 +17,18 @@ export abstract class IChannelsRepository {
     manager?: EntityManager,
   ): Promise<ChannelsModel>;
 
-  abstract update(channel: Channel): Promise<ChannelsModel | null>;
+  abstract update(
+    profileId: string,
+    channelId: string,
+    channelName?: string,
+    channelDescription?: string,
+    channelAvatarFileName?: string,
+  ): Promise<ChannelsModel | null>;
 
-  abstract deleteById(channelId: string): Promise<ChannelsModel | null>;
+  abstract deleteById(
+    profileId: string,
+    channelId: string,
+  ): Promise<ChannelsModel | null>;
 }
 
 export class ChannelsRepository extends IChannelsRepository {
@@ -87,26 +96,58 @@ export class ChannelsRepository extends IChannelsRepository {
     return await repository.save(newChannel);
   }
 
-  async update(channel: Channel): Promise<ChannelsModel | null> {
-    const existingChannel = await this.findById(String(channel.oid));
-    if (!existingChannel) {
+  async update(
+    profileId: string,
+    channelId: string,
+    channelName?: string,
+    channelDescription?: string,
+    channelAvatarFileName?: string,
+  ): Promise<ChannelsModel | null> {
+    const channel = await this.channelsRepository.findOne({
+      where: {
+        id: channelId,
+        is_deleted: false,
+        members: {
+          profile: { id: profileId },
+          is_connected: true,
+        },
+      },
+    });
+    if (!channel) {
       return null;
     }
 
-    existingChannel.name = channel.name;
-    existingChannel.description = channel.description;
-    existingChannel.avatar_url = channel.avatarUrl;
+    if (channelName) {
+      channel.name = channelName;
+    }
+    if (channelDescription) {
+      channel.description = channelDescription;
+    }
+    if (channelAvatarFileName) {
+      channel.avatar_url = channelAvatarFileName;
+    }
 
-    return await this.channelsRepository.save(existingChannel);
+    return await this.channelsRepository.save(channel);
   }
 
-  async deleteById(channelId: string): Promise<ChannelsModel | null> {
-    const existingChannel = await this.findById(channelId);
-    if (!existingChannel) {
+  async deleteById(
+    profileId: string,
+    channelId: string,
+  ): Promise<ChannelsModel | null> {
+    const channel = await this.channelsRepository.findOne({
+      where: {
+        id: channelId,
+        is_deleted: false,
+        members: {
+          profile: { id: profileId },
+          is_connected: true,
+        },
+      },
+    });
+    if (!channel) {
       return null;
     }
-
-    existingChannel.is_deleted = true;
-    return await this.channelsRepository.save(existingChannel);
+    channel.is_deleted = true;
+    return await this.channelsRepository.save(channel);
   }
 }

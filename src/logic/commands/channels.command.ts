@@ -71,7 +71,10 @@ export class CreateChannelCommandHandler extends ICommandHandler<
 }
 
 export class DeleteChannelCommand extends BaseCommand {
-  constructor(public readonly channelId: string) {
+  constructor(
+    public readonly profileId: string,
+    public readonly channelId: string,
+  ) {
     super();
   }
 }
@@ -86,6 +89,7 @@ export class DeleteChannelCommandHandler extends ICommandHandler<
 
   async execute(command: DeleteChannelCommand): Promise<Channel> {
     const deletedChannelModel = await this.channelRepository.deleteById(
+      command.profileId,
       command.channelId,
     );
     if (!deletedChannelModel) {
@@ -100,7 +104,8 @@ export class DeleteChannelCommandHandler extends ICommandHandler<
 
 export class UpdateChannelCommand extends BaseCommand {
   constructor(
-    public readonly id: string,
+    public readonly profileId: string,
+    public readonly channelId: string,
     public readonly name?: string,
     public readonly description?: string,
     public readonly avatarBuffer?: Buffer,
@@ -122,20 +127,16 @@ export class UpdateChannelCommandHandler extends ICommandHandler<
   }
 
   async execute(command: UpdateChannelCommand): Promise<Channel> {
-    const channelModel = await this.channelRepository.findById(command.id);
+    const channelModel = await this.channelRepository.findById(
+      command.channelId,
+    );
     if (!channelModel) {
       throw new ChannelDoesNotExistError(
         'Channel with given id does not exist',
       );
     }
-    const channel = convertChannelModelToEntity(channelModel);
 
-    if (command.name) {
-      channel.name = command.name;
-    }
-    if (command.description) {
-      channel.description = command.description;
-    }
+    let newAvatar = command.avatarFilename;
     if (command.avatarBuffer && command.avatarFilename) {
       const avatarUrl = await this.fileService.uploadFile(
         'avatars',
@@ -145,16 +146,23 @@ export class UpdateChannelCommandHandler extends ICommandHandler<
       if (!avatarUrl) {
         throw new InvalidFileExtensionError('Invalid extension file format');
       }
-      channel.avatarUrl = avatarUrl;
+      newAvatar = avatarUrl;
     }
 
-    const isUpdated = await this.channelRepository.update(channel);
-    if (!isUpdated) {
+    const updatedChannelModel = await this.channelRepository.update(
+      command.profileId,
+      command.channelId,
+      command.name,
+      command.description,
+      newAvatar,
+    );
+
+    if (!updatedChannelModel) {
       throw new ChannelDoesNotExistError(
         'Channel with given id does not exist',
       );
     }
 
-    return channel;
+    return convertChannelModelToEntity(updatedChannelModel);
   }
 }

@@ -231,7 +231,7 @@ export class ChannelsController {
     }
   }
 
-  @Delete('/:id')
+  @Delete('/:channelId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiResponse({
@@ -244,11 +244,12 @@ export class ChannelsController {
     type: ResponseErrorDTO,
   })
   async deleteChannelById(
+    @Req() req: RequestWithUser,
     @Param() params: RequestDeleteChannelParamsDTO,
   ): Promise<undefined> {
     try {
-      const { id } = params;
-      const command = new DeleteChannelCommand(id);
+      const { channelId } = params;
+      const command = new DeleteChannelCommand(String(req.user.oid), channelId);
       await this.deleteChannelCommandHandler.execute(command);
     } catch (error) {
       if (error instanceof ApplicationError) {
@@ -261,7 +262,7 @@ export class ChannelsController {
     }
   }
 
-  @Patch('/:id')
+  @Patch('/:channelId')
   @UseGuards(JwtAuthGuard)
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -279,17 +280,19 @@ export class ChannelsController {
   })
   @UseInterceptors(FileInterceptor('avatar'))
   async updateChannelById(
+    @Req() req: RequestWithUser,
     @Param() params: RequestUpdateChannelParamsDTO,
     @Body() body: RequestUpdateChannelDTO,
     @UploadedFile() avatar?: Express.Multer.File,
   ): Promise<ResponseUpdateChannelDTO> {
     try {
-      const { id } = params;
+      const { channelId } = params;
       const avatarBuffer: Buffer | undefined = avatar?.buffer;
       const avatarFileName: string | undefined = avatar?.originalname;
 
       const command = new UpdateChannelCommand(
-        id,
+        String(req.user.oid),
+        channelId,
         body.name ?? undefined,
         body.description ?? undefined,
         avatarBuffer,
