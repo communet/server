@@ -24,7 +24,7 @@ export const NestJsGetChannelByIdQueryHandlerProvider: Provider = {
 
 export abstract class IGetChannelsQueryHandler extends IQueryHandler<
   GetChannelsQuery,
-  [Array<Channel>, number]
+  Channel[]
 > {}
 
 export const NestJsGetChannelsQueryHandlerProvider: Provider = {

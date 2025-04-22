@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  DefaultValuePipe,
   Delete,
   Get,
   HttpCode,
@@ -9,10 +8,8 @@ import {
   HttpStatus,
   Inject,
   Param,
-  ParseIntPipe,
   Patch,
   Post,
-  Query,
   Req,
   UploadedFile,
   UseGuards,
@@ -96,6 +93,7 @@ export class ChannelsController {
   @ApiResponse({
     status: 200,
     description: 'Get all channels',
+    type: ResponseGetChannelsDTO,
   })
   @ApiResponse({
     status: 400,
@@ -104,27 +102,20 @@ export class ChannelsController {
   })
   async getChannels(
     @Req() req: RequestWithUser,
-    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
-    @Query('offset', new DefaultValuePipe(0), ParseIntPipe) offset: number,
   ): Promise<ResponseGetChannelsDTO> {
     try {
-      const query = new GetChannelsQuery(limit, offset, req.user);
-      const [channels, count] =
-        await this.getChannelsQueryHandler.execute(query);
-      return {
-        channels: channels.map((channel) => ({
-          id: String(channel.oid),
-          name: channel.name,
-          description: channel.description ?? null,
-          avatar: channel.avatarUrl ?? null,
-          is_deleted: channel.isDeleted,
-          created_at: channel.createdAt.toISOString(),
-          updated_at: channel.updatedAt.toISOString(),
-        })),
-        count: count,
-        limit: limit,
-        offset: offset,
-      };
+      const query = new GetChannelsQuery(String(req.user.oid));
+      const channels = await this.getChannelsQueryHandler.execute(query);
+      const formattedChannels = channels.map((channel) => ({
+        id: String(channel.oid),
+        name: channel.name,
+        description: channel.description ?? null,
+        avatar: channel.avatarUrl ?? null,
+        is_deleted: channel.isDeleted,
+        created_at: channel.createdAt.toISOString(),
+        updated_at: channel.updatedAt.toISOString(),
+      }));
+      return formattedChannels;
     } catch (error) {
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

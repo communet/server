@@ -1,14 +1,9 @@
 import { Channel } from '@/domain/entities/channels.entities';
 import { EntityManager, Repository } from 'typeorm';
 import { ChannelsModel } from '@/infra/database/models/channel.model';
-import { Profile } from '@/domain/entities/user.entities';
 
 export abstract class IChannelsRepository {
-  abstract findAllByProfileId(
-    profile: Profile,
-    limit: number,
-    offset: number,
-  ): Promise<[Array<ChannelsModel>, number]>;
+  abstract findAllByProfileId(profileId: string): Promise<ChannelsModel[]>;
 
   abstract findById(channelId: string): Promise<ChannelsModel | null>;
 
@@ -38,34 +33,18 @@ export class ChannelsRepository extends IChannelsRepository {
     super();
   }
 
-  async findAllByProfileId(
-    profile: Profile,
-    limit: number,
-    offset: number,
-  ): Promise<[Array<ChannelsModel>, number]> {
-    const channelsCount = await this.channelsRepository.count({
-      where: {
-        is_deleted: false,
-        members: {
-          profile: { id: String(profile.oid) },
-          is_connected: true,
-        },
-      },
-    });
-
+  async findAllByProfileId(profileId: string): Promise<ChannelsModel[]> {
     const channels = await this.channelsRepository.find({
       where: {
         is_deleted: false,
         members: {
-          profile: { id: String(profile.oid) },
+          profile: { id: profileId },
           is_connected: true,
         },
       },
-      skip: offset,
-      take: limit,
     });
 
-    return [channels, channelsCount];
+    return channels;
   }
 
   async findById(channelId: string): Promise<ChannelsModel | null> {
