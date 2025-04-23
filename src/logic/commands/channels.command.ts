@@ -5,6 +5,7 @@ import { IChannelsRepository } from '@/infra/database/repositories/channels.repo
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 import { ITransactionManager } from '@/infra/database/repositories/transaction.repositories';
 import { IFileService } from '@/infra/services/minio.services';
+import { validateAvatarFileExtension } from '@/infra/utils/minio.utils';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import { ChannelDoesNotExistError } from '@/logic/exceptions/channels.exceptions';
 import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions';
@@ -44,9 +45,12 @@ export class CreateChannelCommandHandler extends ICommandHandler<
       );
 
       if (command.avatarBuffer && command.avatarFilename) {
+        if (!validateAvatarFileExtension(command.avatarFilename)) {
+          throw new InvalidFileExtensionError('Invalid extension file format');
+        }
+
         const avatarUrl = await this.fileService.uploadFile(
           'avatars',
-          command.avatarFilename,
           command.avatarBuffer,
         );
         if (!avatarUrl) {
@@ -138,14 +142,14 @@ export class UpdateChannelCommandHandler extends ICommandHandler<
 
     let newAvatar = command.avatarFilename;
     if (command.avatarBuffer && command.avatarFilename) {
-      const avatarUrl = await this.fileService.uploadFile(
-        'avatars',
-        command.avatarFilename,
-        command.avatarBuffer,
-      );
-      if (!avatarUrl) {
+      if (!validateAvatarFileExtension(command.avatarFilename)) {
         throw new InvalidFileExtensionError('Invalid extension file format');
       }
+
+      const avatarUrl = await this.fileService.uploadFile(
+        'avatars',
+        command.avatarBuffer,
+      );
       newAvatar = avatarUrl;
     }
 

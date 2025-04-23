@@ -6,6 +6,7 @@ import { convertProfileModelToEntity } from '@/infra/database/converters/user.co
 import { DisplayName } from '@/domain/values/user.values';
 import { IFileService } from '@/infra/services/minio.services';
 import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions';
+import { validateAvatarFileExtension } from '@/infra/utils/minio.utils';
 
 export class UpdateCurrentUserCommand extends BaseCommand {
   constructor(
@@ -39,9 +40,12 @@ export class UpdateCurrentUserCommandHandler extends ICommandHandler<
     const profile = convertProfileModelToEntity(profileModel);
 
     if (command.avatarBuffer && command.avatarFilename) {
+      if (!validateAvatarFileExtension(command.avatarFilename)) {
+        throw new InvalidFileExtensionError('Invalid extension file format');
+      }
+
       const avatarUrl = await this.fileService.uploadFile(
         'avatars',
-        command.avatarFilename,
         command.avatarBuffer,
       );
       if (!avatarUrl) {
