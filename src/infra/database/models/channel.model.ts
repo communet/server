@@ -8,6 +8,8 @@ import {
 } from 'typeorm';
 // eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
 import { ChannelMemberModel } from './member.model';
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
+import { ChatModel } from './chat.model';
 
 @Entity('channel')
 export class ChannelsModel {
@@ -25,6 +27,9 @@ export class ChannelsModel {
 
   @Column({ default: false })
   is_deleted!: boolean;
+
+  @OneToMany(() => ChatModel, (chat) => chat.channel)
+  chats!: ChatModel[];
 
   @OneToMany(() => ChannelMemberModel, (member) => member.channel)
   members!: ChannelMemberModel[];
