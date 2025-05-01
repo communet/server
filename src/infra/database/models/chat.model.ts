@@ -30,7 +30,7 @@ export class ChatModel {
   })
   type!: ChatType;
 
-  @ManyToOne(() => ChannelsModel, (channel) => channel.chats)
+  @ManyToOne(() => ChannelsModel, (channel) => channel.chats, { eager: true })
   @JoinColumn({ name: 'channel_id' })
   channel!: ChannelsModel;
 

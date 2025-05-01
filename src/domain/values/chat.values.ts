@@ -17,16 +17,16 @@ export class ChatName extends BaseValue<string> {
     const max_length = 32;
 
     if (!this.value) {
-      throw new ChatNameEmptyError('Name cannot be empty');
+      throw new ChatNameEmptyError('Chat name cannot be empty');
     }
     if (this.value.length < min_length) {
       throw new ChatNameTooShortError(
-        `Name must be greater or equal to ${min_length} characters`,
+        `Chat name must be greater or equal to ${min_length} characters`,
       );
     }
     if (this.validate.length > max_length) {
       throw new ChatNameTooLongError(
-        `Username must be less or equal to ${max_length} characters`,
+        `Chat name must be less or equal to ${max_length} characters`,
       );
     }
   }

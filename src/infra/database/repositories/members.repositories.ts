@@ -2,6 +2,8 @@ import { EntityManager, Repository } from 'typeorm';
 import { ChannelMemberModel } from '@/infra/database/models/member.model';
 
 export abstract class IChannelMembersRepository {
+  abstract checkForMember(channelId: string, userId: string): Promise<boolean>;
+
   abstract connectToChannel(
     profileId: string,
     channelId: string,
@@ -19,6 +21,16 @@ export class ChannelMembersRepository extends IChannelMembersRepository {
     protected readonly membersRepository: Repository<ChannelMemberModel>,
   ) {
     super();
+  }
+
+  async checkForMember(channelId: string, profileId: string): Promise<boolean> {
+    const member = await this.membersRepository.findOne({
+      where: {
+        channel: { id: channelId },
+        profile: { id: profileId },
+      },
+    });
+    return Boolean(member);
   }
 
   async connectToChannel(

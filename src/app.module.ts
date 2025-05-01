@@ -5,6 +5,7 @@ import { registerTypeOrmModule } from '@/infra/nestjs-typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ChannelsModule } from '@/application/api/channels/module.channels';
+import { ChatsModule } from '@/application/api/chats/module.chats';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ChannelsModule } from '@/application/api/channels/module.channels';
     AuthModule,
     UsersModule,
     ChannelsModule,
+    ChatsModule,
   ],
   controllers: [],
   providers: [],

@@ -31,7 +31,9 @@ export class ChannelsModel {
   @OneToMany(() => ChatModel, (chat) => chat.channel)
   chats!: ChatModel[];
 
-  @OneToMany(() => ChannelMemberModel, (member) => member.channel)
+  @OneToMany(() => ChannelMemberModel, (member) => member.channel, {
+    eager: false,
+  })
   members!: ChannelMemberModel[];
 
   @CreateDateColumn({ type: 'timestamp' })

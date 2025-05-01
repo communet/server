@@ -24,6 +24,11 @@ import {
   IChannelMembersRepository,
 } from '@/infra/database/repositories/members.repositories';
 import { ChannelMemberModel } from '@/infra/database/models/member.model';
+import {
+  ChatsRepository,
+  IChatsRepository,
+} from '@/infra/database/repositories/chats.repositories';
+import { ChatModel } from '@/infra/database/models/chat.model';
 
 export const TransactionManagerProvider: Provider = {
   provide: ITransactionManager,
@@ -62,6 +67,15 @@ export const ChannelMembersRepositoryProvider: Provider = {
   useFactory: (DataSource: DataSource) => {
     const repository = DataSource.getRepository(ChannelMemberModel);
     return new ChannelMembersRepository(repository);
+  },
+  inject: [DataSource],
+};
+
+export const ChatsRepositoryProvider: Provider = {
+  provide: IChatsRepository,
+  useFactory: (DataSource: DataSource) => {
+    const repository = DataSource.getRepository(ChatModel);
+    return new ChatsRepository(repository);
   },
   inject: [DataSource],
 };

@@ -37,6 +37,12 @@ import {
   DisconnectFromChannelCommandHandler,
 } from '@/logic/commands/members.command';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
+import {
+  CreateChatCommand,
+  CreateChatCommandHandler,
+} from '@/logic/commands/chats.command';
+import { Chat } from '@/domain/entities/chat.entities';
+import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -202,4 +208,25 @@ export const NestJsDisconnectFromChannelCommandHandlerProvider: Provider = {
     );
   },
   inject: [IChannelsRepository, IChannelMembersRepository],
+};
+
+export abstract class ICreateChatCommandHandler extends ICommandHandler<
+  CreateChatCommand,
+  Chat
+> {}
+
+export const NestJsCreateChatCommandHandlerProvider: Provider = {
+  provide: ICreateChatCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+  ) => {
+    return new CreateChatCommandHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
 };
