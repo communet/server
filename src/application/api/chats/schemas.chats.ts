@@ -35,3 +35,12 @@ const ResponseCreateChatSchema = z.object({
 export class ResponseCreateChatDTO extends createZodDto(
   ResponseCreateChatSchema,
 ) {}
+
+const RequestDeleteChatParamsSchema = z.object({
+  channelId: z.string().uuid(),
+  chatId: z.string().uuid(),
+});
+
+export class RequestDeleteChatParamsDTO extends createZodDto(
+  RequestDeleteChatParamsSchema,
+) {}

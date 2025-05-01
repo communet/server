@@ -4,11 +4,23 @@ import { Repository } from 'typeorm';
 
 export abstract class IChatsRepository {
   abstract create(chat: Chat): Promise<ChatModel>;
+
+  abstract findById(chatId: string): Promise<ChatModel | null>;
+
+  abstract deleteById(chatId: string): Promise<boolean>;
 }
 
 export class ChatsRepository extends IChatsRepository {
   constructor(protected readonly chatsRepository: Repository<ChatModel>) {
     super();
+  }
+
+  async findById(chatId: string): Promise<ChatModel | null> {
+    return await this.chatsRepository.findOne({
+      where: {
+        id: chatId,
+      },
+    });
   }
 
   async create(chat: Chat): Promise<ChatModel> {
@@ -26,5 +38,14 @@ export class ChatsRepository extends IChatsRepository {
       relations: ['channel'],
     });
     return createdChat!;
+  }
+
+  async deleteById(chatId: string): Promise<boolean> {
+    const channelModel = await this.findById(chatId);
+    if (!channelModel) {
+      return false;
+    }
+    await this.chatsRepository.delete(channelModel.id);
+    return true;
   }
 }

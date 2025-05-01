@@ -5,3 +5,9 @@ export class UserDoesNotJoinedToChannelError extends ApplicationError {
     super('UserDoesNotJoinedToChannel', message);
   }
 }
+
+export class ChatDoesNotExistError extends ApplicationError {
+  constructor(message: string) {
+    super('ChatDoesNotExist', message);
+  }
+}

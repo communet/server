@@ -1,6 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ChatsController } from '@/application/api/chats/controller.chats';
-import { NestJsCreateChatCommandHandlerProvider } from '@/infra/nest-providers/command.providers';
+import {
+  NestJsCreateChatCommandHandlerProvider,
+  NestJsDeleteChatCommandHandlerProvider,
+} from '@/infra/nest-providers/command.providers';
 import {
   ChannelMembersRepositoryProvider,
   ChannelsRepositoryProvider,
@@ -14,6 +17,7 @@ import {
     ChannelsRepositoryProvider,
     ChatsRepositoryProvider,
     NestJsCreateChatCommandHandlerProvider,
+    NestJsDeleteChatCommandHandlerProvider,
   ],
 })
 export class ChatsModule {}
