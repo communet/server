@@ -11,12 +11,14 @@ import {
   HttpCode,
   Delete,
   Get,
+  Put,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
   ICreateChatCommandHandler,
   IDeleteChatCommandHandler,
+  IUpdateChatCommandHandler,
 } from '@/infra/nest-providers/command.providers';
 import {
   JwtAuthGuard,
@@ -28,13 +30,17 @@ import {
   RequestDeleteChatParamsDTO,
   RequestGetChatParamsDTO,
   RequestGetChatsParamsDTO,
+  RequestUpdateChatBodyDTO,
+  RequestUpdateChatParamsDTO,
   ResponseCreateChatDTO,
   ResponseGetChatByIdDTO,
   ResponseGetChatsDTO,
+  ResponseUpdateChatDTO,
 } from '@/application/api/chats/schemas.chats';
 import {
   CreateChatCommand,
   DeleteChatCommand,
+  UpdateChatCommand,
 } from '@/logic/commands/chats.command';
 import { ChatType } from '@/infra/database/models/chat.model';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
@@ -56,6 +62,9 @@ export class ChatsController {
 
     @Inject(ICreateChatCommandHandler)
     protected readonly createChatCommandHandler: ICreateChatCommandHandler,
+
+    @Inject(IUpdateChatCommandHandler)
+    protected readonly updateChatCommandHandler: IUpdateChatCommandHandler,
 
     @Inject(IDeleteChatCommandHandler)
     protected readonly deleteChatCommandHandler: IDeleteChatCommandHandler,
@@ -86,6 +95,7 @@ export class ChatsController {
         id: String(chat.oid),
         name: chat.name,
         type: chat.type,
+        chanenl_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
       }));
@@ -176,6 +186,54 @@ export class ChatsController {
         String(req.user.oid),
       );
       const chat = await this.createChatCommandHandler.execute(command);
+      return {
+        id: String(chat.oid),
+        name: chat.name,
+        type: chat.type,
+        chanenl_id: String(chat.channel.oid),
+        created_at: chat.createdAt.toISOString(),
+        updated_at: chat.updatedAt.toISOString(),
+      };
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Put('/{:channelId}/chats/{:chatId}')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Update chat by id',
+    type: ResponseUpdateChatDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async updateChat(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestUpdateChatParamsDTO,
+    @Body() body: RequestUpdateChatBodyDTO,
+  ): Promise<ResponseUpdateChatDTO> {
+    try {
+      const { channelId, chatId } = params;
+      const command = new UpdateChatCommand(
+        String(req.user.oid),
+        channelId,
+        chatId,
+        body.name,
+        body.type,
+      );
+      const chat = await this.updateChatCommandHandler.execute(command);
       return {
         id: String(chat.oid),
         name: chat.name,

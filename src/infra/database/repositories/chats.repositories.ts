@@ -9,6 +9,8 @@ export abstract class IChatsRepository {
 
   abstract findAllByChannelId(channelId: string): Promise<ChatModel[]>;
 
+  abstract update(chat: Chat): Promise<ChatModel>;
+
   abstract deleteById(chatId: string): Promise<boolean>;
 }
 
@@ -51,6 +53,13 @@ export class ChatsRepository extends IChatsRepository {
       relations: ['channel'],
     });
     return createdChat!;
+  }
+
+  async update(chat: Chat): Promise<ChatModel> {
+    const existingChat = await this.findById(String(chat.oid));
+    existingChat!.name = chat.name;
+    existingChat!.type = chat.type === 'voice' ? ChatType.VOICE : ChatType.TEXT;
+    return await this.chatsRepository.save(existingChat!);
   }
 
   async deleteById(chatId: string): Promise<boolean> {

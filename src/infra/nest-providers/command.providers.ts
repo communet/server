@@ -42,6 +42,8 @@ import {
   CreateChatCommandHandler,
   DeleteChatCommand,
   DeleteChatCommandHandler,
+  UpdateChatCommand,
+  UpdateChatCommandHandler,
 } from '@/logic/commands/chats.command';
 import { Chat } from '@/domain/entities/chat.entities';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
@@ -246,6 +248,27 @@ export const NestJsDeleteChatCommandHandlerProvider: Provider = {
     chatsRepository: IChatsRepository,
   ) => {
     return new DeleteChatCommandHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+};
+
+export abstract class IUpdateChatCommandHandler extends ICommandHandler<
+  UpdateChatCommand,
+  Chat
+> {}
+
+export const NestJsUpdateChatCommandHandlerProvider: Provider = {
+  provide: IUpdateChatCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+  ) => {
+    return new UpdateChatCommandHandler(
       channelsRepository,
       membersRepository,
       chatsRepository,

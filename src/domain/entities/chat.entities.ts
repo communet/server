@@ -19,8 +19,20 @@ export class Chat extends BaseEntity {
     return this._name.getValue();
   }
 
+  public set name(value: string | undefined) {
+    if (value) {
+      this._name = new ChatName(value);
+    }
+  }
+
   public get type(): string {
     return this._type.getValue();
+  }
+
+  public set type(value: string | undefined) {
+    if (value) {
+      this._type = new ChatTypeVT(value);
+    }
   }
 
   public get channel(): Channel {

@@ -120,3 +120,59 @@ export class DeleteChatCommandHandler extends ICommandHandler<
     }
   }
 }
+
+export class UpdateChatCommand extends BaseCommand {
+  constructor(
+    public readonly profileId: string,
+    public readonly channelId: string,
+    public readonly chatId: string,
+    public readonly name: string,
+    public readonly type: string,
+  ) {
+    super();
+  }
+}
+
+export class UpdateChatCommandHandler extends ICommandHandler<
+  UpdateChatCommand,
+  Chat
+> {
+  constructor(
+    protected readonly channelsRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
+    protected readonly chatsRepository: IChatsRepository,
+  ) {
+    super();
+  }
+
+  async execute(command: UpdateChatCommand): Promise<Chat> {
+    const channel = await this.channelsRepository.findById(command.channelId);
+    if (!channel) {
+      throw new ChannelDoesNotExistError(
+        'Channel with given id does not exist',
+      );
+    }
+
+    const member = await this.membersRepository.checkForMember(
+      command.channelId,
+      command.profileId,
+    );
+    if (!member) {
+      throw new UserDoesNotJoinedToChannelError(
+        'User does not joined to channel',
+      );
+    }
+
+    const chatModel = await this.chatsRepository.findById(command.chatId);
+    if (!chatModel) {
+      throw new ChatDoesNotExistError('Chat with given id does not exist');
+    }
+
+    const chat = convertChatModelToEntity(chatModel);
+    chat.name = command.name;
+    chat.type = command.type;
+    await this.chatsRepository.update(chat);
+
+    return chat;
+  }
+}

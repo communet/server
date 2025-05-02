@@ -3,6 +3,7 @@ import { ChatsController } from '@/application/api/chats/controller.chats';
 import {
   NestJsCreateChatCommandHandlerProvider,
   NestJsDeleteChatCommandHandlerProvider,
+  NestJsUpdateChatCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import {
   ChannelMembersRepositoryProvider,
@@ -23,6 +24,7 @@ import {
     NestJsGetChatsQueryHandlerProvider,
     NestJsGetChatByIdQueryHandlerProvider,
     NestJsCreateChatCommandHandlerProvider,
+    NestJsUpdateChatCommandHandlerProvider,
     NestJsDeleteChatCommandHandlerProvider,
   ],
 })
