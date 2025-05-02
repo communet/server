@@ -60,3 +60,53 @@ export class GetChatByIdQueryHandler extends IQueryHandler<
     return convertChatModelToEntity(chatModel);
   }
 }
+
+export class GetChatsQuery extends BaseQuery {
+  constructor(
+    public readonly profileId: string,
+    public readonly channelId: string,
+  ) {
+    super();
+  }
+}
+
+export class GetChatsQueryHandler extends IQueryHandler<GetChatsQuery, Chat[]> {
+  constructor(
+    protected readonly channelsRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
+    protected readonly chatsRepository: IChatsRepository,
+  ) {
+    super();
+  }
+
+  async execute(query: GetChatsQuery): Promise<Chat[]> {
+    const channel = await this.channelsRepository.findById(query.channelId);
+    if (!channel) {
+      throw new ChannelDoesNotExistError(
+        'Channel with given id does not exist',
+      );
+    }
+
+    const member = await this.membersRepository.checkForMember(
+      query.channelId,
+      query.profileId,
+    );
+    if (!member) {
+      throw new UserDoesNotJoinedToChannelError(
+        'User does not joined to channel',
+      );
+    }
+
+    const chatModels = await this.chatsRepository.findAllByChannelId(
+      query.channelId,
+    );
+    const chats = [];
+    if (chatModels) {
+      for (const model of chatModels) {
+        chats.push(convertChatModelToEntity(model));
+      }
+    }
+
+    return chats;
+  }
+}

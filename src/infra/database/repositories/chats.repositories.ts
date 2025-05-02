@@ -7,12 +7,25 @@ export abstract class IChatsRepository {
 
   abstract findById(chatId: string): Promise<ChatModel | null>;
 
+  abstract findAllByChannelId(channelId: string): Promise<ChatModel[]>;
+
   abstract deleteById(chatId: string): Promise<boolean>;
 }
 
 export class ChatsRepository extends IChatsRepository {
   constructor(protected readonly chatsRepository: Repository<ChatModel>) {
     super();
+  }
+
+  async findAllByChannelId(channelId: string): Promise<ChatModel[]> {
+    return await this.chatsRepository.find({
+      where: {
+        channel: {
+          id: channelId,
+          is_deleted: false,
+        },
+      },
+    });
   }
 
   async findById(chatId: string): Promise<ChatModel | null> {

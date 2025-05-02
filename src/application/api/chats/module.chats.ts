@@ -9,7 +9,10 @@ import {
   ChannelsRepositoryProvider,
   ChatsRepositoryProvider,
 } from '@/infra/nest-providers/repository.providers';
-import { NestJsGetChatByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
+import {
+  NestJsGetChatByIdQueryHandlerProvider,
+  NestJsGetChatsQueryHandlerProvider,
+} from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [ChatsController],
@@ -17,6 +20,7 @@ import { NestJsGetChatByIdQueryHandlerProvider } from '@/infra/nest-providers/qu
     ChannelMembersRepositoryProvider,
     ChannelsRepositoryProvider,
     ChatsRepositoryProvider,
+    NestJsGetChatsQueryHandlerProvider,
     NestJsGetChatByIdQueryHandlerProvider,
     NestJsCreateChatCommandHandlerProvider,
     NestJsDeleteChatCommandHandlerProvider,

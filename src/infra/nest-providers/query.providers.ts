@@ -11,6 +11,8 @@ import { IChannelsRepository } from '@/infra/database/repositories/channels.repo
 import {
   GetChatByIdQuery,
   GetChatByIdQueryHandler,
+  GetChatsQuery,
+  GetChatsQueryHandler,
 } from '@/logic/queries/chats.queries';
 import { Chat } from '@/domain/entities/chat.entities';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
@@ -55,6 +57,27 @@ export const NestJsGetChatByIdQueryHandlerProvider: Provider = {
     chatsRepository: IChatsRepository,
   ) => {
     return new GetChatByIdQueryHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+};
+
+export abstract class IGetChatsQueryHandler extends IQueryHandler<
+  GetChatsQuery,
+  Chat[]
+> {}
+
+export const NestJsGetChatsQueryHandlerProvider: Provider = {
+  provide: IGetChatsQueryHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+  ) => {
+    return new GetChatsQueryHandler(
       channelsRepository,
       membersRepository,
       chatsRepository,

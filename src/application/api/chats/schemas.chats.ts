@@ -66,3 +66,15 @@ const ResponseGetChatByIdSchema = z.object({
 export class ResponseGetChatByIdDTO extends createZodDto(
   ResponseGetChatByIdSchema,
 ) {}
+
+const RequestGetChatsParamsSchema = z.object({
+  channelId: z.string().uuid(),
+});
+
+export class RequestGetChatsParamsDTO extends createZodDto(
+  RequestGetChatsParamsSchema,
+) {}
+
+const ResponseGetChatsSchema = z.array(z.object({}));
+
+export class ResponseGetChatsDTO extends createZodDto(ResponseGetChatsSchema) {}

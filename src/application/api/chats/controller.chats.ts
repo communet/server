@@ -27,8 +27,10 @@ import {
   RequestCreateChatParamsDTO,
   RequestDeleteChatParamsDTO,
   RequestGetChatParamsDTO,
+  RequestGetChatsParamsDTO,
   ResponseCreateChatDTO,
   ResponseGetChatByIdDTO,
+  ResponseGetChatsDTO,
 } from '@/application/api/chats/schemas.chats';
 import {
   CreateChatCommand,
@@ -36,13 +38,19 @@ import {
 } from '@/logic/commands/chats.command';
 import { ChatType } from '@/infra/database/models/chat.model';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
-import { IGetChatByIdQueryHandler } from '@/infra/nest-providers/query.providers';
-import { GetChatByIdQuery } from '@/logic/queries/chats.queries';
+import {
+  IGetChatByIdQueryHandler,
+  IGetChatsQueryHandler,
+} from '@/infra/nest-providers/query.providers';
+import { GetChatByIdQuery, GetChatsQuery } from '@/logic/queries/chats.queries';
 
 @ApiTags('Chats')
 @Controller('/api/channels')
 export class ChatsController {
   constructor(
+    @Inject(IGetChatsQueryHandler)
+    protected readonly getChatsQueryHandler: IGetChatsQueryHandler,
+
     @Inject(IGetChatByIdQueryHandler)
     protected readonly getChatByIdQueryHandler: IGetChatByIdQueryHandler,
 
@@ -52,6 +60,47 @@ export class ChatsController {
     @Inject(IDeleteChatCommandHandler)
     protected readonly deleteChatCommandHandler: IDeleteChatCommandHandler,
   ) {}
+
+  @Get('/{:channelId}/chats')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get all channel chats',
+    type: ResponseGetChatsDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async getChats(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestGetChatsParamsDTO,
+  ): Promise<ResponseGetChatsDTO> {
+    try {
+      const { channelId } = params;
+      const query = new GetChatsQuery(String(req.user.oid), channelId);
+      const chats = await this.getChatsQueryHandler.execute(query);
+      const formattedChats = chats.map((chat) => ({
+        id: String(chat.oid),
+        name: chat.name,
+        type: chat.type,
+        created_at: chat.createdAt.toISOString(),
+        updated_at: chat.updatedAt.toISOString(),
+      }));
+      return formattedChats;
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   @Get('/{:channelId}/chats/{:chatId}')
   @HttpCode(200)
