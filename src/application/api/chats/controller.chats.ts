@@ -10,6 +10,7 @@ import {
   Body,
   HttpCode,
   Delete,
+  Get,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
@@ -25,7 +26,9 @@ import {
   RequestCreateChatBodyDTO,
   RequestCreateChatParamsDTO,
   RequestDeleteChatParamsDTO,
+  RequestGetChatParamsDTO,
   ResponseCreateChatDTO,
+  ResponseGetChatByIdDTO,
 } from '@/application/api/chats/schemas.chats';
 import {
   CreateChatCommand,
@@ -33,11 +36,16 @@ import {
 } from '@/logic/commands/chats.command';
 import { ChatType } from '@/infra/database/models/chat.model';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
+import { IGetChatByIdQueryHandler } from '@/infra/nest-providers/query.providers';
+import { GetChatByIdQuery } from '@/logic/queries/chats.queries';
 
 @ApiTags('Chats')
 @Controller('/api/channels')
 export class ChatsController {
   constructor(
+    @Inject(IGetChatByIdQueryHandler)
+    protected readonly getChatByIdQueryHandler: IGetChatByIdQueryHandler,
+
     @Inject(ICreateChatCommandHandler)
     protected readonly createChatCommandHandler: ICreateChatCommandHandler,
 
@@ -45,12 +53,57 @@ export class ChatsController {
     protected readonly deleteChatCommandHandler: IDeleteChatCommandHandler,
   ) {}
 
+  @Get('/{:channelId}/chats/{:chatId}')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get exist channel by id',
+    type: ResponseGetChatByIdDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async getChatById(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestGetChatParamsDTO,
+  ): Promise<ResponseGetChatByIdDTO> {
+    try {
+      const { channelId, chatId } = params;
+      const query = new GetChatByIdQuery(
+        String(req.user.oid),
+        channelId,
+        chatId,
+      );
+      const chat = await this.getChatByIdQueryHandler.execute(query);
+      return {
+        id: String(chat.oid),
+        name: chat.name,
+        type: chat.type,
+        chanenl_id: String(chat.channel.oid),
+        created_at: chat.createdAt.toISOString(),
+        updated_at: chat.updatedAt.toISOString(),
+      };
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   @Post('/{:channelId}/chats')
   @HttpCode(201)
   @ApiResponse({
     status: 201,
     description: 'Create new text/voice chat for channel',
-    type: RequestCreateChatBodyDTO,
+    type: ResponseCreateChatDTO,
   })
   @ApiResponse({
     status: 400,

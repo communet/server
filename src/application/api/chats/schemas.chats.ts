@@ -44,3 +44,25 @@ const RequestDeleteChatParamsSchema = z.object({
 export class RequestDeleteChatParamsDTO extends createZodDto(
   RequestDeleteChatParamsSchema,
 ) {}
+
+const RequestGetChatParamsSchema = z.object({
+  channelId: z.string().uuid(),
+  chatId: z.string().uuid(),
+});
+
+export class RequestGetChatParamsDTO extends createZodDto(
+  RequestGetChatParamsSchema,
+) {}
+
+const ResponseGetChatByIdSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string(),
+  type: z.string(),
+  chanenl_id: z.string().uuid(),
+  created_at: z.string().datetime(),
+  updated_at: z.string().datetime(),
+});
+
+export class ResponseGetChatByIdDTO extends createZodDto(
+  ResponseGetChatByIdSchema,
+) {}

@@ -8,6 +8,13 @@ import {
 } from '@/logic/queries/channels.queries';
 import { Provider } from '@nestjs/common';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
+import {
+  GetChatByIdQuery,
+  GetChatByIdQueryHandler,
+} from '@/logic/queries/chats.queries';
+import { Chat } from '@/domain/entities/chat.entities';
+import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
+import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 
 export abstract class IGetChannelByIdQueryHandler extends IQueryHandler<
   GetChannelByIdQuery,
@@ -33,4 +40,25 @@ export const NestJsGetChannelsQueryHandlerProvider: Provider = {
     return new GetChannelsQueryHandler(channelsRepository);
   },
   inject: [IChannelsRepository],
+};
+
+export abstract class IGetChatByIdQueryHandler extends IQueryHandler<
+  GetChatByIdQuery,
+  Chat
+> {}
+
+export const NestJsGetChatByIdQueryHandlerProvider: Provider = {
+  provide: IGetChatByIdQueryHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+  ) => {
+    return new GetChatByIdQueryHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+    );
+  },
+  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
 };
