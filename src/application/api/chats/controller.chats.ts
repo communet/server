@@ -95,7 +95,7 @@ export class ChatsController {
         id: String(chat.oid),
         name: chat.name,
         type: chat.type,
-        chanenl_id: String(chat.channel.oid),
+        channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
       }));
@@ -141,7 +141,7 @@ export class ChatsController {
         id: String(chat.oid),
         name: chat.name,
         type: chat.type,
-        chanenl_id: String(chat.channel.oid),
+        channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
       };
@@ -190,7 +190,7 @@ export class ChatsController {
         id: String(chat.oid),
         name: chat.name,
         type: chat.type,
-        chanenl_id: String(chat.channel.oid),
+        channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
       };
@@ -238,7 +238,7 @@ export class ChatsController {
         id: String(chat.oid),
         name: chat.name,
         type: chat.type,
-        chanenl_id: String(chat.channel.oid),
+        channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
       };

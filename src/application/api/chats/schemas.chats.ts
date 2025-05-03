@@ -27,7 +27,7 @@ const ResponseCreateChatSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   type: z.string(),
-  chanenl_id: z.string().uuid(),
+  channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -58,7 +58,7 @@ const ResponseGetChatByIdSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   type: z.string(),
-  chanenl_id: z.string().uuid(),
+  channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
@@ -80,7 +80,7 @@ const ResponseGetChatsSchema = z.array(
     id: z.string().uuid(),
     name: z.string(),
     type: z.string(),
-    chanenl_id: z.string().uuid(),
+    channel_id: z.string().uuid(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
   }),
@@ -115,7 +115,7 @@ const ResponseUpdateChatSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
   type: z.string(),
-  chanenl_id: z.string().uuid(),
+  channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
 });
