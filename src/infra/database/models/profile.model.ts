@@ -12,6 +12,8 @@ import {
 import { CredentialsModel } from './credentials.model';
 // eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
 import { ChannelMemberModel } from './member.model';
+// eslint-disable-next-line no-relative-import-paths/no-relative-import-paths
+import { MessageModel } from './message.model';
 
 @Entity('profiles')
 export class ProfileModel {
@@ -32,6 +34,9 @@ export class ProfileModel {
 
   @OneToMany(() => ChannelMemberModel, (member) => member.profile)
   channels!: ChannelMemberModel[];
+
+  @OneToMany(() => MessageModel, (message) => message.chat)
+  messages!: MessageModel[];
 
   @CreateDateColumn({ type: 'timestamp' })
   created_at!: Date;
