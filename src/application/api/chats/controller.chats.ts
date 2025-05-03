@@ -94,7 +94,7 @@ export class ChatsController {
       const formattedChats = chats.map((chat) => ({
         id: String(chat.oid),
         name: chat.name,
-        type: chat.type,
+        type: chat.type as 'text' | 'voice',
         channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
@@ -140,7 +140,7 @@ export class ChatsController {
       return {
         id: String(chat.oid),
         name: chat.name,
-        type: chat.type,
+        type: chat.type as 'text' | 'voice',
         channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
@@ -189,7 +189,7 @@ export class ChatsController {
       return {
         id: String(chat.oid),
         name: chat.name,
-        type: chat.type,
+        type: chat.type as 'text' | 'voice',
         channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),
@@ -237,7 +237,7 @@ export class ChatsController {
       return {
         id: String(chat.oid),
         name: chat.name,
-        type: chat.type,
+        type: chat.type as 'text' | 'voice',
         channel_id: String(chat.channel.oid),
         created_at: chat.createdAt.toISOString(),
         updated_at: chat.updatedAt.toISOString(),

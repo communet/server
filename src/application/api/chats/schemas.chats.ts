@@ -26,7 +26,7 @@ export class RequestCreateChatBodyDTO extends createZodDto(
 const ResponseCreateChatSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(['text', 'voice']),
   channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -57,7 +57,7 @@ export class RequestGetChatParamsDTO extends createZodDto(
 const ResponseGetChatByIdSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(['text', 'voice']),
   channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
@@ -79,7 +79,7 @@ const ResponseGetChatsSchema = z.array(
   z.object({
     id: z.string().uuid(),
     name: z.string(),
-    type: z.string(),
+    type: z.enum(['text', 'voice']),
     channel_id: z.string().uuid(),
     created_at: z.string().datetime(),
     updated_at: z.string().datetime(),
@@ -114,7 +114,7 @@ export class RequestUpdateChatBodyDTO extends createZodDto(
 const ResponseUpdateChatSchema = z.object({
   id: z.string().uuid(),
   name: z.string(),
-  type: z.string(),
+  type: z.enum(['text', 'voice']),
   channel_id: z.string().uuid(),
   created_at: z.string().datetime(),
   updated_at: z.string().datetime(),
