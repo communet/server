@@ -6,6 +6,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ChannelsModule } from '@/application/api/channels/module.channels';
 import { ChatsModule } from '@/application/api/chats/module.chats';
+import { MessageModule } from '@/application/api/message/module.message';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ChatsModule } from '@/application/api/chats/module.chats';
     UsersModule,
     ChannelsModule,
     ChatsModule,
+    MessageModule,
   ],
   controllers: [],
   providers: [],
