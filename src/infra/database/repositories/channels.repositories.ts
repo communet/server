@@ -42,6 +42,7 @@ export class ChannelsRepository extends IChannelsRepository {
           is_connected: true,
         },
       },
+      relations: ['members', 'members.profile', 'members.profile.credentials'],
     });
 
     return channels;
@@ -53,6 +54,7 @@ export class ChannelsRepository extends IChannelsRepository {
         id: channelId,
         is_deleted: false,
       },
+      relations: ['members', 'members.profile', 'members.profile.credentials'],
     });
     return channel;
   }
@@ -106,7 +108,8 @@ export class ChannelsRepository extends IChannelsRepository {
       channel.avatar_url = channelAvatarFileName;
     }
 
-    return await this.channelsRepository.save(channel);
+    await this.channelsRepository.save(channel);
+    return await this.findById(channel.id);
   }
 
   async deleteById(

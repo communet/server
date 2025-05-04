@@ -165,7 +165,7 @@ export const NestJsUpdateChannelCommandHandlerProvider: Provider = {
 
 export abstract class IDeleteChannelCommandHandler extends ICommandHandler<
   DeleteChannelCommand,
-  Channel
+  undefined
 > {}
 
 export const NestJsDeleteChannelCommandHandlerProvider: Provider = {

@@ -85,13 +85,13 @@ export class DeleteChannelCommand extends BaseCommand {
 
 export class DeleteChannelCommandHandler extends ICommandHandler<
   DeleteChannelCommand,
-  Channel
+  undefined
 > {
   constructor(protected readonly channelRepository: IChannelsRepository) {
     super();
   }
 
-  async execute(command: DeleteChannelCommand): Promise<Channel> {
+  async execute(command: DeleteChannelCommand): Promise<undefined> {
     const deletedChannelModel = await this.channelRepository.deleteById(
       command.profileId,
       command.channelId,
@@ -101,8 +101,6 @@ export class DeleteChannelCommandHandler extends ICommandHandler<
         'Channel with given id does not exist',
       );
     }
-
-    return convertChannelModelToEntity(deletedChannelModel);
   }
 }
 

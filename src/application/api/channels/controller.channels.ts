@@ -106,17 +106,26 @@ export class ChannelsController {
     try {
       const query = new GetChannelsQuery(String(req.user.oid));
       const channels = await this.getChannelsQueryHandler.execute(query);
-      const formattedChannels = channels.map((channel) => ({
+      return channels.map((channel) => ({
         id: String(channel.oid),
         name: channel.name,
         description: channel.description ?? null,
         avatar: channel.avatarUrl ?? null,
+        members: channel.members.map((member) => ({
+          id: String(member.oid),
+          display_name: member.displayName,
+          username: member.credentials.username,
+          email: member.credentials.email,
+          avatar: member.avatarUrl,
+          created_at: member.createdAt.toISOString(),
+          updated_at: member.updatedAt.toISOString(),
+        })),
         is_deleted: channel.isDeleted,
         created_at: channel.createdAt.toISOString(),
         updated_at: channel.updatedAt.toISOString(),
       }));
-      return formattedChannels;
     } catch (error) {
+      console.error(error);
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
@@ -219,11 +228,21 @@ export class ChannelsController {
         name: channel.name,
         description: channel.description,
         avatar: channel.avatarUrl,
+        members: channel.members.map((profile) => ({
+          id: String(profile.oid),
+          display_name: profile.displayName,
+          username: profile.credentials.username,
+          email: profile.credentials.email,
+          avatar: profile.avatarUrl,
+          created_at: profile.createdAt.toISOString(),
+          updated_at: profile.updatedAt.toISOString(),
+        })),
         is_deleted: channel.isDeleted,
         created_at: channel.createdAt.toISOString(),
         updated_at: channel.updatedAt.toISOString(),
       };
     } catch (error) {
+      console.error(error);
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
@@ -255,6 +274,7 @@ export class ChannelsController {
       const command = new DeleteChannelCommand(String(req.user.oid), channelId);
       await this.deleteChannelCommandHandler.execute(command);
     } catch (error) {
+      console.error(error);
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
@@ -324,6 +344,7 @@ export class ChannelsController {
         updated_at: channel.updatedAt.toISOString(),
       };
     } catch (error) {
+      console.error(error);
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
@@ -358,6 +379,7 @@ export class ChannelsController {
       );
       await this.connectToChannelCommandHandler.execute(command);
     } catch (error) {
+      console.error(error);
       if (error instanceof ApplicationError) {
         throw new HttpException(error.message, HttpStatus.CONFLICT);
       }

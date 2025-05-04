@@ -1,12 +1,14 @@
 import { v4 as uuid4, UUIDTypes as UUID } from 'uuid';
 import { BaseEntity } from '@/domain/entities/base.entities';
 import { ChannelName } from '@/domain/values/channels.values';
+import { Profile } from '@/domain/entities/user.entities';
 
 export class Channel extends BaseEntity {
   constructor(
     protected _name: ChannelName,
     protected _description: string | undefined = undefined,
     protected _avatarUrl: string | undefined = undefined,
+    protected _members: Profile[] = [],
     protected _isDeleted: boolean = false,
     protected _createdAt: Date = new Date(),
     protected _updatedAt: Date = new Date(),
@@ -33,6 +35,16 @@ export class Channel extends BaseEntity {
   public set description(value: string | undefined) {
     if (value) {
       this._description = value;
+    }
+  }
+
+  public get members(): Profile[] {
+    return this._members;
+  }
+
+  public set members(value: Profile[] | undefined) {
+    if (value) {
+      this._members = value;
     }
   }
 
