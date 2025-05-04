@@ -220,8 +220,8 @@ export class ChannelsController {
     @Param() params: RequestGetChannelByIdDTO,
   ): Promise<ResponseGetChannelByIdDTO> {
     try {
-      const { id } = params;
-      const query = new GetChannelByIdQuery(id);
+      const { channelId } = params;
+      const query = new GetChannelByIdQuery(channelId);
       const channel = await this.getChannelByIdQueryHandler.execute(query);
       return {
         id: String(channel.oid),

@@ -52,7 +52,7 @@ export class ResponseGetChannelsDTO extends createZodDto(
 ) {}
 
 const RequestGetChannelByIdSchema = z.object({
-  id: z.string().uuid(),
+  channelId: z.string().uuid(),
 });
 
 export class RequestGetChannelByIdDTO extends createZodDto(
