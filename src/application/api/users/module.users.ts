@@ -7,6 +7,7 @@ import {
   JwtStrategyProvider,
 } from '@/infra/nest-providers/service.providers';
 import { NestJsUpdateCurrentUserCommandHandlerProvider } from '@/infra/nest-providers/command.providers';
+import { NestJsGetUserByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [UsersController],
@@ -15,6 +16,7 @@ import { NestJsUpdateCurrentUserCommandHandlerProvider } from '@/infra/nest-prov
     JWTServiceProvider,
     JwtStrategyProvider,
     FileServiceProvider,
+    NestJsGetUserByIdQueryHandlerProvider,
     NestJsUpdateCurrentUserCommandHandlerProvider,
   ],
 })

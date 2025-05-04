@@ -17,6 +17,12 @@ import {
 import { Chat } from '@/domain/entities/chat.entities';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
+import {
+  GetUserByIdQuery,
+  GetUserByIdQueryHandler,
+} from '@/logic/queries/users.queries';
+import { Profile } from '@/domain/entities/user.entities';
+import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 
 export abstract class IGetChannelByIdQueryHandler extends IQueryHandler<
   GetChannelByIdQuery,
@@ -84,4 +90,17 @@ export const NestJsGetChatsQueryHandlerProvider: Provider = {
     );
   },
   inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+};
+
+export abstract class IGetUserByIdQueryHandler extends IQueryHandler<
+  GetUserByIdQuery,
+  Profile
+> {}
+
+export const NestJsGetUserByIdQueryHandlerProvider: Provider = {
+  provide: IGetUserByIdQueryHandler,
+  useFactory: (profileRepository: IProfileRepository) => {
+    return new GetUserByIdQueryHandler(profileRepository);
+  },
+  inject: [IProfileRepository],
 };

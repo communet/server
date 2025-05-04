@@ -11,6 +11,7 @@ import {
   Body,
   UseInterceptors,
   UploadedFile,
+  Param,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
@@ -21,12 +22,16 @@ import {
 } from '@/application/api/auth/guards.auth';
 import {
   ReponseGetCurrentUserDTO,
+  ReponseGetUserByIdDTO,
   ReponseUpdateCurrentUserDTO,
+  RequestGetUserByIdParamsDTO,
 } from '@/application/api/users/schemas.users';
 import { UpdateCurrentUserCommand } from '@/logic/commands/users.command';
 import { IUpdateCurrentUserCommandHandler } from '@/infra/nest-providers/command.providers';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { IGetUserByIdQueryHandler } from '@/infra/nest-providers/query.providers';
+import { GetUserByIdQuery } from '@/logic/queries/users.queries';
 
 @ApiTags('Users')
 @Controller('/api/users')
@@ -34,6 +39,9 @@ export class UsersController {
   constructor(
     @Inject(IUpdateCurrentUserCommandHandler)
     private readonly updateCurrentUserCommandHandler: IUpdateCurrentUserCommandHandler,
+
+    @Inject(IGetUserByIdQueryHandler)
+    private readonly getUserByIdQueryHandler: IGetUserByIdQueryHandler,
   ) {}
 
   @Get('/me')
@@ -119,6 +127,46 @@ export class UsersController {
         avatar: updatedProfile.avatarUrl ?? null,
         created_at: updatedProfile.createdAt.toISOString(),
         updated_at: updatedProfile.updatedAt.toISOString(),
+      };
+    } catch (error) {
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Get('/{:profileId}')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get data about user with given id',
+    type: ReponseGetUserByIdDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  async getUserById(
+    @Param() params: RequestGetUserByIdParamsDTO,
+  ): Promise<ReponseGetUserByIdDTO> {
+    try {
+      const { profileId } = params;
+      const query = new GetUserByIdQuery(profileId);
+      const profile = await this.getUserByIdQueryHandler.execute(query);
+      return {
+        id: String(profile.oid),
+        display_name: profile.displayName,
+        username: profile.credentials.username,
+        email: profile.credentials.email,
+        avatar: profile.avatarUrl ?? null,
+        updated_at: profile.updatedAt.toISOString(),
+        created_at: profile.createdAt.toISOString(),
       };
     } catch (error) {
       if (error instanceof ApplicationError) {
