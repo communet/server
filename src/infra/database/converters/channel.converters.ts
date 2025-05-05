@@ -5,11 +5,12 @@ import { convertProfileModelToEntity } from '@/infra/database/converters/user.co
 
 export function convertChannelModelToEntity(model: ChannelsModel): Channel {
   const channelName = new ChannelName(model.name);
+  const members = model.members ?? [];
   return new Channel(
     channelName,
     model.description,
     model.avatar_url,
-    model.members.map((member) => {
+    members.map((member) => {
       return convertProfileModelToEntity(member.profile);
     }),
     model.is_deleted,

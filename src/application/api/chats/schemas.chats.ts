@@ -103,8 +103,9 @@ const RequestUpdateChatBodySchema = z.object({
     .trim()
     .toLowerCase()
     .min(3, 'Username must be greater or equal 3 characters')
-    .max(32, 'Username must be less or equal 32 characters'),
-  type: z.enum(['text', 'voice']),
+    .max(32, 'Username must be less or equal 32 characters')
+    .nullish(),
+  type: z.enum(['text', 'voice']).nullish(),
 });
 
 export class RequestUpdateChatBodyDTO extends createZodDto(

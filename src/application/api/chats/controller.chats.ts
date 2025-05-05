@@ -11,7 +11,7 @@ import {
   HttpCode,
   Delete,
   Get,
-  Put,
+  Patch,
 } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
@@ -206,7 +206,7 @@ export class ChatsController {
     }
   }
 
-  @Put('/{:channelId}/chats/{:chatId}')
+  @Patch('/{:channelId}/chats/{:chatId}')
   @HttpCode(200)
   @ApiResponse({
     status: 200,
@@ -230,8 +230,8 @@ export class ChatsController {
         String(req.user.oid),
         channelId,
         chatId,
-        body.name,
-        body.type,
+        body.name ?? undefined,
+        body.type ?? undefined,
       );
       const chat = await this.updateChatCommandHandler.execute(command);
       return {

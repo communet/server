@@ -126,8 +126,8 @@ export class UpdateChatCommand extends BaseCommand {
     public readonly profileId: string,
     public readonly channelId: string,
     public readonly chatId: string,
-    public readonly name: string,
-    public readonly type: string,
+    public readonly name?: string,
+    public readonly type?: string,
   ) {
     super();
   }
