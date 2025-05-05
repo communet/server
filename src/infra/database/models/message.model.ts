@@ -4,6 +4,7 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,6 +28,15 @@ export class MessageModel {
   @ManyToOne(() => ChatModel, (chat) => chat.messages)
   @JoinColumn({ name: 'chat_id' })
   chat!: ChatModel;
+
+  @OneToOne(() => MessageModel, (message) => message.replies, {
+    nullable: true,
+  })
+  @JoinColumn({ name: 'reply_to_id' })
+  reply_to!: MessageModel;
+
+  @OneToOne(() => MessageModel, (message) => message.reply_to)
+  replies!: MessageModel;
 
   @Column({ default: false })
   is_deleted!: boolean;
