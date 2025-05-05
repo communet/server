@@ -24,7 +24,7 @@ export class ChatName extends BaseValue<string> {
         `Chat name must be greater or equal to ${min_length} characters`,
       );
     }
-    if (this.validate.length > max_length) {
+    if (this.value.length > max_length) {
       throw new ChatNameTooLongError(
         `Chat name must be less or equal to ${max_length} characters`,
       );
