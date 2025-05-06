@@ -9,7 +9,7 @@ export class Message extends BaseEntity {
     protected _text: MessageContent,
     protected _author: Profile,
     protected _chat: Chat,
-    protected _replyTo: Message | undefined = undefined,
+    protected _replyTo: string | undefined = undefined,
     protected _createdAt: Date = new Date(),
     protected _updatedAt: Date = new Date(),
     protected _oid: UUID = uuid4(),
@@ -29,7 +29,7 @@ export class Message extends BaseEntity {
     return this._chat;
   }
 
-  public get replyTo(): Message | undefined {
+  public get replyTo(): string | undefined {
     return this._replyTo;
   }
 }

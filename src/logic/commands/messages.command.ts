@@ -19,6 +19,7 @@ export class CreateMessageCommand extends BaseCommand {
     public readonly channelId: string,
     public readonly chatId: string,
     public readonly content: string,
+    public readonly replyTo: string | undefined,
   ) {
     super();
   }
@@ -67,6 +68,7 @@ export class CreateMessageCommandHandler extends ICommandHandler<
       messageContent,
       command.profile,
       convertChatModelToEntity(chatModel),
+      command.replyTo,
     );
 
     await this.messagesRepository.create(message);

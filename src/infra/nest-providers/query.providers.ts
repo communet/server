@@ -23,6 +23,12 @@ import {
 } from '@/logic/queries/users.queries';
 import { Profile } from '@/domain/entities/user.entities';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
+import {
+  GetMessageByIdQuery,
+  GetMessageByIdQueryHandler,
+} from '@/logic/queries/message.queries';
+import { Message } from '@/domain/entities/message.entities';
+import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
 
 export abstract class IGetChannelByIdQueryHandler extends IQueryHandler<
   GetChannelByIdQuery,
@@ -103,4 +109,32 @@ export const NestJsGetUserByIdQueryHandlerProvider: Provider = {
     return new GetUserByIdQueryHandler(profileRepository);
   },
   inject: [IProfileRepository],
+};
+
+export abstract class IGetMessageByIdQueryHandler extends IQueryHandler<
+  GetMessageByIdQuery,
+  Message
+> {}
+
+export const NestJsGetMessageByIdQueryHandlerProvider: Provider = {
+  provide: IGetMessageByIdQueryHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+    messagesRepository: IMessagesRepository,
+  ) => {
+    return new GetMessageByIdQueryHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+      messagesRepository,
+    );
+  },
+  inject: [
+    IChannelsRepository,
+    IChannelMembersRepository,
+    IChatsRepository,
+    IMessagesRepository,
+  ],
 };

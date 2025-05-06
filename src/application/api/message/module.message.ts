@@ -7,6 +7,7 @@ import {
   MessagesRepositoryProvider,
 } from '@/infra/nest-providers/repository.providers';
 import { NestJsCreateMessageCommandHandlerProvider } from '@/infra/nest-providers/command.providers';
+import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [MessageController],
@@ -16,6 +17,7 @@ import { NestJsCreateMessageCommandHandlerProvider } from '@/infra/nest-provider
     ChatsRepositoryProvider,
     MessagesRepositoryProvider,
     NestJsCreateMessageCommandHandlerProvider,
+    NestJsGetMessageByIdQueryHandlerProvider,
   ],
 })
 export class MessageModule {}
