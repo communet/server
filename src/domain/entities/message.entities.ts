@@ -21,6 +21,12 @@ export class Message extends BaseEntity {
     return this._text.getValue();
   }
 
+  public set content(value: string | undefined) {
+    if (value) {
+      this._text = new MessageContent(value);
+    }
+  }
+
   public get author(): Profile {
     return this._author;
   }

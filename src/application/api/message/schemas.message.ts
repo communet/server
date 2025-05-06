@@ -67,6 +67,43 @@ export class ResponseGetMessageByIdDTO extends createZodDto(
   ResponseGetMessageByIdSchema,
 ) {}
 
+const RequestUpdateMessageByIdParamsIdSchema = z.object({
+  channelId: z.string().uuid(),
+  chatId: z.string().uuid(),
+  messageId: z.string().uuid(),
+});
+
+export class RequestUpdateMessageByIdParamsIdDTO extends createZodDto(
+  RequestUpdateMessageByIdParamsIdSchema,
+) {}
+
+const RequestUpdateMessageByIdBodySchema = z.object({
+  content: z.string(),
+});
+
+export class RequestUpdateMessageByIdBodyDTO extends createZodDto(
+  RequestUpdateMessageByIdBodySchema,
+) {}
+
+const ResponseUpdateMessageByIdSchema = z.object({
+  id: z.string().uuid(),
+  content: z.string(),
+  author: z.object({
+    id: z.string().uuid(),
+    display_name: z.string(),
+    username: z.string(),
+    email: z.string().email(),
+    avatar: z.string().nullable(),
+  }),
+  reply_to: z.string().uuid().nullable(),
+  created_at: z.string(),
+  updated_at: z.string(),
+});
+
+export class ResponseUpdateMessageByIdDTO extends createZodDto(
+  ResponseUpdateMessageByIdSchema,
+) {}
+
 const RequestDeleteMessageByParamsIdSchema = z.object({
   channelId: z.string().uuid(),
   chatId: z.string().uuid(),

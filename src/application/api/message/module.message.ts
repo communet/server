@@ -9,6 +9,7 @@ import {
 import {
   NestJsCreateMessageCommandHandlerProvider,
   NestJsDeleteMessageByIdCommandHandlerProvider,
+  NestJsUpdateMessageByIdCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
 import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
 
@@ -21,6 +22,7 @@ import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers
     MessagesRepositoryProvider,
     NestJsCreateMessageCommandHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,
+    NestJsUpdateMessageByIdCommandHandlerProvider,
     NestJsDeleteMessageByIdCommandHandlerProvider,
   ],
 })

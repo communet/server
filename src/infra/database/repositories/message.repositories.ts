@@ -5,6 +5,7 @@ import { Message } from '@/domain/entities/message.entities';
 export abstract class IMessagesRepository {
   abstract findById(messageId: string): Promise<MessageModel | null>;
   abstract create(model: Message): Promise<MessageModel>;
+  abstract update(entity: Message): Promise<boolean>;
   abstract deleteById(messageId: string): Promise<boolean>;
 }
 
@@ -34,6 +35,16 @@ export class MessageRepository extends IMessagesRepository {
 
     const newMessage = this.messagesRepository.create(messageModel);
     return await this.messagesRepository.save(newMessage);
+  }
+
+  async update(entity: Message): Promise<boolean> {
+    const message = await this.findById(String(entity.oid));
+    if (!message) {
+      return false;
+    }
+    message.text = entity.content;
+    await this.messagesRepository.save(message);
+    return true;
   }
 
   async deleteById(messageId: string): Promise<boolean> {
