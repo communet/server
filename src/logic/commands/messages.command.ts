@@ -12,6 +12,7 @@ import { MessageContent } from '@/domain/values/message.values';
 import { convertChatModelToEntity } from '@/infra/database/converters/chat.converters';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
+import { MessageDoesNotExistError } from '@/logic/exceptions/message.exceptions';
 
 export class CreateMessageCommand extends BaseCommand {
   constructor(
@@ -74,5 +75,74 @@ export class CreateMessageCommandHandler extends ICommandHandler<
     await this.messagesRepository.create(message);
 
     return message;
+  }
+}
+
+export class DeleteMessageByIdCommand extends BaseCommand {
+  constructor(
+    public readonly profileId: string,
+    public readonly channelId: string,
+    public readonly chatId: string,
+    public readonly messageId: string,
+  ) {
+    super();
+  }
+}
+
+export class DeleteMessageByIdCommandHandler extends ICommandHandler<
+  DeleteMessageByIdCommand,
+  undefined
+> {
+  constructor(
+    protected readonly channelsRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
+    protected readonly chatsRepository: IChatsRepository,
+    protected readonly messagesRepository: IMessagesRepository,
+  ) {
+    super();
+  }
+
+  async execute(command: DeleteMessageByIdCommand): Promise<undefined> {
+    const channelModel = await this.channelsRepository.findById(
+      command.channelId,
+    );
+    if (!channelModel) {
+      throw new ChannelDoesNotExistError(
+        'Channel with given id does not exist',
+      );
+    }
+
+    const isMember = await this.membersRepository.checkForMember(
+      command.channelId,
+      command.profileId,
+    );
+    if (!isMember) {
+      throw new UserDoesNotJoinedToChannelError(
+        'User does not joined to channel',
+      );
+    }
+
+    const chatModel = await this.chatsRepository.findById(command.chatId);
+    if (!chatModel) {
+      throw new ChatDoesNotExistError('Chat with given id does not exist');
+    }
+
+    const messageModel = await this.messagesRepository.findById(
+      command.messageId,
+    );
+    if (!messageModel) {
+      throw new MessageDoesNotExistError(
+        'Message with given id does not exist',
+      );
+    }
+
+    const isDeleted = await this.messagesRepository.deleteById(
+      command.messageId,
+    );
+    if (!isDeleted) {
+      throw new MessageDoesNotExistError(
+        'Message with given id does not exist',
+      );
+    }
   }
 }

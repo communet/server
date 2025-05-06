@@ -6,7 +6,10 @@ import {
   ChatsRepositoryProvider,
   MessagesRepositoryProvider,
 } from '@/infra/nest-providers/repository.providers';
-import { NestJsCreateMessageCommandHandlerProvider } from '@/infra/nest-providers/command.providers';
+import {
+  NestJsCreateMessageCommandHandlerProvider,
+  NestJsDeleteMessageByIdCommandHandlerProvider,
+} from '@/infra/nest-providers/command.providers';
 import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
 
 @Module({
@@ -18,6 +21,7 @@ import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers
     MessagesRepositoryProvider,
     NestJsCreateMessageCommandHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,
+    NestJsDeleteMessageByIdCommandHandlerProvider,
   ],
 })
 export class MessageModule {}

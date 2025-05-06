@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
@@ -21,12 +22,19 @@ import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
   RequestCreateMessageBodyDTO,
   RequestCreateMessageParamsDTO,
+  RequestDeleteMessageByParamsIdDTO,
   RequestGetMessageByParamsIdDTO,
   ResponseCreateMessageDTO,
   ResponseGetMessageByIdDTO,
 } from '@/application/api/message/schemas.message';
-import { CreateMessageCommand } from '@/logic/commands/messages.command';
-import { ICreateMessageCommandHandler } from '@/infra/nest-providers/command.providers';
+import {
+  CreateMessageCommand,
+  DeleteMessageByIdCommand,
+} from '@/logic/commands/messages.command';
+import {
+  ICreateMessageCommandHandler,
+  IDeleteMessageByIdCommandHandler,
+} from '@/infra/nest-providers/command.providers';
 import { GetMessageByIdQuery } from '@/logic/queries/message.queries';
 import { IGetMessageByIdQueryHandler } from '@/infra/nest-providers/query.providers';
 
@@ -39,6 +47,9 @@ export class MessageController {
 
     @Inject(IGetMessageByIdQueryHandler)
     protected readonly getMessageByIdQuryHandler: IGetMessageByIdQueryHandler,
+
+    @Inject(IDeleteMessageByIdCommandHandler)
+    protected readonly deleteMessageByIdCommandHandler: IDeleteMessageByIdCommandHandler,
   ) {}
 
   @Post()
@@ -135,6 +146,43 @@ export class MessageController {
         created_at: message.createdAt.toISOString(),
         updated_at: message.updatedAt.toISOString(),
       };
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  @Delete('/{:messageId}')
+  @HttpCode(204)
+  @ApiResponse({
+    status: 204,
+    description: 'Delete message by id',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async deleteMessageById(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestDeleteMessageByParamsIdDTO,
+  ): Promise<undefined> {
+    try {
+      const { channelId, chatId, messageId } = params;
+      const command = new DeleteMessageByIdCommand(
+        String(req.user.oid),
+        channelId,
+        chatId,
+        messageId,
+      );
+      await this.deleteMessageByIdCommandHandler.execute(command);
     } catch (error) {
       console.error(error);
       if (error instanceof ApplicationError) {

@@ -50,6 +50,8 @@ import { IChatsRepository } from '@/infra/database/repositories/chats.repositori
 import {
   CreateMessageCommand,
   CreateMessageCommandHandler,
+  DeleteMessageByIdCommand,
+  DeleteMessageByIdCommandHandler,
 } from '@/logic/commands/messages.command';
 import { Message } from '@/domain/entities/message.entities';
 import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
@@ -297,6 +299,34 @@ export const NestJsCreateMessageCommandHandlerProvider: Provider = {
     messagesRepository: IMessagesRepository,
   ) => {
     return new CreateMessageCommandHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+      messagesRepository,
+    );
+  },
+  inject: [
+    IChannelsRepository,
+    IChannelMembersRepository,
+    IChatsRepository,
+    IMessagesRepository,
+  ],
+};
+
+export abstract class IDeleteMessageByIdCommandHandler extends ICommandHandler<
+  DeleteMessageByIdCommand,
+  undefined
+> {}
+
+export const NestJsDeleteMessageByIdCommandHandlerProvider: Provider = {
+  provide: IDeleteMessageByIdCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+    messagesRepository: IMessagesRepository,
+  ) => {
+    return new DeleteMessageByIdCommandHandler(
       channelsRepository,
       membersRepository,
       chatsRepository,

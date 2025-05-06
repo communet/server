@@ -66,3 +66,13 @@ const ResponseGetMessageByIdSchema = z.object({
 export class ResponseGetMessageByIdDTO extends createZodDto(
   ResponseGetMessageByIdSchema,
 ) {}
+
+const RequestDeleteMessageByParamsIdSchema = z.object({
+  channelId: z.string().uuid(),
+  chatId: z.string().uuid(),
+  messageId: z.string().uuid(),
+});
+
+export class RequestDeleteMessageByParamsIdDTO extends createZodDto(
+  RequestDeleteMessageByParamsIdSchema,
+) {}
