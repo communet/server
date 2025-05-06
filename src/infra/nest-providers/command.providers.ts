@@ -47,6 +47,12 @@ import {
 } from '@/logic/commands/chats.command';
 import { Chat } from '@/domain/entities/chat.entities';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
+import {
+  CreateMessageCommand,
+  CreateMessageCommandHandler,
+} from '@/logic/commands/messages.command';
+import { Message } from '@/domain/entities/message.entities';
+import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -275,4 +281,32 @@ export const NestJsUpdateChatCommandHandlerProvider: Provider = {
     );
   },
   inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+};
+
+export abstract class ICreateMessageCommandHandler extends ICommandHandler<
+  CreateMessageCommand,
+  Message
+> {}
+
+export const NestJsCreateMessageCommandHandlerProvider: Provider = {
+  provide: ICreateMessageCommandHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+    messagesRepository: IMessagesRepository,
+  ) => {
+    return new CreateMessageCommandHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+      messagesRepository,
+    );
+  },
+  inject: [
+    IChannelsRepository,
+    IChannelMembersRepository,
+    IChatsRepository,
+    IMessagesRepository,
+  ],
 };

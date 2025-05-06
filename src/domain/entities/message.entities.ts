@@ -16,4 +16,20 @@ export class Message extends BaseEntity {
   ) {
     super(_createdAt, _updatedAt, _oid);
   }
+
+  public get content(): string {
+    return this._text.getValue();
+  }
+
+  public get author(): Profile {
+    return this._author;
+  }
+
+  public get chat(): Chat {
+    return this._chat;
+  }
+
+  public get replyTo(): Message | undefined {
+    return this._replyTo;
+  }
 }
