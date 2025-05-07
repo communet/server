@@ -1,6 +1,38 @@
 import { createZodDto } from 'nestjs-zod';
 import { z } from 'zod';
 
+const RequestGetAllMessagesParamsSchema = z.object({
+  channelId: z.string().uuid(),
+  chatId: z.string().uuid(),
+});
+
+export class RequestGetAllMessagesParamsDTO extends createZodDto(
+  RequestGetAllMessagesParamsSchema,
+) {}
+
+const ResponseGetAllMessagesSchema = z.array(
+  z.object({
+    id: z.string().uuid(),
+    content: z.string(),
+    author: z.object({
+      id: z.string().uuid(),
+      display_name: z.string(),
+      username: z.string(),
+      email: z.string().email(),
+      avatar: z.string().nullable(),
+      created_at: z.string().datetime(),
+      updated_at: z.string().datetime(),
+    }),
+    reply_to: z.string().uuid().nullable(),
+    created_at: z.string(),
+    updated_at: z.string(),
+  }),
+);
+
+export class ResponseGetAllMessagesDTO extends createZodDto(
+  ResponseGetAllMessagesSchema,
+) {}
+
 const RequestCreateMessageParamsSchema = z.object({
   channelId: z.string().uuid(),
   chatId: z.string().uuid(),
@@ -28,6 +60,8 @@ const ResponseCreateMessageSchema = z.object({
     username: z.string(),
     email: z.string().email(),
     avatar: z.string().nullable(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
   created_at: z.string(),
@@ -57,6 +91,8 @@ const ResponseGetMessageByIdSchema = z.object({
     username: z.string(),
     email: z.string().email(),
     avatar: z.string().nullable(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
   created_at: z.string(),
@@ -94,6 +130,8 @@ const ResponseUpdateMessageByIdSchema = z.object({
     username: z.string(),
     email: z.string().email(),
     avatar: z.string().nullable(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
   created_at: z.string(),

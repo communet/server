@@ -24,6 +24,8 @@ import {
 import { Profile } from '@/domain/entities/user.entities';
 import { IProfileRepository } from '@/infra/database/repositories/profile.repositories';
 import {
+  GetAllMessagesQuery,
+  GetAllMessagesQueryHandler,
   GetMessageByIdQuery,
   GetMessageByIdQueryHandler,
 } from '@/logic/queries/message.queries';
@@ -109,6 +111,34 @@ export const NestJsGetUserByIdQueryHandlerProvider: Provider = {
     return new GetUserByIdQueryHandler(profileRepository);
   },
   inject: [IProfileRepository],
+};
+
+export abstract class IGetAllMessagesQueryHandler extends IQueryHandler<
+  GetAllMessagesQuery,
+  Message[]
+> {}
+
+export const NestJsGetAllMessagesQueryHandlerProvider: Provider = {
+  provide: IGetAllMessagesQueryHandler,
+  useFactory: (
+    channelsRepository: IChannelsRepository,
+    membersRepository: IChannelMembersRepository,
+    chatsRepository: IChatsRepository,
+    messagesRepository: IMessagesRepository,
+  ) => {
+    return new GetAllMessagesQueryHandler(
+      channelsRepository,
+      membersRepository,
+      chatsRepository,
+      messagesRepository,
+    );
+  },
+  inject: [
+    IChannelsRepository,
+    IChannelMembersRepository,
+    IChatsRepository,
+    IMessagesRepository,
+  ],
 };
 
 export abstract class IGetMessageByIdQueryHandler extends IQueryHandler<

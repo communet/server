@@ -11,6 +11,66 @@ import {
 } from '@/logic/exceptions/chat.exceptions';
 import { MessageDoesNotExistError } from '@/logic/exceptions/message.exceptions';
 import { convertMessageModelToEntity } from '@/infra/database/converters/message.converters';
+import { Profile } from '@/domain/entities/user.entities';
+
+export class GetAllMessagesQuery extends BaseQuery {
+  constructor(
+    public readonly profile: Profile,
+    public readonly channelId: string,
+    public readonly chatId: string,
+  ) {
+    super();
+  }
+}
+
+export class GetAllMessagesQueryHandler extends IQueryHandler<
+  GetAllMessagesQuery,
+  Message[]
+> {
+  constructor(
+    protected readonly channelsRepository: IChannelsRepository,
+    protected readonly membersRepository: IChannelMembersRepository,
+    protected readonly chatsRepository: IChatsRepository,
+    protected readonly messagesRepository: IMessagesRepository,
+  ) {
+    super();
+  }
+
+  async execute(query: GetAllMessagesQuery): Promise<Message[]> {
+    const channel = await this.channelsRepository.findById(query.channelId);
+    if (!channel) {
+      throw new ChannelDoesNotExistError(
+        'Channel with given id does not exist',
+      );
+    }
+
+    const member = await this.membersRepository.checkForMember(
+      query.channelId,
+      String(query.profile.oid),
+    );
+    if (!member) {
+      throw new UserDoesNotJoinedToChannelError(
+        'User does not joined to channel',
+      );
+    }
+
+    const chatModel = await this.chatsRepository.findById(query.chatId);
+    if (!chatModel) {
+      throw new ChatDoesNotExistError('Chat with given id does not exist');
+    }
+
+    const messages: Message[] = [];
+    const messagesModels = await this.messagesRepository.findAllByChat(
+      query.chatId,
+    );
+
+    messagesModels.map((messageModel) => {
+      messages.push(convertMessageModelToEntity(messageModel));
+    });
+
+    return messages;
+  }
+}
 
 export class GetMessageByIdQuery extends BaseQuery {
   constructor(

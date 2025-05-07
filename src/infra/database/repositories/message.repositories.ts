@@ -3,6 +3,7 @@ import { MessageModel } from '@/infra/database/models/message.model';
 import { Message } from '@/domain/entities/message.entities';
 
 export abstract class IMessagesRepository {
+  abstract findAllByChat(chatId: string): Promise<MessageModel[]>;
   abstract findById(messageId: string): Promise<MessageModel | null>;
   abstract create(model: Message): Promise<MessageModel>;
   abstract update(entity: Message): Promise<boolean>;
@@ -12,6 +13,18 @@ export abstract class IMessagesRepository {
 export class MessageRepository extends IMessagesRepository {
   constructor(protected readonly messagesRepository: Repository<MessageModel>) {
     super();
+  }
+
+  async findAllByChat(chatId: string): Promise<MessageModel[]> {
+    return await this.messagesRepository.find({
+      where: {
+        chat: {
+          id: chatId,
+        },
+        is_deleted: false,
+      },
+      relations: ['chat', 'author', 'author.credentials'],
+    });
   }
 
   async findById(messageId: string): Promise<MessageModel | null> {

@@ -24,10 +24,12 @@ import {
   RequestCreateMessageBodyDTO,
   RequestCreateMessageParamsDTO,
   RequestDeleteMessageByParamsIdDTO,
+  RequestGetAllMessagesParamsDTO,
   RequestGetMessageByParamsIdDTO,
   RequestUpdateMessageByIdBodyDTO,
   RequestUpdateMessageByIdParamsIdDTO,
   ResponseCreateMessageDTO,
+  ResponseGetAllMessagesDTO,
   ResponseGetMessageByIdDTO,
   ResponseUpdateMessageByIdDTO,
 } from '@/application/api/message/schemas.message';
@@ -41,13 +43,22 @@ import {
   IDeleteMessageByIdCommandHandler,
   IUpdateMessageByIdCommandHandler,
 } from '@/infra/nest-providers/command.providers';
-import { GetMessageByIdQuery } from '@/logic/queries/message.queries';
-import { IGetMessageByIdQueryHandler } from '@/infra/nest-providers/query.providers';
+import {
+  GetAllMessagesQuery,
+  GetMessageByIdQuery,
+} from '@/logic/queries/message.queries';
+import {
+  IGetAllMessagesQueryHandler,
+  IGetMessageByIdQueryHandler,
+} from '@/infra/nest-providers/query.providers';
 
 @ApiTags('Messages')
 @Controller('/api/channels/{:channelId}/chats/{:chatId}/messages')
 export class MessageController {
   constructor(
+    @Inject(IGetAllMessagesQueryHandler)
+    protected readonly getAllMessagesQueryHandler: IGetAllMessagesQueryHandler,
+
     @Inject(ICreateMessageCommandHandler)
     protected readonly createMessageCommandHandler: ICreateMessageCommandHandler,
 
@@ -60,6 +71,44 @@ export class MessageController {
     @Inject(IDeleteMessageByIdCommandHandler)
     protected readonly deleteMessageByIdCommandHandler: IDeleteMessageByIdCommandHandler,
   ) {}
+
+  @Get()
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Get all messages from chat',
+    type: ResponseGetAllMessagesDTO,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input data',
+    type: ResponseErrorDTO,
+  })
+  @UseGuards(JwtAuthGuard)
+  async getAllMessages(
+    @Req() req: RequestWithUser,
+    @Param() params: RequestGetAllMessagesParamsDTO,
+  ): Promise<ResponseGetAllMessagesDTO> {
+    const { channelId, chatId } = params;
+    const query = new GetAllMessagesQuery(req.user, channelId, chatId);
+    const messages = await this.getAllMessagesQueryHandler.execute(query);
+    return messages.map((message) => ({
+      id: String(message.oid),
+      content: message.content,
+      author: {
+        id: String(message.author.oid),
+        display_name: message.author.displayName,
+        username: message.author.credentials.username,
+        email: message.author.credentials.email,
+        avatar: message.author.avatarUrl ?? null,
+        created_at: message.author.createdAt.toISOString(),
+        updated_at: message.author.updatedAt.toISOString(),
+      },
+      reply_to: message.replyTo ?? null,
+      created_at: message.createdAt.toISOString(),
+      updated_at: message.updatedAt.toISOString(),
+    }));
+  }
 
   @Post()
   @HttpCode(201)
@@ -98,6 +147,8 @@ export class MessageController {
           username: req.user.credentials.username,
           email: req.user.credentials.email,
           avatar: req.user.avatarUrl ?? null,
+          created_at: req.user.createdAt.toISOString(),
+          updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
         created_at: message.createdAt.toISOString(),
@@ -150,6 +201,8 @@ export class MessageController {
           username: req.user.credentials.username,
           email: req.user.credentials.email,
           avatar: req.user.avatarUrl ?? null,
+          created_at: req.user.createdAt.toISOString(),
+          updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
         created_at: message.createdAt.toISOString(),
@@ -205,6 +258,8 @@ export class MessageController {
           username: req.user.credentials.username,
           email: req.user.credentials.email,
           avatar: req.user.avatarUrl ?? null,
+          created_at: req.user.createdAt.toISOString(),
+          updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
         created_at: message.createdAt.toISOString(),

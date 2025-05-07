@@ -11,7 +11,10 @@ import {
   NestJsDeleteMessageByIdCommandHandlerProvider,
   NestJsUpdateMessageByIdCommandHandlerProvider,
 } from '@/infra/nest-providers/command.providers';
-import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers/query.providers';
+import {
+  NestJsGetAllMessagesQueryHandlerProvider,
+  NestJsGetMessageByIdQueryHandlerProvider,
+} from '@/infra/nest-providers/query.providers';
 
 @Module({
   controllers: [MessageController],
@@ -21,6 +24,7 @@ import { NestJsGetMessageByIdQueryHandlerProvider } from '@/infra/nest-providers
     ChatsRepositoryProvider,
     MessagesRepositoryProvider,
     NestJsCreateMessageCommandHandlerProvider,
+    NestJsGetAllMessagesQueryHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,
     NestJsUpdateMessageByIdCommandHandlerProvider,
     NestJsDeleteMessageByIdCommandHandlerProvider,
