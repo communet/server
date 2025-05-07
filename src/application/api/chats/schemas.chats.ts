@@ -13,7 +13,6 @@ const RequestCreateChatBodySchema = z.object({
   name: z
     .string()
     .trim()
-    .toLowerCase()
     .min(3, 'Username must be greater or equal 3 characters')
     .max(32, 'Username must be less or equal 32 characters'),
   type: z.enum(['text', 'voice']),
@@ -101,7 +100,6 @@ const RequestUpdateChatBodySchema = z.object({
   name: z
     .string()
     .trim()
-    .toLowerCase()
     .min(3, 'Username must be greater or equal 3 characters')
     .max(32, 'Username must be less or equal 32 characters')
     .nullish(),
