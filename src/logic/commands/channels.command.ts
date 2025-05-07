@@ -1,4 +1,5 @@
 import { Channel } from '@/domain/entities/channels.entities';
+import { Profile } from '@/domain/entities/user.entities';
 import { ChannelName } from '@/domain/values/channels.values';
 import { convertChannelModelToEntity } from '@/infra/database/converters/channel.converters';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
@@ -12,7 +13,7 @@ import { InvalidFileExtensionError } from '@/logic/exceptions/common.exceptions'
 
 export class CreateChannelCommand extends BaseCommand {
   constructor(
-    public readonly profileId: string,
+    public readonly profile: Profile,
     public readonly name: string,
     public readonly description?: string,
     public readonly avatarBuffer?: Buffer,
@@ -64,11 +65,12 @@ export class CreateChannelCommandHandler extends ICommandHandler<
         manager,
       );
       await this.membersRepository.connectToChannel(
-        command.profileId,
+        String(command.profile.oid),
         channelModel.id,
         manager,
       );
 
+      channel.members = [command.profile];
       return channel;
     });
   }
@@ -106,7 +108,7 @@ export class DeleteChannelCommandHandler extends ICommandHandler<
 
 export class UpdateChannelCommand extends BaseCommand {
   constructor(
-    public readonly profileId: string,
+    public readonly profile: Profile,
     public readonly channelId: string,
     public readonly name?: string,
     public readonly description?: string,
@@ -152,7 +154,7 @@ export class UpdateChannelCommandHandler extends ICommandHandler<
     }
 
     const updatedChannelModel = await this.channelRepository.update(
-      command.profileId,
+      String(command.profile.oid),
       command.channelId,
       command.name,
       command.description,

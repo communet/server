@@ -175,7 +175,7 @@ export class ChannelsController {
       const avatarFileName: string | undefined = avatar?.originalname;
 
       const command = new CreateChannelCommand(
-        String(req.user.oid),
+        req.user,
         body.name,
         body.description ?? undefined,
         avatarBuffer,
@@ -188,6 +188,15 @@ export class ChannelsController {
         name: channel.name,
         description: channel.description ?? null,
         avatar: channel.avatarUrl ?? null,
+        members: channel.members.map((member) => ({
+          id: String(member.oid),
+          display_name: member.displayName,
+          username: member.credentials.username,
+          email: member.credentials.email,
+          avatar: member.avatarUrl,
+          created_at: member.createdAt.toISOString(),
+          updated_at: member.updatedAt.toISOString(),
+        })),
         is_deleted: channel.isDeleted,
         created_at: channel.createdAt.toISOString(),
         updated_at: channel.updatedAt.toISOString(),
@@ -327,7 +336,7 @@ export class ChannelsController {
       const avatarFileName: string | undefined = avatar?.originalname;
 
       const command = new UpdateChannelCommand(
-        String(req.user.oid),
+        req.user,
         channelId,
         body.name ?? undefined,
         body.description ?? undefined,
@@ -341,6 +350,15 @@ export class ChannelsController {
         name: channel.name,
         description: channel.description ?? null,
         avatar: channel.avatarUrl ?? null,
+        members: channel.members.map((member) => ({
+          id: String(member.oid),
+          display_name: member.displayName,
+          username: member.credentials.username,
+          email: member.credentials.email,
+          avatar: member.avatarUrl,
+          created_at: member.createdAt.toISOString(),
+          updated_at: member.updatedAt.toISOString(),
+        })),
         is_deleted: channel.isDeleted,
         created_at: channel.createdAt.toISOString(),
         updated_at: channel.updatedAt.toISOString(),
