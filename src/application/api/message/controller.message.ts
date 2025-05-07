@@ -90,25 +90,36 @@ export class MessageController {
     @Req() req: RequestWithUser,
     @Param() params: RequestGetAllMessagesParamsDTO,
   ): Promise<ResponseGetAllMessagesDTO> {
-    const { channelId, chatId } = params;
-    const query = new GetAllMessagesQuery(req.user, channelId, chatId);
-    const messages = await this.getAllMessagesQueryHandler.execute(query);
-    return messages.map((message) => ({
-      id: String(message.oid),
-      content: message.content,
-      author: {
-        id: String(message.author.oid),
-        display_name: message.author.displayName,
-        username: message.author.credentials.username,
-        email: message.author.credentials.email,
-        avatar: message.author.avatarUrl ?? null,
-        created_at: message.author.createdAt.toISOString(),
-        updated_at: message.author.updatedAt.toISOString(),
-      },
-      reply_to: message.replyTo ?? null,
-      created_at: message.createdAt.toISOString(),
-      updated_at: message.updatedAt.toISOString(),
-    }));
+    try {
+      const { channelId, chatId } = params;
+      const query = new GetAllMessagesQuery(req.user, channelId, chatId);
+      const messages = await this.getAllMessagesQueryHandler.execute(query);
+      return messages.map((message) => ({
+        id: String(message.oid),
+        content: message.content,
+        author: {
+          id: String(message.author.oid),
+          display_name: message.author.displayName,
+          username: message.author.credentials.username,
+          email: message.author.credentials.email,
+          avatar: message.author.avatarUrl ?? null,
+          created_at: message.author.createdAt.toISOString(),
+          updated_at: message.author.updatedAt.toISOString(),
+        },
+        reply_to: message.replyTo ?? null,
+        created_at: message.createdAt.toISOString(),
+        updated_at: message.updatedAt.toISOString(),
+      }));
+    } catch (error) {
+      console.error(error);
+      if (error instanceof ApplicationError) {
+        throw new HttpException(error.message, HttpStatus.NOT_FOUND);
+      }
+      throw new HttpException(
+        'Internal server error',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   @Post()
