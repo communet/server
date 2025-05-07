@@ -13,7 +13,13 @@ import {
   UploadedFile,
   Param,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
 import {
@@ -34,6 +40,7 @@ import { IGetUserByIdQueryHandler } from '@/infra/nest-providers/query.providers
 import { GetUserByIdQuery } from '@/logic/queries/users.queries';
 
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('/api/users')
 export class UsersController {
   constructor(

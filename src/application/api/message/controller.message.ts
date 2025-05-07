@@ -13,7 +13,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ResponseErrorDTO } from '@/application/api/base.schemas';
 import {
   JwtAuthGuard,
@@ -53,6 +53,7 @@ import {
 } from '@/infra/nest-providers/query.providers';
 
 @ApiTags('Messages')
+@ApiBearerAuth()
 @Controller('/api/channels/{:channelId}/chats/{:chatId}/messages')
 export class MessageController {
   constructor(

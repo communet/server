@@ -16,7 +16,13 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import {
   JwtAuthGuard,
   RequestWithUser,
@@ -63,6 +69,7 @@ import {
 } from '@/logic/commands/members.command';
 
 @ApiTags('Channels')
+@ApiBearerAuth()
 @Controller('/api/channels')
 export class ChannelsController {
   constructor(

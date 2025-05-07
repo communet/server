@@ -9,7 +9,7 @@ import {
   Req,
   HttpCode,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   RequestLoginDTO,
   RequestRegisterDTO,
@@ -163,6 +163,7 @@ export class AuthController {
     description: 'Some error with refresh token',
     type: ResponseErrorDTO,
   })
+  @ApiBearerAuth()
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,

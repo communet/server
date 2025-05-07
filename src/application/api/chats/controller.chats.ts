@@ -13,7 +13,7 @@ import {
   Get,
   Patch,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApplicationError } from '@/domain/exceptions/base.exceptions';
 import {
   ICreateChatCommandHandler,
@@ -51,6 +51,7 @@ import {
 import { GetChatByIdQuery, GetChatsQuery } from '@/logic/queries/chats.queries';
 
 @ApiTags('Chats')
+@ApiBearerAuth()
 @Controller('/api/channels')
 export class ChatsController {
   constructor(
