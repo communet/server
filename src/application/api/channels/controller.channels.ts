@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Header,
   HttpCode,
   HttpException,
   HttpStatus,
@@ -256,6 +257,7 @@ export class ChannelsController {
   @Delete('/:channelId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(204)
+  @Header('content-type', 'application/json')
   @ApiResponse({
     status: 204,
     description: 'Delete channel by id',
