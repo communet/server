@@ -34,9 +34,9 @@ export class ChannelMemberModel {
   @Column({ default: true })
   is_connected!: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
 }

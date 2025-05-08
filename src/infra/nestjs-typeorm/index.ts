@@ -19,5 +19,8 @@ export const registerTypeOrmModule = (): DynamicModule =>
       synchronize: false,
       autoLoadEntities: true,
       logging: true,
+      extra: {
+        options: '-c timezone=UTC',
+      },
     }),
   });

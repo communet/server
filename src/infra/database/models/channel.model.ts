@@ -41,9 +41,9 @@ export class ChannelsModel {
   })
   members!: ChannelMemberModel[];
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
 }

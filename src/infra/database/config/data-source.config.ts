@@ -17,4 +17,7 @@ export const AppDataSource = new DataSource({
   database: configService.get('DB_NAME'),
   entities: ['src/infra/database/models/**/*.model.{ts,js}'],
   migrations: ['src/infra/database/migrations/*.{ts,js}'],
+  extra: {
+    options: '-c timezone=UTC',
+  },
 });

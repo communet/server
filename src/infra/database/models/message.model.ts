@@ -38,9 +38,9 @@ export class MessageModel {
   @Column({ default: false })
   is_deleted!: boolean;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @CreateDateColumn({ type: 'timestamptz' })
   created_at!: Date;
 
-  @UpdateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamptz' })
   updated_at!: Date;
 }
