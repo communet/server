@@ -92,7 +92,11 @@ export class MessageController {
   ): Promise<ResponseGetAllMessagesDTO> {
     try {
       const { channelId, chatId } = params;
-      const query = new GetAllMessagesQuery(req.user, channelId, chatId);
+      const query = new GetAllMessagesQuery(
+        String(req.user.oid),
+        channelId,
+        chatId,
+      );
       const messages = await this.getAllMessagesQueryHandler.execute(query);
       return messages.map((message) => ({
         id: String(message.oid),

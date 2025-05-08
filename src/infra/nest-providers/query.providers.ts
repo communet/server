@@ -16,7 +16,6 @@ import {
 } from '@/logic/queries/chats.queries';
 import { Chat } from '@/domain/entities/chat.entities';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
-import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 import {
   GetUserByIdQuery,
   GetUserByIdQueryHandler,
@@ -31,6 +30,8 @@ import {
 } from '@/logic/queries/message.queries';
 import { Message } from '@/domain/entities/message.entities';
 import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
+import { IMessageMixin } from '@/logic/mixin/message.mixin';
+import { IChatMixin } from '@/logic/mixin/chat.mixin';
 
 export abstract class IGetChannelByIdQueryHandler extends IQueryHandler<
   GetChannelByIdQuery,
@@ -65,18 +66,10 @@ export abstract class IGetChatByIdQueryHandler extends IQueryHandler<
 
 export const NestJsGetChatByIdQueryHandlerProvider: Provider = {
   provide: IGetChatByIdQueryHandler,
-  useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-  ) => {
-    return new GetChatByIdQueryHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-    );
+  useFactory: (chatMixin: IChatMixin, chatsRepository: IChatsRepository) => {
+    return new GetChatByIdQueryHandler(chatMixin, chatsRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+  inject: [IChatMixin, IChatsRepository],
 };
 
 export abstract class IGetChatsQueryHandler extends IQueryHandler<
@@ -86,18 +79,10 @@ export abstract class IGetChatsQueryHandler extends IQueryHandler<
 
 export const NestJsGetChatsQueryHandlerProvider: Provider = {
   provide: IGetChatsQueryHandler,
-  useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-  ) => {
-    return new GetChatsQueryHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-    );
+  useFactory: (chatMixin: IChatMixin, chatsRepository: IChatsRepository) => {
+    return new GetChatsQueryHandler(chatMixin, chatsRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+  inject: [IChatMixin, IChatsRepository],
 };
 
 export abstract class IGetUserByIdQueryHandler extends IQueryHandler<
@@ -121,24 +106,12 @@ export abstract class IGetAllMessagesQueryHandler extends IQueryHandler<
 export const NestJsGetAllMessagesQueryHandlerProvider: Provider = {
   provide: IGetAllMessagesQueryHandler,
   useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
+    messageMixin: IMessageMixin,
     messagesRepository: IMessagesRepository,
   ) => {
-    return new GetAllMessagesQueryHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-      messagesRepository,
-    );
+    return new GetAllMessagesQueryHandler(messageMixin, messagesRepository);
   },
-  inject: [
-    IChannelsRepository,
-    IChannelMembersRepository,
-    IChatsRepository,
-    IMessagesRepository,
-  ],
+  inject: [IMessageMixin, IMessagesRepository],
 };
 
 export abstract class IGetMessageByIdQueryHandler extends IQueryHandler<
@@ -149,22 +122,10 @@ export abstract class IGetMessageByIdQueryHandler extends IQueryHandler<
 export const NestJsGetMessageByIdQueryHandlerProvider: Provider = {
   provide: IGetMessageByIdQueryHandler,
   useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
+    messageMixin: IMessageMixin,
     messagesRepository: IMessagesRepository,
   ) => {
-    return new GetMessageByIdQueryHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-      messagesRepository,
-    );
+    return new GetMessageByIdQueryHandler(messageMixin, messagesRepository);
   },
-  inject: [
-    IChannelsRepository,
-    IChannelMembersRepository,
-    IChatsRepository,
-    IMessagesRepository,
-  ],
+  inject: [IMessageMixin, IMessagesRepository],
 };

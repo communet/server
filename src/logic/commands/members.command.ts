@@ -1,11 +1,10 @@
-import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 import { BaseCommand, ICommandHandler } from '@/logic/commands/base.command';
 import {
-  ChannelDoesNotExistError,
   UserAlreadyConnectedError,
   UserAlreadyDisconnectedFromChannelError,
 } from '@/logic/exceptions/channels.exceptions';
+import { IMemberMixin } from '@/logic/mixin/member.mixin';
 
 export class ConnectToChannelCommand extends BaseCommand {
   constructor(
@@ -21,22 +20,14 @@ export class ConnectToChannelCommandHandler extends ICommandHandler<
   undefined
 > {
   constructor(
-    protected readonly channelRepository: IChannelsRepository,
+    protected readonly memberMixin: IMemberMixin,
     protected readonly membersRepository: IChannelMembersRepository,
   ) {
     super();
   }
 
   async execute(command: ConnectToChannelCommand): Promise<undefined> {
-    const channelModel = await this.channelRepository.findById(
-      command.channelId,
-    );
-    if (!channelModel) {
-      throw new ChannelDoesNotExistError(
-        `Channel with ${command.channelId} does not exist`,
-      );
-    }
-
+    await this.memberMixin.beforeHandler(command.channelId);
     const joinStatus = await this.membersRepository.connectToChannel(
       command.profileId,
       command.channelId,
@@ -61,22 +52,14 @@ export class DisconnectFromChannelCommandHandler extends ICommandHandler<
   undefined
 > {
   constructor(
-    protected readonly channelRepository: IChannelsRepository,
+    protected readonly memberMixin: IMemberMixin,
     protected readonly membersRepository: IChannelMembersRepository,
   ) {
     super();
   }
 
   async execute(command: DisconnectFromChannelCommand): Promise<undefined> {
-    const channelModel = await this.channelRepository.findById(
-      command.channelId,
-    );
-    if (!channelModel) {
-      throw new ChannelDoesNotExistError(
-        `Channel with ${command.channelId} does not exist`,
-      );
-    }
-
+    await this.memberMixin.beforeHandler(command.channelId);
     const disconnectStatus = await this.membersRepository.disconnectFromChannel(
       command.profileId,
       command.channelId,

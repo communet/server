@@ -57,6 +57,9 @@ import {
 } from '@/logic/commands/messages.command';
 import { Message } from '@/domain/entities/message.entities';
 import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
+import { IMessageMixin } from '@/logic/mixin/message.mixin';
+import { IChatMixin } from '@/logic/mixin/chat.mixin';
+import { IMemberMixin } from '@/logic/mixin/member.mixin';
 
 export abstract class IRegisterCommandHandler extends ICommandHandler<
   RegisterCommand,
@@ -194,15 +197,12 @@ export abstract class IConnectToChannelCommandHandler extends ICommandHandler<
 export const NestJsConnectToChannelCommandHandlerProvider: Provider = {
   provide: IConnectToChannelCommandHandler,
   useFactory: (
-    channelRepository: IChannelsRepository,
+    memberMixin: IMemberMixin,
     membersRepository: IChannelMembersRepository,
   ) => {
-    return new ConnectToChannelCommandHandler(
-      channelRepository,
-      membersRepository,
-    );
+    return new ConnectToChannelCommandHandler(memberMixin, membersRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository],
+  inject: [IMemberMixin, IChannelMembersRepository],
 };
 
 export abstract class IDisconnectFromChannelCommandHandler extends ICommandHandler<
@@ -213,15 +213,15 @@ export abstract class IDisconnectFromChannelCommandHandler extends ICommandHandl
 export const NestJsDisconnectFromChannelCommandHandlerProvider: Provider = {
   provide: IDisconnectFromChannelCommandHandler,
   useFactory: (
-    channelRepository: IChannelsRepository,
+    memberMixin: IMemberMixin,
     membersRepository: IChannelMembersRepository,
   ) => {
     return new DisconnectFromChannelCommandHandler(
-      channelRepository,
+      memberMixin,
       membersRepository,
     );
   },
-  inject: [IChannelsRepository, IChannelMembersRepository],
+  inject: [IMemberMixin, IChannelMembersRepository],
 };
 
 export abstract class ICreateChatCommandHandler extends ICommandHandler<
@@ -231,18 +231,10 @@ export abstract class ICreateChatCommandHandler extends ICommandHandler<
 
 export const NestJsCreateChatCommandHandlerProvider: Provider = {
   provide: ICreateChatCommandHandler,
-  useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-  ) => {
-    return new CreateChatCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-    );
+  useFactory: (chatMixin: IChatMixin, chatsRepository: IChatsRepository) => {
+    return new CreateChatCommandHandler(chatMixin, chatsRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+  inject: [IChatMixin, IChatsRepository],
 };
 
 export abstract class IDeleteChatCommandHandler extends ICommandHandler<
@@ -252,18 +244,10 @@ export abstract class IDeleteChatCommandHandler extends ICommandHandler<
 
 export const NestJsDeleteChatCommandHandlerProvider: Provider = {
   provide: IDeleteChatCommandHandler,
-  useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-  ) => {
-    return new DeleteChatCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-    );
+  useFactory: (chatMixin: IChatMixin, chatsRepository: IChatsRepository) => {
+    return new DeleteChatCommandHandler(chatMixin, chatsRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+  inject: [IChatMixin, IChatsRepository],
 };
 
 export abstract class IUpdateChatCommandHandler extends ICommandHandler<
@@ -273,18 +257,10 @@ export abstract class IUpdateChatCommandHandler extends ICommandHandler<
 
 export const NestJsUpdateChatCommandHandlerProvider: Provider = {
   provide: IUpdateChatCommandHandler,
-  useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-  ) => {
-    return new UpdateChatCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-    );
+  useFactory: (chatMixin: IChatMixin, chatsRepository: IChatsRepository) => {
+    return new UpdateChatCommandHandler(chatMixin, chatsRepository);
   },
-  inject: [IChannelsRepository, IChannelMembersRepository, IChatsRepository],
+  inject: [IChatMixin, IChatsRepository],
 };
 
 export abstract class ICreateMessageCommandHandler extends ICommandHandler<
@@ -295,24 +271,12 @@ export abstract class ICreateMessageCommandHandler extends ICommandHandler<
 export const NestJsCreateMessageCommandHandlerProvider: Provider = {
   provide: ICreateMessageCommandHandler,
   useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
-    messagesRepository: IMessagesRepository,
+    messageMixin: IMessageMixin,
+    messageRepository: IMessagesRepository,
   ) => {
-    return new CreateMessageCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
-      messagesRepository,
-    );
+    return new CreateMessageCommandHandler(messageMixin, messageRepository);
   },
-  inject: [
-    IChannelsRepository,
-    IChannelMembersRepository,
-    IChatsRepository,
-    IMessagesRepository,
-  ],
+  inject: [IMessageMixin, IMessagesRepository],
 };
 
 export abstract class IUpdateMessageByIdCommandHandler extends ICommandHandler<
@@ -323,24 +287,15 @@ export abstract class IUpdateMessageByIdCommandHandler extends ICommandHandler<
 export const NestJsUpdateMessageByIdCommandHandlerProvider: Provider = {
   provide: IUpdateMessageByIdCommandHandler,
   useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
+    messageMixin: IMessageMixin,
     messagesRepository: IMessagesRepository,
   ) => {
     return new UpdateMessageByIdCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
+      messageMixin,
       messagesRepository,
     );
   },
-  inject: [
-    IChannelsRepository,
-    IChannelMembersRepository,
-    IChatsRepository,
-    IMessagesRepository,
-  ],
+  inject: [IMessageMixin, IMessagesRepository],
 };
 
 export abstract class IDeleteMessageByIdCommandHandler extends ICommandHandler<
@@ -351,22 +306,13 @@ export abstract class IDeleteMessageByIdCommandHandler extends ICommandHandler<
 export const NestJsDeleteMessageByIdCommandHandlerProvider: Provider = {
   provide: IDeleteMessageByIdCommandHandler,
   useFactory: (
-    channelsRepository: IChannelsRepository,
-    membersRepository: IChannelMembersRepository,
-    chatsRepository: IChatsRepository,
+    messageMixin: IMessageMixin,
     messagesRepository: IMessagesRepository,
   ) => {
     return new DeleteMessageByIdCommandHandler(
-      channelsRepository,
-      membersRepository,
-      chatsRepository,
+      messageMixin,
       messagesRepository,
     );
   },
-  inject: [
-    IChannelsRepository,
-    IChannelMembersRepository,
-    IChatsRepository,
-    IMessagesRepository,
-  ],
+  inject: [IMessageMixin, IMessagesRepository],
 };

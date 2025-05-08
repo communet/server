@@ -15,6 +15,7 @@ import {
   NestJsGetAllMessagesQueryHandlerProvider,
   NestJsGetMessageByIdQueryHandlerProvider,
 } from '@/infra/nest-providers/query.providers';
+import { MessageMixinProvider } from '@/infra/nest-providers/mixin.providers';
 
 @Module({
   controllers: [MessageController],
@@ -23,6 +24,7 @@ import {
     ChannelMembersRepositoryProvider,
     ChatsRepositoryProvider,
     MessagesRepositoryProvider,
+    MessageMixinProvider,
     NestJsCreateMessageCommandHandlerProvider,
     NestJsGetAllMessagesQueryHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,

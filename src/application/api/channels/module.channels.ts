@@ -17,6 +17,7 @@ import {
   NestJsGetChannelByIdQueryHandlerProvider,
   NestJsGetChannelsQueryHandlerProvider,
 } from '@/infra/nest-providers/query.providers';
+import { MemberMixinProvider } from '@/infra/nest-providers/mixin.providers';
 
 @Module({
   controllers: [ChannelsController],
@@ -25,6 +26,7 @@ import {
     ChannelMembersRepositoryProvider,
     TransactionManagerProvider,
     FileServiceProvider,
+    MemberMixinProvider,
     NestJsCreateChannelCommandHandlerProvider,
     NestJsUpdateChannelCommandHandlerProvider,
     NestJsDeleteChannelCommandHandlerProvider,

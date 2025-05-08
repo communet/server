@@ -1,21 +1,13 @@
 import { Message } from '@/domain/entities/message.entities';
-import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
-import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
-import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
 import { IMessagesRepository } from '@/infra/database/repositories/message.repositories';
 import { BaseQuery, IQueryHandler } from '@/logic/queries/base.queries';
-import { ChannelDoesNotExistError } from '@/logic/exceptions/channels.exceptions';
-import {
-  ChatDoesNotExistError,
-  UserDoesNotJoinedToChannelError,
-} from '@/logic/exceptions/chat.exceptions';
 import { MessageDoesNotExistError } from '@/logic/exceptions/message.exceptions';
 import { convertMessageModelToEntity } from '@/infra/database/converters/message.converters';
-import { Profile } from '@/domain/entities/user.entities';
+import { IMessageMixin } from '@/logic/mixin/message.mixin';
 
 export class GetAllMessagesQuery extends BaseQuery {
   constructor(
-    public readonly profile: Profile,
+    public readonly profileId: string,
     public readonly channelId: string,
     public readonly chatId: string,
   ) {
@@ -28,36 +20,18 @@ export class GetAllMessagesQueryHandler extends IQueryHandler<
   Message[]
 > {
   constructor(
-    protected readonly channelsRepository: IChannelsRepository,
-    protected readonly membersRepository: IChannelMembersRepository,
-    protected readonly chatsRepository: IChatsRepository,
+    protected readonly meessageMixin: IMessageMixin,
     protected readonly messagesRepository: IMessagesRepository,
   ) {
     super();
   }
 
   async execute(query: GetAllMessagesQuery): Promise<Message[]> {
-    const channel = await this.channelsRepository.findById(query.channelId);
-    if (!channel) {
-      throw new ChannelDoesNotExistError(
-        'Channel with given id does not exist',
-      );
-    }
-
-    const member = await this.membersRepository.checkForMember(
+    await this.meessageMixin.beforeHandler(
+      query.profileId,
       query.channelId,
-      String(query.profile.oid),
+      query.chatId,
     );
-    if (!member) {
-      throw new UserDoesNotJoinedToChannelError(
-        'User does not joined to channel',
-      );
-    }
-
-    const chatModel = await this.chatsRepository.findById(query.chatId);
-    if (!chatModel) {
-      throw new ChatDoesNotExistError('Chat with given id does not exist');
-    }
 
     const messages: Message[] = [];
     const messagesModels = await this.messagesRepository.findAllByChat(
@@ -88,36 +62,18 @@ export class GetMessageByIdQueryHandler extends IQueryHandler<
   Message
 > {
   constructor(
-    protected readonly channelsRepository: IChannelsRepository,
-    protected readonly membersRepository: IChannelMembersRepository,
-    protected readonly chatsRepository: IChatsRepository,
+    protected readonly messageMixin: IMessageMixin,
     protected readonly messagesRepository: IMessagesRepository,
   ) {
     super();
   }
 
   async execute(query: GetMessageByIdQuery): Promise<Message> {
-    const channel = await this.channelsRepository.findById(query.channelId);
-    if (!channel) {
-      throw new ChannelDoesNotExistError(
-        'Channel with given id does not exist',
-      );
-    }
-
-    const member = await this.membersRepository.checkForMember(
-      query.channelId,
+    await this.messageMixin.beforeHandler(
       query.profileId,
+      query.channelId,
+      query.chatId,
     );
-    if (!member) {
-      throw new UserDoesNotJoinedToChannelError(
-        'User does not joined to channel',
-      );
-    }
-
-    const chatModel = await this.chatsRepository.findById(query.chatId);
-    if (!chatModel) {
-      throw new ChatDoesNotExistError('Chat with given id does not exist');
-    }
 
     const messageModel = await this.messagesRepository.findById(
       query.messageId,
