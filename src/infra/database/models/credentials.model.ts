@@ -24,6 +24,8 @@ export class CredentialsModel {
   password!: string;
 
   @OneToOne(() => ProfileModel, (profile) => profile.credentials, {
+    onDelete: 'CASCADE',
+    nullable: false,
     eager: false,
   })
   profile!: ProfileModel;

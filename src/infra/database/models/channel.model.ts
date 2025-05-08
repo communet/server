@@ -28,10 +28,15 @@ export class ChannelsModel {
   @Column({ default: false })
   is_deleted!: boolean;
 
-  @OneToMany(() => ChatModel, (chat) => chat.channel)
+  @OneToMany(() => ChatModel, (chat) => chat.channel, {
+    nullable: true,
+    onDelete: 'CASCADE',
+  })
   chats!: ChatModel[];
 
   @OneToMany(() => ChannelMemberModel, (member) => member.channel, {
+    nullable: false,
+    onDelete: 'CASCADE',
     eager: false,
   })
   members!: ChannelMemberModel[];

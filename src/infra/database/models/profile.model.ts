@@ -27,6 +27,8 @@ export class ProfileModel {
   avatar_url?: string | undefined;
 
   @OneToOne(() => CredentialsModel, (credentials) => credentials.profile, {
+    onDelete: 'CASCADE',
+    nullable: false,
     eager: true,
   })
   @JoinColumn()

@@ -20,11 +20,15 @@ export class MessageModel {
   @Column()
   text!: string;
 
-  @ManyToOne(() => ProfileModel, (profile) => profile.messages)
+  @ManyToOne(() => ProfileModel, (profile) => profile.messages, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'author_id' })
   author!: ProfileModel;
 
-  @ManyToOne(() => ChatModel, (chat) => chat.messages)
+  @ManyToOne(() => ChatModel, (chat) => chat.messages, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'chat_id' })
   chat!: ChatModel;
 

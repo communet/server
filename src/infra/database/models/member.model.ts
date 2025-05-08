@@ -19,11 +19,15 @@ export class ChannelMemberModel {
   @PrimaryGeneratedColumn('uuid')
   id!: string;
 
-  @ManyToOne(() => ProfileModel, (profile) => profile.channels)
+  @ManyToOne(() => ProfileModel, (profile) => profile.channels, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'profile_id' })
   profile!: ProfileModel;
 
-  @ManyToOne(() => ChannelsModel, (channel) => channel.members)
+  @ManyToOne(() => ChannelsModel, (channel) => channel.members, {
+    nullable: false,
+  })
   @JoinColumn({ name: 'channel_id' })
   channel!: ChannelsModel;
 

@@ -33,11 +33,16 @@ export class ChatModel {
   })
   type!: ChatType;
 
-  @ManyToOne(() => ChannelsModel, (channel) => channel.chats, { eager: true })
+  @ManyToOne(() => ChannelsModel, (channel) => channel.chats, {
+    eager: true,
+    nullable: false,
+  })
   @JoinColumn({ name: 'channel_id' })
   channel!: ChannelsModel;
 
-  @OneToMany(() => MessageModel, (message) => message.chat)
+  @OneToMany(() => MessageModel, (message) => message.chat, {
+    onDelete: 'CASCADE',
+  })
   messages!: MessageModel[];
 
   @CreateDateColumn({ type: 'timestamp' })
