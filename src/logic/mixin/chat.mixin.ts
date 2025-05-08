@@ -6,7 +6,7 @@ import { convertChannelModelToEntity } from '@/infra/database/converters/channel
 import { Channel } from '@/domain/entities/channels.entities';
 
 export abstract class IChatMixin {
-  abstract beforeHandler(
+  abstract getChannelWithValidationOrThrow(
     profileId: string,
     channelId: string,
   ): Promise<Channel>;
@@ -20,7 +20,10 @@ export class ChatMixin extends IChatMixin {
     super();
   }
 
-  async beforeHandler(profileId: string, channelId: string): Promise<Channel> {
+  async getChannelWithValidationOrThrow(
+    profileId: string,
+    channelId: string,
+  ): Promise<Channel> {
     const channel = await this.channelsRepository.findById(channelId);
     if (!channel) {
       throw new ChannelDoesNotExistError(

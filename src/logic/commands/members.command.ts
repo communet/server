@@ -27,7 +27,7 @@ export class ConnectToChannelCommandHandler extends ICommandHandler<
   }
 
   async execute(command: ConnectToChannelCommand): Promise<undefined> {
-    await this.memberMixin.beforeHandler(command.channelId);
+    await this.memberMixin.getChannelWithValidationOrThrow(command.channelId);
     const joinStatus = await this.membersRepository.connectToChannel(
       command.profileId,
       command.channelId,
@@ -59,7 +59,7 @@ export class DisconnectFromChannelCommandHandler extends ICommandHandler<
   }
 
   async execute(command: DisconnectFromChannelCommand): Promise<undefined> {
-    await this.memberMixin.beforeHandler(command.channelId);
+    await this.memberMixin.getChannelWithValidationOrThrow(command.channelId);
     const disconnectStatus = await this.membersRepository.disconnectFromChannel(
       command.profileId,
       command.channelId,

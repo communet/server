@@ -27,7 +27,7 @@ export class GetAllMessagesQueryHandler extends IQueryHandler<
   }
 
   async execute(query: GetAllMessagesQuery): Promise<Message[]> {
-    await this.meessageMixin.beforeHandler(
+    await this.meessageMixin.getChatWithValidationOrThrow(
       query.profileId,
       query.channelId,
       query.chatId,
@@ -69,7 +69,7 @@ export class GetMessageByIdQueryHandler extends IQueryHandler<
   }
 
   async execute(query: GetMessageByIdQuery): Promise<Message> {
-    await this.messageMixin.beforeHandler(
+    await this.messageMixin.getChatWithValidationOrThrow(
       query.profileId,
       query.channelId,
       query.chatId,

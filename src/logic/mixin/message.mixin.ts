@@ -1,3 +1,5 @@
+import { Chat } from '@/domain/entities/chat.entities';
+import { convertChatModelToEntity } from '@/infra/database/converters/chat.converters';
 import { IChannelsRepository } from '@/infra/database/repositories/channels.repositories';
 import { IChatsRepository } from '@/infra/database/repositories/chats.repositories';
 import { IChannelMembersRepository } from '@/infra/database/repositories/members.repositories';
@@ -8,11 +10,11 @@ import {
 } from '@/logic/exceptions/chat.exceptions';
 
 export abstract class IMessageMixin {
-  abstract beforeHandler(
+  abstract getChatWithValidationOrThrow(
     profileId: string,
     channelid: string,
     chatId: string,
-  ): Promise<undefined>;
+  ): Promise<Chat>;
 }
 
 export class MessageMixin extends IMessageMixin {
@@ -23,11 +25,11 @@ export class MessageMixin extends IMessageMixin {
   ) {
     super();
   }
-  async beforeHandler(
+  async getChatWithValidationOrThrow(
     profileId: string,
     channelid: string,
     chatId: string,
-  ): Promise<undefined> {
+  ): Promise<Chat> {
     const channelModel = await this.channelsRepository.findById(channelid);
     if (!channelModel) {
       throw new ChannelDoesNotExistError(
@@ -49,5 +51,7 @@ export class MessageMixin extends IMessageMixin {
     if (!chatModel) {
       throw new ChatDoesNotExistError('Chat with given id does not exist');
     }
+
+    return convertChatModelToEntity(chatModel);
   }
 }

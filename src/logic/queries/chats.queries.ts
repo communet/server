@@ -27,7 +27,7 @@ export class GetChatByIdQueryHandler extends IQueryHandler<
   }
 
   async execute(query: GetChatByIdQuery): Promise<Chat> {
-    await this.chatMixin.beforeHandler(query.profileId, query.channelId);
+    await this.chatMixin.getChannelWithValidationOrThrow(query.profileId, query.channelId);
 
     const chatModel = await this.chatsRepository.findById(query.chatId);
     if (!chatModel) {
@@ -58,7 +58,7 @@ export class GetChatsQueryHandler extends IQueryHandler<GetChatsQuery, Chat[]> {
   }
 
   async execute(query: GetChatsQuery): Promise<Chat[]> {
-    await this.chatMixin.beforeHandler(query.profileId, query.channelId);
+    await this.chatMixin.getChannelWithValidationOrThrow(query.profileId, query.channelId);
 
     const chatModels = await this.chatsRepository.findAllByChannelId(
       query.channelId,

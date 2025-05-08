@@ -30,7 +30,7 @@ export class CreateChatCommandHandler extends ICommandHandler<
   }
 
   async execute(command: CreateChatCommand): Promise<Chat> {
-    const channel = await this.chatMixin.beforeHandler(
+    const channel = await this.chatMixin.getChannelWithValidationOrThrow(
       command.profileId,
       command.channelId,
     );
@@ -67,7 +67,7 @@ export class DeleteChatCommandHandler extends ICommandHandler<
   }
 
   async execute(command: DeleteChatCommand): Promise<undefined> {
-    await this.chatMixin.beforeHandler(command.profileId, command.channelId);
+    await this.chatMixin.getChannelWithValidationOrThrow(command.profileId, command.channelId);
 
     const isDeleted = await this.chatsRepository.deleteById(command.chatId);
     if (!isDeleted) {
@@ -100,7 +100,7 @@ export class UpdateChatCommandHandler extends ICommandHandler<
   }
 
   async execute(command: UpdateChatCommand): Promise<Chat> {
-    await this.chatMixin.beforeHandler(command.profileId, command.channelId);
+    await this.chatMixin.getChannelWithValidationOrThrow(command.profileId, command.channelId);
 
     const chatModel = await this.chatsRepository.findById(command.chatId);
     if (!chatModel) {

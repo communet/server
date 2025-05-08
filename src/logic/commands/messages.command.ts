@@ -31,7 +31,7 @@ export class CreateMessageCommandHandler extends ICommandHandler<
   }
 
   async execute(command: CreateMessageCommand): Promise<Message> {
-    await this.messageMixin.beforeHandler(
+    await this.messageMixin.getChatWithValidationOrThrow(
       String(command.profile.oid),
       command.channelId,
       command.chatId,
@@ -74,7 +74,7 @@ export class UpdateMessageByIdCommandHandler extends ICommandHandler<
   }
 
   async execute(command: UpdateMessageByIdCommand): Promise<Message> {
-    await this.messageMixin.beforeHandler(
+    await this.messageMixin.getChatWithValidationOrThrow(
       command.profileId,
       command.channelId,
       command.chatId,
@@ -120,7 +120,7 @@ export class DeleteMessageByIdCommandHandler extends ICommandHandler<
   }
 
   async execute(command: DeleteMessageByIdCommand): Promise<undefined> {
-    await this.messageMixin.beforeHandler(
+    await this.messageMixin.getChatWithValidationOrThrow(
       command.profileId,
       command.channelId,
       command.chatId,
