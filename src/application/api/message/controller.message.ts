@@ -51,6 +51,7 @@ import {
   IGetAllMessagesQueryHandler,
   IGetMessageByIdQueryHandler,
 } from '@/infra/nest-providers/query.providers';
+import { WsGateway } from '@/application/api/ws/ws.gateway';
 
 @ApiTags('Messages')
 @ApiBearerAuth()
@@ -64,13 +65,16 @@ export class MessageController {
     protected readonly createMessageCommandHandler: ICreateMessageCommandHandler,
 
     @Inject(IGetMessageByIdQueryHandler)
-    protected readonly getMessageByIdQuryHandler: IGetMessageByIdQueryHandler,
+    protected readonly getMessageByIdQueryHandler: IGetMessageByIdQueryHandler,
 
     @Inject(IUpdateMessageByIdCommandHandler)
     protected readonly updateMessageByIdCommandHandler: IUpdateMessageByIdCommandHandler,
 
     @Inject(IDeleteMessageByIdCommandHandler)
     protected readonly deleteMessageByIdCommandHandler: IDeleteMessageByIdCommandHandler,
+
+    @Inject(WsGateway)
+    protected readonly websocketGateway: WsGateway,
   ) {}
 
   @Get()
@@ -154,6 +158,13 @@ export class MessageController {
         body.reply_to ?? undefined,
       );
       const message = await this.createMessageCommandHandler.execute(command);
+
+      this.websocketGateway.sendMessageToChannelExcludeSender(
+        `channel_${channelId}`,
+        message,
+        req.headers['x-socket-id'] as string,
+      )
+
       return {
         id: String(message.oid),
         content: message.content,
@@ -207,7 +218,7 @@ export class MessageController {
         chatId,
         messageId,
       );
-      const message = await this.getMessageByIdQuryHandler.execute(query);
+      const message = await this.getMessageByIdQueryHandler.execute(query);
       return {
         id: String(message.oid),
         content: message.content,

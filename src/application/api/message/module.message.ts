@@ -16,6 +16,7 @@ import {
   NestJsGetMessageByIdQueryHandlerProvider,
 } from '@/infra/nest-providers/query.providers';
 import { MessageMixinProvider } from '@/infra/nest-providers/mixin.providers';
+import { WsGateway } from '@/application/api/ws/ws.gateway';
 
 @Module({
   controllers: [MessageController],
@@ -25,6 +26,7 @@ import { MessageMixinProvider } from '@/infra/nest-providers/mixin.providers';
     ChatsRepositoryProvider,
     MessagesRepositoryProvider,
     MessageMixinProvider,
+    WsGateway,
     NestJsCreateMessageCommandHandlerProvider,
     NestJsGetAllMessagesQueryHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,
