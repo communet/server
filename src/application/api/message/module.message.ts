@@ -1,22 +1,21 @@
-import { Module } from '@nestjs/common';
 import { MessageController } from '@/application/api/message/controller.message';
+import {
+  NestJsCreateMessageCommandHandlerProvider,
+  NestJsDeleteMessageByIdCommandHandlerProvider,
+  NestJsUpdateMessageByIdCommandHandlerProvider,
+} from '@/infra/nest-providers/command.providers';
+import { MessageMixinProvider } from '@/infra/nest-providers/mixin.providers';
+import {
+  NestJsGetAllMessagesQueryHandlerProvider,
+  NestJsGetMessageByIdQueryHandlerProvider,
+} from '@/infra/nest-providers/query.providers';
 import {
   ChannelMembersRepositoryProvider,
   ChannelsRepositoryProvider,
   ChatsRepositoryProvider,
   MessagesRepositoryProvider,
 } from '@/infra/nest-providers/repository.providers';
-import {
-  NestJsCreateMessageCommandHandlerProvider,
-  NestJsDeleteMessageByIdCommandHandlerProvider,
-  NestJsUpdateMessageByIdCommandHandlerProvider,
-} from '@/infra/nest-providers/command.providers';
-import {
-  NestJsGetAllMessagesQueryHandlerProvider,
-  NestJsGetMessageByIdQueryHandlerProvider,
-} from '@/infra/nest-providers/query.providers';
-import { MessageMixinProvider } from '@/infra/nest-providers/mixin.providers';
-import { WsGateway } from '@/application/api/ws/ws.gateway';
+import { Module } from '@nestjs/common';
 
 @Module({
   controllers: [MessageController],
@@ -26,7 +25,6 @@ import { WsGateway } from '@/application/api/ws/ws.gateway';
     ChatsRepositoryProvider,
     MessagesRepositoryProvider,
     MessageMixinProvider,
-    WsGateway,
     NestJsCreateMessageCommandHandlerProvider,
     NestJsGetAllMessagesQueryHandlerProvider,
     NestJsGetMessageByIdQueryHandlerProvider,

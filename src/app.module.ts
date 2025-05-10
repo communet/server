@@ -1,12 +1,13 @@
 import { AuthModule } from '@/application/api/auth/module.auth';
+import { ChannelsModule } from '@/application/api/channels/module.channels';
+import { ChatsModule } from '@/application/api/chats/module.chats';
+import { MessageModule } from '@/application/api/message/module.message';
 import { UsersModule } from '@/application/api/users/module.users';
+import { WsModule } from '@/application/api/ws/ws.module';
 import { ConfigSchema } from '@/config/schema';
 import { registerTypeOrmModule } from '@/infra/nestjs-typeorm';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ChannelsModule } from '@/application/api/channels/module.channels';
-import { ChatsModule } from '@/application/api/chats/module.chats';
-import { MessageModule } from '@/application/api/message/module.message';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MessageModule } from '@/application/api/message/module.message';
     }),
     registerTypeOrmModule(),
     AuthModule,
+    WsModule,
     UsersModule,
     ChannelsModule,
     ChatsModule,
