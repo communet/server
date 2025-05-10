@@ -11,6 +11,7 @@ export function setupCors(app: INestApplication, originAddress: string): void {
       'Accept',
       'Origin',
       'X-Requested-With',
+      'X-Socket-Id',
     ],
     exposedHeaders: ['Set-Cookie'],
     preflightContinue: false,
