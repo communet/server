@@ -24,6 +24,7 @@ const ResponseGetAllMessagesSchema = z.array(
       updated_at: z.string().datetime(),
     }),
     reply_to: z.string().uuid().nullable(),
+    chat_id: z.string().uuid(),
     created_at: z.string(),
     updated_at: z.string(),
   }),
@@ -64,6 +65,7 @@ const ResponseCreateMessageSchema = z.object({
     updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
+  chat_id: z.string().uuid(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -95,6 +97,7 @@ const ResponseGetMessageByIdSchema = z.object({
     updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
+  chat_id: z.string().uuid(),
   created_at: z.string(),
   updated_at: z.string(),
 });
@@ -134,6 +137,7 @@ const ResponseUpdateMessageByIdSchema = z.object({
     updated_at: z.string().datetime(),
   }),
   reply_to: z.string().uuid().nullable(),
+  chat_id: z.string().uuid(),
   created_at: z.string(),
   updated_at: z.string(),
 });

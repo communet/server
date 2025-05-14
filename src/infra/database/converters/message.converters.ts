@@ -8,6 +8,7 @@ export function convertMessageModelToEntity(model: MessageModel): Message {
     new MessageContent(model.text),
     convertProfileModelToEntity(model.author),
     model.reply_to ?? undefined,
+    model.chat.id,
     model.created_at,
     model.updated_at,
     model.id,

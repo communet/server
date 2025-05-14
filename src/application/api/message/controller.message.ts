@@ -115,6 +115,7 @@ export class MessageController {
           updated_at: message.author.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
+        chat_id: message.chatId,
         created_at: message.createdAt.toISOString(),
         updated_at: message.updatedAt.toISOString(),
       }));
@@ -163,7 +164,7 @@ export class MessageController {
         `channel_${channelId}`,
         message,
         req.headers['x-socket-id'] as string,
-      )
+      );
 
       return {
         id: String(message.oid),
@@ -178,6 +179,7 @@ export class MessageController {
           updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
+        chat_id: message.chatId,
         created_at: message.createdAt.toISOString(),
         updated_at: message.updatedAt.toISOString(),
       };
@@ -232,6 +234,7 @@ export class MessageController {
           updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
+        chat_id: message.chatId,
         created_at: message.createdAt.toISOString(),
         updated_at: message.updatedAt.toISOString(),
       };
@@ -289,6 +292,7 @@ export class MessageController {
           updated_at: req.user.updatedAt.toISOString(),
         },
         reply_to: message.replyTo ?? null,
+        chat_id: message.chatId,
         created_at: message.createdAt.toISOString(),
         updated_at: message.updatedAt.toISOString(),
       };

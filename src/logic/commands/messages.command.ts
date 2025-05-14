@@ -42,9 +42,10 @@ export class CreateMessageCommandHandler extends ICommandHandler<
       messageContent,
       command.profile,
       command.replyTo,
+      command.chatId,
     );
-
-    await this.messagesRepository.create(message, command.chatId);
+    console.table(message);
+    await this.messagesRepository.create(message);
 
     return message;
   }
