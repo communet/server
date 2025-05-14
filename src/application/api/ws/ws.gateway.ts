@@ -17,9 +17,9 @@ export class WsGateway implements OnGatewayConnection<unknown> {
   }
 
   sendMessageToChannelExcludeSender(
-    channelId: string,
+    channelId: string[],
     message: Message,
-    excludeSocketId: string,
+    excludeSocketId: string[],
   ): void {
     this.server
       // .to(channelId)

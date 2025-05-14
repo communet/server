@@ -161,9 +161,9 @@ export class MessageController {
       const message = await this.createMessageCommandHandler.execute(command);
 
       this.websocketGateway.sendMessageToChannelExcludeSender(
-        `channel_${channelId}`,
+        [`channel_${channelId}`],
         message,
-        req.headers['x-socket-id'] as string,
+        [req.headers['x-socket-id'] as string],
       );
 
       return {

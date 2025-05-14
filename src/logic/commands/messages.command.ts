@@ -44,7 +44,7 @@ export class CreateMessageCommandHandler extends ICommandHandler<
       command.replyTo,
       command.chatId,
     );
-    console.table(message);
+
     await this.messagesRepository.create(message);
 
     return message;
