@@ -220,7 +220,7 @@ export class ChannelsController {
     }
   }
 
-  @Get('/:id')
+  @Get('/:channelId')
   @UseGuards(JwtAuthGuard)
   @HttpCode(200)
   @ApiResponse({
