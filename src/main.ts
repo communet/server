@@ -1,23 +1,19 @@
-import { patchNestJsSwagger, ZodValidationPipe } from 'nestjs-zod';
-import * as cookieParser from 'cookie-parser';
+import fastify from 'fastify';
 
-patchNestJsSwagger();
+const server = fastify();
 
-import { AppModule } from '@/app.module';
-import { setupDocumentation } from '@/infra/nest-configuration/api-documentation';
-import { setupCors } from '@/infra/nest-configuration/cors';
-import { NestFactory } from '@nestjs/core';
+server.get('/', (): object => {
+  return { hello: 'world' };
+});
 
-async function bootstrap(): Promise<void> {
-  const app = await NestFactory.create(AppModule);
+const start = async (): Promise<void> => {
+  try {
+    await server.listen({ port: 3000 });
+    console.log('Server running on http://localhost:3000');
+  } catch (err) {
+    server.log.error(err);
+    process.exit(1);
+  }
+};
 
-  app.useGlobalPipes(new ZodValidationPipe());
-  app.use(cookieParser());
-
-  setupDocumentation(app);
-  setupCors(app, process.env.ORIGIN_ADDRESS ?? 'http://localhost:5173');
-
-  await app.listen(process.env.PORT ?? 3000);
-}
-
-bootstrap().catch(console.error);
+start().catch(server.log.error);
