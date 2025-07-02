@@ -1,6 +1,12 @@
 import fastify from 'fastify';
 
-const server = fastify();
+const server = fastify({
+  logger: {
+    transport: {
+      target: 'pino-pretty',
+    },
+  },
+});
 
 server.get('/', (): object => {
   return { hello: 'world' };
@@ -9,7 +15,6 @@ server.get('/', (): object => {
 const start = async (): Promise<void> => {
   try {
     await server.listen({ port: 3000 });
-    console.log('Server running on http://localhost:3000');
   } catch (err) {
     server.log.error(err);
     process.exit(1);
