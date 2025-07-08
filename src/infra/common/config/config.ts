@@ -1,5 +1,5 @@
-import { ConfigSchema } from '@/infra/common/config/validator';
 import { config } from 'dotenv';
+import { ConfigSchema } from './validator';
 
 config();
 

@@ -1,5 +1,4 @@
 import eslint from '@eslint/js';
-import noRelativeImportPaths from 'eslint-plugin-no-relative-import-paths';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
@@ -26,9 +25,6 @@ export default tseslint.config(
     },
   },
   {
-    plugins: {
-      'no-relative-import-paths': noRelativeImportPaths,
-    },
     rules: {
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-floating-promises': 'error',
@@ -36,10 +32,6 @@ export default tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'error',
       '@typescript-eslint/explicit-function-return-type': 'error',
       '@typescript-eslint/no-unused-vars': 'error',
-      'no-relative-import-paths/no-relative-import-paths': [
-        'error',
-        { rootDir: 'src', prefix: '@', allowSameFolder: false },
-      ],
     },
   },
 );
