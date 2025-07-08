@@ -8,7 +8,16 @@
   "scripts": {
     "start": "ts-node src/main.ts",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix"
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "db": "knex --knexfile ./knexfile.ts",
+    "migration:make": "npm run db migrate:make",
+    "migration:run": "npm run db migrate:latest",
+    "migration:rollback": "npm run db migrate:rollback",
+    "migration:up": "npm run db migrate:up",
+    "migration:down": "npm run db migrate:down",
+    "migration:list": "npm run db migrate:list",
+    "seed:make": "npm run db seed:make",
+    "seed:run": "npm run db seed:run"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -27,6 +36,10 @@
     "typescript-eslint": "^8.20.0"
   },
   "dependencies": {
-    "fastify": "^5.4.0"
+    "dotenv": "^17.0.1",
+    "fastify": "^5.4.0",
+    "knex": "^3.1.0",
+    "pg": "^8.16.3",
+    "zod": "^3.25.75"
   }
 }
