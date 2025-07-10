@@ -7,9 +7,12 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "tsx src/main.ts",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "type-check": "tsc --noEmit",
+    "check:format": "prettier --check \"{src,test}/**/*.ts\"",
+    "check:format:fix": "prettier --write \"{src,test}/**/*.ts\"",
+    "check:lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "check:lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
+    "check:types": "tsc --noEmit",
+    "check": " && npm run check:lint && npm run check:types",
     "db": "knex --knexfile ./knexfile.ts",
     "migration:make": "npm run db migrate:make",
     "migration:run": "npm run db migrate:latest",
@@ -19,7 +22,8 @@
     "migration:list": "npm run db migrate:list",
     "seed:make": "npm run db seed:make",
     "seed:run": "npm run db seed:run",
-    "test": "jest"
+    "test": "jest",
+    "prepare": "husky"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -31,7 +35,9 @@
     "eslint-plugin-no-relative-import-paths": "^1.6.1",
     "eslint-plugin-prettier": "^5.2.2",
     "globals": "^16.0.0",
+    "husky": "^9.1.7",
     "jest": "^30.0.4",
+    "lint-staged": "^16.1.2",
     "pino-pretty": "^13.0.0",
     "prettier": "^3.4.2",
     "ts-jest": "^29.4.0",
@@ -46,5 +52,13 @@
     "knex": "^3.1.0",
     "pg": "^8.16.3",
     "zod": "^3.25.75"
+  },
+  "lint-staged": {
+    "{src,test}/**/*.ts": [
+      "npm run check:format",
+      "npm run check:lint",
+      "npm run check:types",
+      "npm run test"
+    ]
   }
 }
