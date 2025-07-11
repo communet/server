@@ -1,4 +1,4 @@
-import { IdRule } from '../id.rule';
+import { IdRule } from '../id/id.rule';
 
 describe('Rules - IdRule', () => {
   it('IdRule can be created using constructor and non-empty string', () => {

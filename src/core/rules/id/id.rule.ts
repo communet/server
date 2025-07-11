@@ -1,9 +1,6 @@
-import { Rule } from '../abstracts';
-import { RuleError } from '../errors';
-
-const RULE_ERRORS = {
-  EMPTY_ID: 'id cannot be empty',
-};
+import { Rule } from '../../abstracts';
+import { RuleError } from '../../errors';
+import { RULE_ERRORS } from './constatnts';
 
 export class IdRule extends Rule<string> {
   readonly name = 'IdRule';

@@ -1,5 +1,5 @@
 export abstract class Rule<T> {
-  constructor(private readonly _value: T) {
+  constructor(protected readonly _value: T) {
     this.validate();
   }
 
@@ -7,6 +7,6 @@ export abstract class Rule<T> {
     return this._value;
   }
 
-  abstract validate(): void;
-  abstract get name(): string;
+  protected abstract validate(): void;
+  protected abstract get name(): string;
 }
