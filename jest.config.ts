@@ -198,13 +198,7 @@ const config: Config = {
   // Whether to use watchman for file crawling
   // watchman: true,
 
-  ...createDefaultPreset({
-    tsconfig: {
-      paths: {
-        '@/*': ['./src/*'],
-      },
-    },
-  }),
+  ...createDefaultPreset(),
 };
 
 export default config;
