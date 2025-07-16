@@ -1,8 +1,6 @@
-import { Permissions } from './tables';
-
 // NOTE: https://knexjs.org/guide/#typescript
 declare module 'knex/types/tables' {
-  interface Tables {
-    permissions: Permissions;
-  }
+  // NOTE: Будет расширяться в дальнейшем
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  interface Tables {}
 }
