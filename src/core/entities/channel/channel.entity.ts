@@ -7,8 +7,8 @@ export class ChannelEntity extends Entity {
   // TODO: добавить список чатов
   // TODO: добавить идентификатор создателя
 
-  constructor(id: string, name: string, isDeleted?: boolean) {
-    super(id, isDeleted);
+  constructor(id: string, name: string) {
+    super(id);
     this._name = new StringRule(name, CHANNEL_NAME_OPTIONS);
   }
 

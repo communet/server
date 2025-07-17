@@ -1,25 +1,23 @@
 import { ChannelEntity } from '../channel';
 
 describe('Entities - ChannelEntity', () => {
-  it('ChannelEntity can be created by constructor using only required params', () => {
-    const channelName = 'Some channel name';
-    const channelId = '1234567890';
-
-    const channelEntity = new ChannelEntity(channelId, channelName);
-
-    expect(channelEntity.id).toBe(channelId);
-    expect(channelEntity.name).toBe(channelName);
-    expect(channelEntity.isDeleted).toBeFalsy();
-  });
-
-  it('ChannelEntity can be created by consructor using all params', () => {
+  it('ChannelEntity can be created by consructor', () => {
     const channelName = 'Some channel name';
     const channelId = '123456789';
-    const channelEntity = new ChannelEntity(channelId, channelName, true);
+    const channelEntity = new ChannelEntity(channelId, channelName);
 
     expect(channelEntity.name).toBe(channelName);
     expect(channelEntity.id).toBe(channelId);
-    expect(channelEntity.isDeleted).toBeTruthy();
+  });
+
+  it('ChannelEntity throws RuleError if provide empty id', () => {
+    const channelName = '1231';
+    const channelId = '';
+
+    const channelEntityConstrucotr = (): ChannelEntity =>
+      new ChannelEntity(channelId, channelName);
+
+    expect(channelEntityConstrucotr).toThrow(/id cannot be empty/);
   });
 
   it('ChannelEntity throws RuleError if length(channelName) < 1', () => {
