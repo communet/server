@@ -1,13 +1,26 @@
 import { ChannelEntity } from '../channel';
+import { ChatEntity } from '../chat';
 
 describe('Entities - ChannelEntity', () => {
-  it('ChannelEntity can be created by consructor', () => {
+  it('ChannelEntity can be created by consructor with only reqired params', () => {
     const channelName = 'Some channel name';
     const channelId = '123456789';
     const channelEntity = new ChannelEntity(channelId, channelName);
 
     expect(channelEntity.name).toBe(channelName);
     expect(channelEntity.id).toBe(channelId);
+    expect(channelEntity.chats).toStrictEqual([]);
+  });
+
+  it('ChannelEntity can be created by constructor with list of chats', () => {
+    const chats: ChatEntity[] = [];
+
+    for (let i = 0; i < 3; i++) {
+      chats.push(new ChatEntity(String(i), 'some channel name'));
+    }
+
+    const channelEntity = new ChannelEntity('1234', 'some channel name', chats);
+    expect(channelEntity.chats).toStrictEqual(chats);
   });
 
   it('ChannelEntity throws RuleError if provide empty id', () => {
