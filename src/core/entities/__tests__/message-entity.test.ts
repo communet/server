@@ -1,35 +1,28 @@
-import { MESSAGE_BODY_OPTIONS, MessageEntity } from '../message';
-import { IdRule, StringRule } from '../../rules';
+import { MessageEntity } from '../message';
 
 describe('Entities - MessageEntity', () => {
   it('MessageEntity can be created by constructor', () => {
-    const messageId = new IdRule('123456789');
-    const messageBody = new StringRule(
-      'some message body',
-      MESSAGE_BODY_OPTIONS,
-    );
     const createdAt = new Date();
-    const entity = new MessageEntity(messageId, messageBody, createdAt);
+    const entity = new MessageEntity(
+      '123456789',
+      'some message body',
+      createdAt,
+    );
 
-    expect(entity.id).toBe(messageId.value);
-    expect(entity.body).toBe(messageBody.value);
+    expect(entity.id).toBe('123456789');
+    expect(entity.body).toBe('some message body');
     expect(entity.createdAt).toBe(createdAt);
   });
 
   it('MessageEntity can create without provided created at', () => {
-    const entity = new MessageEntity(
-      new IdRule('123'),
-      new StringRule('some body', MESSAGE_BODY_OPTIONS),
-    );
+    const entity = new MessageEntity('123', 'some body');
+
     expect(entity.createdAt).toBeDefined();
   });
 
   it('MessageEntity throws RuleError if provide empty body', () => {
     const entityConstructor = (): MessageEntity =>
-      new MessageEntity(
-        new IdRule('12345'),
-        new StringRule('', MESSAGE_BODY_OPTIONS),
-      );
+      new MessageEntity('12345', '');
 
     expect(entityConstructor).toThrow(/length should be > 1/);
   });

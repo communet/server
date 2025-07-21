@@ -1,15 +1,16 @@
 import { Entity } from '../../abstracts';
-import { IdRule, StringRule } from '../../rules';
+import { StringRule } from '../../rules';
 import { ChatEntity } from '../chat';
+import { CHANNEL_NAME_OPTIONS } from './constants';
 
 export class ChannelEntity extends Entity {
   protected readonly _name: StringRule;
   protected readonly _chats: ChatEntity[];
   // TODO: добавить идентификатор создателя
 
-  constructor(id: IdRule, name: StringRule, chats?: ChatEntity[]) {
+  constructor(id: string, name: string, chats?: ChatEntity[]) {
     super(id);
-    this._name = name;
+    this._name = new StringRule(name, CHANNEL_NAME_OPTIONS);
     this._chats = chats ?? [];
   }
 
