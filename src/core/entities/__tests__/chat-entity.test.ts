@@ -33,13 +33,13 @@ describe('Entities - ChatEntity', () => {
     const chatEntityConstructor = (): ChatEntity =>
       new ChatEntity('1234567890', '');
 
-    expect(chatEntityConstructor).toThrow(/length should be > 1/);
+    expect(chatEntityConstructor).toThrow(/length should be >= 1/);
   });
 
   it('ChatEntity throws RuleError if length(chatName) > 50', () => {
     const chatEntityConstructor = (): ChatEntity =>
       new ChatEntity('1234567890', 'x'.repeat(51));
 
-    expect(chatEntityConstructor).toThrow(/length should be < 50/);
+    expect(chatEntityConstructor).toThrow(/length should be <= 50/);
   });
 });

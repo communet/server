@@ -24,6 +24,6 @@ describe('Entities - MessageEntity', () => {
     const entityConstructor = (): MessageEntity =>
       new MessageEntity('12345', '');
 
-    expect(entityConstructor).toThrow(/length should be > 1/);
+    expect(entityConstructor).toThrow(/length should be >= 1/);
   });
 });
