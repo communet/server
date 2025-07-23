@@ -12,7 +12,7 @@
     "check:lint": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "check:lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "check:types": "tsc --noEmit",
-    "check": " && npm run check:lint && npm run check:types",
+    "check": "npm run check:lint && npm run check:types",
     "db": "knex --knexfile ./knexfile.ts",
     "migration:make": "npm run db migrate:make",
     "migration:run": "npm run db migrate:latest",

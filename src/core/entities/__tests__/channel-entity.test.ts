@@ -32,13 +32,13 @@ describe('Entities - ChannelEntity', () => {
     const channelEntityConstructor = (): ChannelEntity =>
       new ChannelEntity('1234567890', '');
 
-    expect(channelEntityConstructor).toThrow(/length should be > 1/);
+    expect(channelEntityConstructor).toThrow(/length should be >= 1/);
   });
 
   it('ChannelEntity throws RuleError if length(channelName) > 255', () => {
     const channelEntityConstructor = (): ChannelEntity =>
       new ChannelEntity('1234567890', 'x'.repeat(256));
 
-    expect(channelEntityConstructor).toThrow(/length should be < 255/);
+    expect(channelEntityConstructor).toThrow(/length should be <= 255/);
   });
 });
