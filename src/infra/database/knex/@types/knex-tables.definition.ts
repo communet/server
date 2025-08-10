@@ -1,4 +1,4 @@
-import { User } from './tables';
+import { Channel, User } from './tables';
 
 // NOTE: https://knexjs.org/guide/#typescript
 declare module 'knex/types/tables' {
@@ -6,5 +6,6 @@ declare module 'knex/types/tables' {
 
   interface Tables {
     users: User;
+    channels: Channel;
   }
 }
