@@ -1,11 +1,9 @@
-import * as dotenv from 'dotenv';
 import type { Knex } from 'knex';
+import { AppConfig } from './src/infra/common';
 
-dotenv.config();
-
-const AppConfig = process.env;
-
-const config: { [key: string]: Knex.Config } = {
+const config: {
+  [key in 'development' | 'test' | 'production']: Knex.Config;
+} = {
   development: {
     client: 'postgresql',
     connection: {
@@ -13,7 +11,27 @@ const config: { [key: string]: Knex.Config } = {
       user: AppConfig.DB_USER,
       password: AppConfig.DB_PASSWORD,
       host: AppConfig.DB_HOST,
-      port: Number(AppConfig.DB_PORT),
+      port: AppConfig.DB_PORT,
+    },
+    migrations: {
+      tableName: 'migrations',
+      directory: './src/infra/database/knex/migrations',
+      extension: 'ts',
+    },
+    seeds: {
+      directory: './src/infra/database/knex/seeds/dev',
+      extension: 'ts',
+    },
+  },
+
+  test: {
+    client: 'postgresql',
+    connection: {
+      database: `${AppConfig.DB_NAME}-test`,
+      user: AppConfig.DB_USER,
+      password: AppConfig.DB_PASSWORD,
+      host: AppConfig.DB_HOST,
+      port: AppConfig.DB_PORT,
     },
     migrations: {
       tableName: 'migrations',
@@ -33,7 +51,7 @@ const config: { [key: string]: Knex.Config } = {
       user: AppConfig.DB_USER,
       password: AppConfig.DB_PASSWORD,
       host: AppConfig.DB_HOST,
-      port: Number(AppConfig.DB_PORT),
+      port: AppConfig.DB_PORT,
     },
     migrations: {
       tableName: 'migrations',
@@ -47,4 +65,4 @@ const config: { [key: string]: Knex.Config } = {
   },
 };
 
-module.exports = config;
+export default config;
