@@ -22,7 +22,7 @@
     "migration:list": "npm run db migrate:list",
     "seed:make": "npm run db seed:make",
     "seed:run": "npm run db seed:run",
-    "test": "jest",
+    "test": "jest --runInBand",
     "prepare": "husky"
   },
   "devDependencies": {

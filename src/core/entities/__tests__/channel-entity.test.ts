@@ -3,7 +3,11 @@ import { ChatEntity } from '../chat';
 
 describe('Entities - ChannelEntity', () => {
   it('ChannelEntity can be created by constructor with only required params', () => {
-    const channelEntity = new ChannelEntity('123456789', 'Some channel name');
+    const channelEntity = new ChannelEntity(
+      '123456789',
+      'Some channel name',
+      '1234567890',
+    );
 
     expect(channelEntity.name).toBe('Some channel name');
     expect(channelEntity.id).toBe('123456789');
@@ -17,27 +21,32 @@ describe('Entities - ChannelEntity', () => {
       chats.push(new ChatEntity(String(i), 'some channel name'));
     }
 
-    const channelEntity = new ChannelEntity('1234', 'some channel name', chats);
+    const channelEntity = new ChannelEntity(
+      '1234',
+      'some channel name',
+      '1234567890',
+      chats,
+    );
     expect(channelEntity.chats).toStrictEqual(chats);
   });
 
   it('ChannelEntity throws RuleError if provide empty id', () => {
     const channelEntityConstructor = (): ChannelEntity =>
-      new ChannelEntity('', '1231');
+      new ChannelEntity('', '1231', '1234567890');
 
     expect(channelEntityConstructor).toThrow(/id cannot be empty/);
   });
 
   it('ChannelEntity throws RuleError if length(channelName) < 1', () => {
     const channelEntityConstructor = (): ChannelEntity =>
-      new ChannelEntity('1234567890', '');
+      new ChannelEntity('1234567890', '', '1234567890');
 
     expect(channelEntityConstructor).toThrow(/length should be >= 1/);
   });
 
   it('ChannelEntity throws RuleError if length(channelName) > 255', () => {
     const channelEntityConstructor = (): ChannelEntity =>
-      new ChannelEntity('1234567890', 'x'.repeat(256));
+      new ChannelEntity('1234567890', 'x'.repeat(256), '1234567890');
 
     expect(channelEntityConstructor).toThrow(/length should be <= 255/);
   });
