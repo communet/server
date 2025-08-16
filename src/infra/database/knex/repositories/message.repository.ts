@@ -2,12 +2,17 @@ import { Knex } from 'knex';
 import { MessageEntity } from '../../../../core/entities';
 import {
   LoadByChatIdPort,
+  LoadMessageByIdPort,
   RemoveMessagePort,
   SaveMessagePort,
 } from '../../../../core/ports';
 
 export class MessageRepository
-  implements LoadByChatIdPort, RemoveMessagePort, SaveMessagePort
+  implements
+    LoadByChatIdPort,
+    RemoveMessagePort,
+    SaveMessagePort,
+    LoadMessageByIdPort
 {
   constructor(private readonly knex: Knex) {}
 
@@ -26,6 +31,20 @@ export class MessageRepository
           createdAt: message.created_at,
         }),
     );
+  }
+
+  async load(id: string): Promise<MessageEntity | null> {
+    const message = await this.knex('messages').where({ id }).first();
+
+    return message
+      ? new MessageEntity({
+          id: message.id,
+          body: message.body,
+          senderId: message.sender_id,
+          chatId: message.chat_id,
+          createdAt: message.created_at,
+        })
+      : null;
   }
 
   async remove(id: string): Promise<void> {

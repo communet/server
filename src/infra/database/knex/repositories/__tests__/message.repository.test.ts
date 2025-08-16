@@ -99,4 +99,14 @@ describe('MessageRepository', () => {
     // NOTE: because in previous test we're added another message
     expect(loadedMessages).toHaveLength(1);
   });
+
+  it('MessageRepository.load returns message or null', async () => {
+    const repository = new MessageRepository(db);
+
+    const message = await repository.load(idGenerator.generate());
+    const anotherMessage = await repository.load(anotherIdGenerator.generate());
+
+    expect(message).toBeNull();
+    expect(anotherMessage).not.toBeNull();
+  });
 });
