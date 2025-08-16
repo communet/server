@@ -4,7 +4,7 @@ import { MessageEntity } from '../message';
 import { CHAT_NAME_OPTIONS } from './constants';
 
 export class ChatEntity extends Entity {
-  private readonly _name: StringRule;
+  private _name: StringRule;
   private readonly _messages: MessageEntity[];
   private readonly _channelId: IdRule;
 
@@ -22,6 +22,10 @@ export class ChatEntity extends Entity {
 
   public get name(): string {
     return this._name.value;
+  }
+
+  public set name(name: string) {
+    this._name = new StringRule(name, CHAT_NAME_OPTIONS);
   }
 
   public get messages(): MessageEntity[] {

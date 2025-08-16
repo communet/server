@@ -1,1 +1,1 @@
-export { GetAllChatsQuery } from './get-all-chats-by-channel-id.query';
+export { GetAllChatsByChannelIdQuery } from './get-all-chats-by-channel-id.query';
