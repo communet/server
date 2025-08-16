@@ -4,7 +4,8 @@ import { MESSAGE_BODY_OPTIONS } from './constants';
 import { MessageEntityPayload } from './types';
 
 export class MessageEntity extends Entity {
-  private readonly _body: StringRule;
+  private _body: StringRule;
+  // FIXME: this should be a rule class
   private readonly _createdAt: Date;
   private readonly _senderId: IdRule;
   private readonly _chatId: IdRule;
@@ -19,6 +20,10 @@ export class MessageEntity extends Entity {
 
   public get body(): string {
     return this._body.value;
+  }
+
+  public set body(body: string) {
+    this._body = new StringRule(body, MESSAGE_BODY_OPTIONS);
   }
 
   public get createdAt(): Date {
