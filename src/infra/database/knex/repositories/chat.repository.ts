@@ -12,11 +12,14 @@ export class ChatRepository
   constructor(private readonly knex: Knex) {}
 
   async save(chat: ChatEntity): Promise<ChatEntity> {
-    await this.knex('chats').insert({
-      id: chat.id,
-      name: chat.name,
-      channel_id: chat.channelId,
-    });
+    await this.knex('chats')
+      .insert({
+        id: chat.id,
+        name: chat.name,
+        channel_id: chat.channelId,
+      })
+      .onConflict(['id'])
+      .merge();
 
     return chat;
   }
