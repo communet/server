@@ -24,10 +24,10 @@ describe('GetUserByIdService tests', () => {
     const userService = new GetUserByIdService(loadPort);
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(userService.getUserById('id')).resolves.toStrictEqual(user);
+    expect(userService.getById('id')).resolves.toStrictEqual(user);
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(userService.getUserById('id')).resolves.toBeNull();
+    expect(userService.getById('id')).resolves.toBeNull();
 
     expect(laodByIdMock).toHaveBeenCalledTimes(2);
   });

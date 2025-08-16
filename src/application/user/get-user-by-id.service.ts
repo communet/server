@@ -1,10 +1,10 @@
 import { UserEntity } from '../../core/entities';
-import { LoadUserByIdPort } from '../../core/ports';
+import { GetUserByIdQuery, LoadUserByIdPort } from '../../core/ports';
 
-export class GetUserByIdService {
+export class GetUserByIdService implements GetUserByIdQuery {
   constructor(private readonly loadUserPort: LoadUserByIdPort) {}
 
-  async getUserById(id: string): Promise<UserEntity | null> {
+  async getById(id: string): Promise<UserEntity | null> {
     return this.loadUserPort.loadById(id);
   }
 }
