@@ -1,4 +1,4 @@
-import { Channel, Chat, User } from './tables';
+import { Channel, Chat, Message, User } from './tables';
 
 // NOTE: https://knexjs.org/guide/#typescript
 declare module 'knex/types/tables' {
@@ -8,5 +8,6 @@ declare module 'knex/types/tables' {
     users: User;
     channels: Channel;
     chats: Chat;
+    messages: Message;
   }
 }
