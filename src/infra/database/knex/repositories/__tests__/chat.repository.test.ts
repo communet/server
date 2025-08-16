@@ -6,6 +6,7 @@ import { ChatRepository } from '../chat.repository';
 
 const idGenerator = new FixedIdGenerator(v4());
 const anotherIdGenerator = new FixedIdGenerator(v4());
+const anotherChatIdGenerator = new FixedIdGenerator(v4());
 
 describe('ChatRepository', () => {
   beforeAll(async () => {
@@ -84,5 +85,24 @@ describe('ChatRepository', () => {
 
     expect(loadedChats).toHaveLength(2);
     expect(loadedChats).toStrictEqual([chat, anotherChat]);
+  });
+
+  it('ChatRepository.load returns chat if found', async () => {
+    const repository = new ChatRepository(db);
+    const chat = new ChatEntity(
+      idGenerator.generate(),
+      'some chat name',
+      idGenerator.generate(),
+    );
+
+    await repository.save(chat);
+
+    const loadedChat = await repository.load(chat.id);
+    const anotherChat = await repository.load(
+      anotherChatIdGenerator.generate(),
+    );
+
+    expect(loadedChat).toStrictEqual(chat);
+    expect(anotherChat).toBeNull();
   });
 });

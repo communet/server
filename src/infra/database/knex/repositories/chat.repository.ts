@@ -1,13 +1,18 @@
 import { Knex } from 'knex';
 import { ChatEntity } from '../../../../core/entities';
 import {
+  LoadChatByIdPort,
   LoadChatsByChannelIdPort,
   RemoveChatPort,
   SaveChatPort,
 } from '../../../../core/ports';
 
 export class ChatRepository
-  implements SaveChatPort, RemoveChatPort, LoadChatsByChannelIdPort
+  implements
+    SaveChatPort,
+    RemoveChatPort,
+    LoadChatsByChannelIdPort,
+    LoadChatByIdPort
 {
   constructor(private readonly knex: Knex) {}
 
@@ -32,5 +37,11 @@ export class ChatRepository
     const chats = await this.knex('chats').where({ channel_id: channelId });
 
     return chats.map((chat) => new ChatEntity(chat.id, chat.name, channelId));
+  }
+
+  async load(id: string): Promise<ChatEntity | null> {
+    const chat = await this.knex('chats').where({ id }).first();
+
+    return chat ? new ChatEntity(chat.id, chat.name, chat.channel_id) : null;
   }
 }
