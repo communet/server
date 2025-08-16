@@ -1,16 +1,23 @@
 import { Entity } from '../../abstracts';
-import { StringRule } from '../../rules';
+import { IdRule, StringRule } from '../../rules';
 import { MessageEntity } from '../message';
 import { CHAT_NAME_OPTIONS } from './constants';
 
 export class ChatEntity extends Entity {
-  protected readonly _name: StringRule;
-  protected readonly _messages: MessageEntity[];
+  private readonly _name: StringRule;
+  private readonly _messages: MessageEntity[];
+  private readonly _channelId: IdRule;
 
-  constructor(id: string, name: string, messages?: MessageEntity[]) {
+  constructor(
+    id: string,
+    name: string,
+    channelId: string,
+    messages?: MessageEntity[],
+  ) {
     super(id);
     this._name = new StringRule(name, CHAT_NAME_OPTIONS);
     this._messages = messages ?? [];
+    this._channelId = new IdRule(channelId);
   }
 
   public get name(): string {
@@ -19,5 +26,9 @@ export class ChatEntity extends Entity {
 
   public get messages(): MessageEntity[] {
     return this._messages;
+  }
+
+  public get channelId(): string {
+    return this._channelId.value;
   }
 }

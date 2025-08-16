@@ -18,7 +18,7 @@ describe('Entities - ChannelEntity', () => {
     const chats: ChatEntity[] = [];
 
     for (let i = 0; i < 3; i++) {
-      chats.push(new ChatEntity(String(i), 'some channel name'));
+      chats.push(new ChatEntity(String(i), 'some channel name', '1234567890'));
     }
 
     const channelEntity = new ChannelEntity(

@@ -3,7 +3,11 @@ import { MessageEntity } from '../message';
 
 describe('Entities - ChatEntity', () => {
   it('ChatEntity can be created by constructor', () => {
-    const chatEntity = new ChatEntity('123456789', 'Some chat name');
+    const chatEntity = new ChatEntity(
+      '123456789',
+      'Some chat name',
+      '1234567890',
+    );
 
     expect(chatEntity.id).toBe('123456789');
     expect(chatEntity.name).toBe('Some chat name');
@@ -16,7 +20,12 @@ describe('Entities - ChatEntity', () => {
       messages.push(new MessageEntity(String(i), 'Some message body'));
     }
 
-    const chatEntity = new ChatEntity('12345', 'Some chat name', messages);
+    const chatEntity = new ChatEntity(
+      '12345',
+      'Some chat name',
+      '1234567890',
+      messages,
+    );
 
     expect(chatEntity.messages.length).toBe(10);
     expect(chatEntity.messages).toStrictEqual(messages);
@@ -24,21 +33,21 @@ describe('Entities - ChatEntity', () => {
 
   it('ChatEntity throws RuleError if provide empty id', () => {
     const chatEntityConstructor = (): ChatEntity =>
-      new ChatEntity('', 'SomeChatName');
+      new ChatEntity('', 'SomeChatName', '1234567890');
 
     expect(chatEntityConstructor).toThrow(/id cannot be empty/);
   });
 
   it('ChatEntity throws RuleError if length(chatName) < 1', () => {
     const chatEntityConstructor = (): ChatEntity =>
-      new ChatEntity('1234567890', '');
+      new ChatEntity('1234567890', '', '1234567890');
 
     expect(chatEntityConstructor).toThrow(/length should be >= 1/);
   });
 
   it('ChatEntity throws RuleError if length(chatName) > 50', () => {
     const chatEntityConstructor = (): ChatEntity =>
-      new ChatEntity('1234567890', 'x'.repeat(51));
+      new ChatEntity('1234567890', 'x'.repeat(51), '1234567890');
 
     expect(chatEntityConstructor).toThrow(/length should be <= 50/);
   });
