@@ -4,7 +4,7 @@ import { ChatEntity } from '../chat';
 import { CHANNEL_NAME_OPTIONS } from './constants';
 
 export class ChannelEntity extends Entity {
-  private readonly _name: StringRule;
+  private _name: StringRule;
   private readonly _chats: ChatEntity[];
   private readonly _creatorId: IdRule;
   // TODO: добавить идентификатор создателя
@@ -23,6 +23,10 @@ export class ChannelEntity extends Entity {
 
   public get name(): string {
     return this._name.value;
+  }
+
+  public set name(name: string) {
+    this._name = new StringRule(name, CHANNEL_NAME_OPTIONS);
   }
 
   public get chats(): ChatEntity[] {
