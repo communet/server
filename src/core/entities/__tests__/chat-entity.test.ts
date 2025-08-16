@@ -17,7 +17,14 @@ describe('Entities - ChatEntity', () => {
   it('ChatEntity can be created with provided message entities', () => {
     const messages: MessageEntity[] = [];
     for (let i = 0; i < 10; i++) {
-      messages.push(new MessageEntity(String(i), 'Some message body'));
+      messages.push(
+        new MessageEntity({
+          id: String(i),
+          body: 'Some message body',
+          senderId: '1234567890',
+          chatId: '1234567890',
+        }),
+      );
     }
 
     const chatEntity = new ChatEntity(
