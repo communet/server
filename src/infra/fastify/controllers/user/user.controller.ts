@@ -1,9 +1,8 @@
-import { FastifyRequest } from 'fastify';
+import { FastifyReply, FastifyRequest } from 'fastify';
 import { GetUserByIdService } from '../../../../application';
 import { GetUserByIdQuery } from '../../../../core/ports';
 import { db, UserRepository } from '../../../database';
-import { Response } from '../response';
-import { UserGetByIdRequest, UserGetByIdResponse } from './types';
+import { UserGetByIdRequest } from './types';
 import { UserControllerMapper } from './user-controller.mapper';
 
 export class UserController {
@@ -11,10 +10,18 @@ export class UserController {
 
   async getUserById(
     req: FastifyRequest<UserGetByIdRequest>,
-  ): Promise<Response<UserGetByIdResponse>> {
-    return UserControllerMapper.toResponse(
+    rep: FastifyReply,
+  ): Promise<void> {
+    const result = UserControllerMapper.toResponse(
       await this.getUserByIdQuery.getById(req.params.id),
     );
+
+    // TODO: Подумать, как лучше сделать
+    if (result.error && result.code === 'not_found') {
+      rep.status(404).send(result);
+    } else {
+      rep.status(200).send(result);
+    }
   }
 }
 
