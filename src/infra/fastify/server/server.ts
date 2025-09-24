@@ -3,7 +3,6 @@ import fastify, {
   FastifyPluginCallback,
   FastifyServerOptions,
 } from 'fastify';
-import { API_PREFIX_V1 } from './constants';
 import { ServerOptions } from './types';
 
 export class Server {
@@ -16,8 +15,8 @@ export class Server {
     this.server = fastify(options);
   }
 
-  register(plugin: FastifyPluginCallback): void {
-    this.server.register(plugin, { prefix: API_PREFIX_V1 });
+  register(plugin: FastifyPluginCallback, prefix?: string): void {
+    this.server.register(plugin, { prefix });
   }
 
   async start(): Promise<string> {

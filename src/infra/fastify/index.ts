@@ -1,5 +1,7 @@
+import { NotFoundPlugin } from './plugins';
 import { UserRouter } from './router';
 import { Server } from './server';
+import { API_PREFIX_V1 } from './server/constants';
 
 export function startServer(): Promise<string> {
   const server = new Server(
@@ -14,7 +16,8 @@ export function startServer(): Promise<string> {
     { port: 3333 },
   );
 
-  server.register(UserRouter);
+  server.register(NotFoundPlugin);
+  server.register(UserRouter, API_PREFIX_V1);
 
   return server.start();
 }
