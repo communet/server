@@ -3,8 +3,3 @@ export type UserGetByIdRequest = {
     id: string;
   };
 };
-
-export type UserGetByIdResponse = {
-  id: string;
-  username: string;
-};

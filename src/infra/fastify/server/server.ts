@@ -34,4 +34,8 @@ export class Server {
 
     return result;
   }
+
+  get fastify(): Readonly<FastifyInstance> {
+    return this.server;
+  }
 }
