@@ -1,4 +1,4 @@
-import { ResponseNotFound } from '../types';
+import { ResponseNotFound } from './types';
 
 export class NotFoundResponse {
   constructor(public reason: string) {}

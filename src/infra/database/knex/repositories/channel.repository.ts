@@ -29,10 +29,16 @@ export class ChannelRepository
     return channel;
   }
 
-  // TODO: implement in future
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  loadByUserId(userId: string): Promise<ChannelEntity[]> {
-    throw new Error('Method not implemented.');
+  // FIXME: include channels in which user is a participant
+  async loadByUserId(userId: string): Promise<ChannelEntity[]> {
+    const channels = await this.knex('channels')
+      .where({ creator_id: userId })
+      .select('*');
+
+    return channels.map(
+      (channel) =>
+        new ChannelEntity(channel.id, channel.name, channel.creator_id),
+    );
   }
 
   async loadById(id: string): Promise<ChannelEntity | null> {

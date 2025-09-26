@@ -1,1 +1,2 @@
-export { UserController } from './user';
+export * from './channel';
+export * from './user';

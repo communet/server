@@ -1,21 +1,23 @@
-import { FastifyRequest } from 'fastify';
 import { GetUserByIdService } from '../../../../application';
 import { UserEntity } from '../../../../core/entities';
 import { GetUserByIdQuery } from '../../../../core/ports';
 import { db, UserRepository } from '../../../database';
 import { NotFoundResponse } from '../../responses';
+import { ControllerHandlerParams } from '../../router/common';
 import { UserGetByIdRequest } from './types';
 
 export class UserController {
   constructor(private readonly getUserByIdQuery: GetUserByIdQuery) {}
 
-  async getUserById(
-    req: FastifyRequest<UserGetByIdRequest>,
-  ): Promise<UserEntity | NotFoundResponse> {
-    const result = await this.getUserByIdQuery.getById(req.params.id);
+  async getUserById({
+    request,
+  }: ControllerHandlerParams<UserGetByIdRequest>): Promise<
+    UserEntity | NotFoundResponse
+  > {
+    const result = await this.getUserByIdQuery.getById(request.params.id);
 
     if (!result) {
-      return new NotFoundResponse(`User #${req.params.id} not found`);
+      return new NotFoundResponse(`User #${request.params.id} not found`);
     }
 
     return result;

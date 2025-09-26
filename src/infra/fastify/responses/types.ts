@@ -9,11 +9,20 @@ export type ResponseNotFound = {
   code: 'not_found';
 };
 
-// TODO: Детализировать этот тип в будущем
-export type ResponseError = ResponseNotFound & {
+export type ResponseUnauthorized = {
   error: true;
   reason: string;
-  code: string;
+  code: 'unauthorized';
 };
+
+// TODO: Детализировать этот тип в будущем
+export type ResponseError =
+  | ResponseNotFound
+  | ResponseUnauthorized
+  | {
+      error: true;
+      reason: string;
+      code: string;
+    };
 
 export type Response<T> = ResponseOk<T> | ResponseError;

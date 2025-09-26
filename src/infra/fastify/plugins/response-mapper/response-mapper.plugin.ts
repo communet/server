@@ -1,11 +1,12 @@
 import { FastifyInstance, preSerializationHookHandler } from 'fastify';
+import { ResponseOk } from '../../responses';
 import { MapperCollection, PluginBuilder } from './types';
 import { SUCCESS_CODE, getStatusCode } from './utils';
 
 const handleResponseWithMappers =
   (mappers: MapperCollection): preSerializationHookHandler =>
   (_, reply, payload, done): void => {
-    const [response] = mappers
+    let [response] = mappers
       .entries()
       .filter(([, mapper]) =>
         payload instanceof Array
@@ -20,10 +21,22 @@ const handleResponseWithMappers =
       )
       .toArray();
 
-    if (response instanceof Array) {
+    if (payload instanceof Array && payload.length === 0) {
       reply.code(SUCCESS_CODE);
+      response = { data: [], error: false };
     } else {
-      reply.code(getStatusCode(response));
+      if (response instanceof Array) {
+        reply.code(SUCCESS_CODE);
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        response = (response as ResponseOk<any>[]).reduce(
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          (acc, r) => ({ error: false, data: [...acc.data, r.data] }),
+          { data: [], error: false },
+        );
+      } else {
+        reply.code(getStatusCode(response));
+      }
     }
 
     done(null, response);
