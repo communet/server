@@ -8,8 +8,6 @@ export type ControllerHandlerParams<
   reply: FastifyReply<R>;
 };
 
-export type Assert<T extends Expected, Expected> = T;
-
 export type WithUser<T> = T & {
   user: UserEntity;
 };

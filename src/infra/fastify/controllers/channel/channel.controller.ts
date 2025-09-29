@@ -10,7 +10,7 @@ import {
   GetChannelsByUserIdQuery,
 } from '../.././../../core/ports';
 import { ControllerHandlerParams, WithUser } from '../../router';
-import { CreateChannelRequest } from './types';
+import { CreateChannelHandlerParams } from './types';
 
 export class ChannelController {
   constructor(
@@ -27,9 +27,7 @@ export class ChannelController {
   async createChannel({
     request,
     user,
-  }: WithUser<
-    ControllerHandlerParams<CreateChannelRequest>
-  >): Promise<ChannelEntity> {
+  }: WithUser<CreateChannelHandlerParams>): Promise<ChannelEntity> {
     const channel = await this.createChannelUseCase.create({
       name: request.body.name,
       creatorId: user.id,

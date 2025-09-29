@@ -1,11 +1,7 @@
-import { RouteGenericInterface } from 'fastify';
-import { Assert } from '../../router';
+import { ControllerHandlerParams } from '../../router';
 
-export type UserGetByIdRequest = Assert<
-  {
-    Params: {
-      id: string;
-    };
-  },
-  RouteGenericInterface
->;
+export type GetUserByIdHandlerParams = ControllerHandlerParams<{
+  Params: {
+    id: string;
+  };
+}>;

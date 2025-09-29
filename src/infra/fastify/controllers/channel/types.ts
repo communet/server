@@ -1,11 +1,7 @@
-import { RouteGenericInterface } from 'fastify';
-import { Assert } from '../../router';
+import { ControllerHandlerParams } from '../../router';
 
-export type CreateChannelRequest = Assert<
-  {
-    Body: {
-      name: string;
-    };
-  },
-  RouteGenericInterface
->;
+export type CreateChannelHandlerParams = ControllerHandlerParams<{
+  Body: {
+    name: string;
+  };
+}>;

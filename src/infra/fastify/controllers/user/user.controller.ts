@@ -3,17 +3,14 @@ import { UserEntity } from '../../../../core/entities';
 import { GetUserByIdQuery } from '../../../../core/ports';
 import { db, UserRepository } from '../../../database';
 import { NotFoundResponse } from '../../responses';
-import { ControllerHandlerParams } from '../../router/';
-import { UserGetByIdRequest } from './types';
+import { GetUserByIdHandlerParams } from './types';
 
 export class UserController {
   constructor(private readonly getUserByIdQuery: GetUserByIdQuery) {}
 
   async getUserById({
     request,
-  }: ControllerHandlerParams<UserGetByIdRequest>): Promise<
-    UserEntity | NotFoundResponse
-  > {
+  }: GetUserByIdHandlerParams): Promise<UserEntity | NotFoundResponse> {
     const result = await this.getUserByIdQuery.getById(request.params.id);
 
     if (!result) {
