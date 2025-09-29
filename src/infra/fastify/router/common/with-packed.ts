@@ -5,5 +5,5 @@ export const withPacked =
   <T extends RouteGenericInterface, R>(
     fn: (params: ControllerHandlerParams<T>) => R,
   ) =>
-  (request: FastifyRequest<T>, reply: FastifyReply): R =>
+  (request: FastifyRequest<T>, reply: FastifyReply<T>): R =>
     fn({ request, reply });

@@ -9,4 +9,8 @@ export const ChannelRouter = (fastify: FastifyInstance): void => {
     '/channels',
     withPacked(withUser(userController.getChannels.bind(userController))),
   );
+  fastify.post(
+    '/channels',
+    withPacked(withUser(userController.createChannel.bind(userController))),
+  );
 };

@@ -3,7 +3,7 @@ import { UserEntity } from '../../../../core/entities';
 import { GetUserByIdQuery } from '../../../../core/ports';
 import { db, UserRepository } from '../../../database';
 import { NotFoundResponse } from '../../responses';
-import { ControllerHandlerParams } from '../../router/common';
+import { ControllerHandlerParams } from '../../router/';
 import { UserGetByIdRequest } from './types';
 
 export class UserController {
