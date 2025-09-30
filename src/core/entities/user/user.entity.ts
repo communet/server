@@ -5,7 +5,11 @@ import { USERNAME_RULE_OPTIONS } from './constants';
 export class UserEntity extends Entity {
   constructor(id: string, username: string) {
     super(id);
-    this._username = new StringRule(username, USERNAME_RULE_OPTIONS);
+    this._username = new StringRule(
+      username,
+      'username',
+      USERNAME_RULE_OPTIONS,
+    );
   }
 
   private _username: StringRule;

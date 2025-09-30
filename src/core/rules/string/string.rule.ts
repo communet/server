@@ -4,7 +4,11 @@ import { RULE_ERRORS } from './constants';
 import { StringRuleOptions } from './types';
 
 export class StringRule extends Rule<string> {
-  constructor(_value: string, options?: StringRuleOptions) {
+  constructor(
+    _value: string,
+    readonly name: string = 'StringRule',
+    options?: StringRuleOptions,
+  ) {
     super(_value);
 
     this._maxLength = options?.max;
@@ -13,8 +17,6 @@ export class StringRule extends Rule<string> {
 
     this.validate();
   }
-
-  readonly name = '';
 
   private _maxLength?: number;
   private _minLength?: number;

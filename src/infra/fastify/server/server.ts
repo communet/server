@@ -22,7 +22,9 @@ export class Server {
         'requirements' in error &&
         'rule' in error
       ) {
-        return reply.send(new BadRequestResponse(error.requirements));
+        return reply.send(
+          new BadRequestResponse(error.rule, error.requirements),
+        );
       }
 
       return reply.send(new InternalServerResponse(error.message));

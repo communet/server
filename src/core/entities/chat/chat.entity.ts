@@ -15,9 +15,9 @@ export class ChatEntity extends Entity {
     messages?: MessageEntity[],
   ) {
     super(id);
-    this._name = new StringRule(name, CHAT_NAME_OPTIONS);
+    this._name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
     this._messages = messages ?? [];
-    this._channelId = new IdRule(channelId);
+    this._channelId = new IdRule(channelId, 'channelId');
   }
 
   public get name(): string {
@@ -25,7 +25,7 @@ export class ChatEntity extends Entity {
   }
 
   public set name(name: string) {
-    this._name = new StringRule(name, CHAT_NAME_OPTIONS);
+    this._name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
   }
 
   public get messages(): MessageEntity[] {

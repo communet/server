@@ -12,10 +12,10 @@ export class MessageEntity extends Entity {
 
   constructor({ id, body, senderId, chatId, createdAt }: MessageEntityPayload) {
     super(id);
-    this._body = new StringRule(body, MESSAGE_BODY_OPTIONS);
+    this._body = new StringRule(body, 'messageBody', MESSAGE_BODY_OPTIONS);
     this._createdAt = createdAt ?? new Date();
-    this._senderId = new IdRule(senderId);
-    this._chatId = new IdRule(chatId);
+    this._senderId = new IdRule(senderId, 'senderId');
+    this._chatId = new IdRule(chatId, 'chatId');
   }
 
   public get body(): string {
@@ -23,7 +23,7 @@ export class MessageEntity extends Entity {
   }
 
   public set body(body: string) {
-    this._body = new StringRule(body, MESSAGE_BODY_OPTIONS);
+    this._body = new StringRule(body, 'messageBody', MESSAGE_BODY_OPTIONS);
   }
 
   public get createdAt(): Date {

@@ -3,7 +3,12 @@ import { RuleError } from '../../errors';
 import { RULE_ERRORS } from './constatnts';
 
 export class IdRule extends Rule<string> {
-  readonly name = 'IdRule';
+  constructor(
+    value: string,
+    readonly name: string = 'IdRule',
+  ) {
+    super(value);
+  }
 
   validate(): void {
     if (this.value.length === 0) {
