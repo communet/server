@@ -1,7 +1,11 @@
 import { ChannelEntity, UserEntity } from '../../core/entities';
 import { makeResponsePlugin, NotFoundPlugin } from './plugins';
 import {
+  BadRequestResponse,
+  InternalServerResponse,
+  mapBadRequest,
   mapChannelEntity,
+  mapInternalServer,
   mapNotFound,
   mapUnauthorized,
   mapUserEntity,
@@ -30,6 +34,8 @@ export function startServer(): Promise<string> {
   makeResponsePlugin(server.fastify)
     .map(UnauthorizedResponse, mapUnauthorized)
     .map(NotFoundResponse, mapNotFound)
+    .map(BadRequestResponse, mapBadRequest)
+    .map(InternalServerResponse, mapInternalServer)
     .map(UserEntity, mapUserEntity)
     .map(ChannelEntity, mapChannelEntity)
     .build();

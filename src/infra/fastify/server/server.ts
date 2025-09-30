@@ -3,6 +3,8 @@ import fastify, {
   FastifyPluginCallback,
   FastifyServerOptions,
 } from 'fastify';
+import { RuleError } from '../../../core/errors';
+import { BadRequestResponse, InternalServerResponse } from '../responses';
 import { ServerOptions } from './types';
 
 export class Server {
@@ -13,6 +15,18 @@ export class Server {
     private readonly serverOptions: ServerOptions,
   ) {
     this.server = fastify(options);
+
+    this.server.setErrorHandler((error, _, reply) => {
+      if (
+        error instanceof RuleError &&
+        'requirements' in error &&
+        'rule' in error
+      ) {
+        return reply.send(new BadRequestResponse(error.requirements));
+      }
+
+      return reply.send(new InternalServerResponse(error.message));
+    });
   }
 
   register(plugin: FastifyPluginCallback, prefix?: string): void {

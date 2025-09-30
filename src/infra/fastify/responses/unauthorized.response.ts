@@ -6,6 +6,6 @@ export class UnauthorizedResponse {
 
 export const mapUnauthorized = (): ResponseUnauthorized => ({
   error: true,
-  reason: '',
+  reason: ['User is unauthorized'],
   code: 'unauthorized',
 });

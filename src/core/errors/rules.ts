@@ -4,7 +4,12 @@ export class RuleError extends Error {
     ...requirements: string[]
   ) {
     const req = requirements.flatMap((v) => (v.length > 0 ? [v] : []));
+
     super('\n' + req.join(';\n'));
+
     this.name = `[RuleError::${rule}]`;
+    this.requirements = requirements;
   }
+
+  public readonly requirements: string[];
 }

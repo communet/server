@@ -1,1 +1,1 @@
-export * from './get-status-code';
+export { getStatusCode } from './get-status-code';

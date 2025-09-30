@@ -1,11 +1,14 @@
 import { FastifyInstance, preSerializationHookHandler } from 'fastify';
 import { ResponseOk } from '../../responses';
+import { SUCCESS_CODE } from './constants';
 import { MapperCollection, PluginBuilder } from './types';
-import { SUCCESS_CODE, getStatusCode } from './utils';
+import { getStatusCode } from './utils';
 
 const handleResponseWithMappers =
   (mappers: MapperCollection): preSerializationHookHandler =>
   (_, reply, payload, done): void => {
+    console.log('payload', { payload });
+
     let [response] = mappers
       .entries()
       .filter(([, mapper]) =>
