@@ -9,4 +9,5 @@ export const UserRouter = (fastify: FastifyInstance): void => {
     '/users/:id',
     withPacked(userController.getUserById.bind(userController)),
   );
+  fastify.log.info('Registered GET /users/:id');
 };
