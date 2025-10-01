@@ -8,6 +8,25 @@ export type ControllerHandlerParams<
   reply: FastifyReply<R>;
 };
 
+type ExtractRouteGenericFromParams<T> =
+  T extends ControllerHandlerParams<infer R> ? R : T;
+
+export type WithParam<T, Param extends string = never> = string extends Param
+  ? never
+  : ControllerHandlerParams<
+      {
+        Params: {
+          [K in Param]: string;
+        };
+      } & ExtractRouteGenericFromParams<T>
+    >;
+
+export type WithBody<T, Body extends object> = ControllerHandlerParams<
+  {
+    Body: Body;
+  } & ExtractRouteGenericFromParams<T>
+>;
+
 export type WithUser<T> = T & {
   user: UserEntity;
 };

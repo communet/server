@@ -1,7 +1,3 @@
-import { ControllerHandlerParams } from '../../router';
+import { ControllerHandlerParams, WithParam } from '../../router';
 
-export type GetUserByIdHandlerParams = ControllerHandlerParams<{
-  Params: {
-    id: string;
-  };
-}>;
+export type GetUserByIdHandlerParams = WithParam<ControllerHandlerParams, 'id'>;

@@ -1,11 +1,12 @@
 import { EntityNotFoundError } from '../../application';
-import { ChannelEntity, UserEntity } from '../../core/entities';
+import { ChannelEntity, ChatEntity, UserEntity } from '../../core/entities';
 import { makeResponsePlugin, NotFoundPlugin } from './plugins';
 import {
   BadRequestResponse,
   InternalServerResponse,
   mapBadRequest,
   mapChannelEntity,
+  mapChatEntity,
   mapInternalServer,
   mapNotFound,
   mapUnauthorized,
@@ -14,6 +15,7 @@ import {
   UnauthorizedResponse,
 } from './responses';
 import { ChannelRouter, UserRouter } from './router';
+import { ChatRouter } from './router/chat.router';
 import { Server } from './server';
 import { API_PREFIX_V1 } from './server/constants';
 
@@ -47,11 +49,13 @@ export function startServer(): Promise<string> {
       ),
     )
     .map(UserEntity, mapUserEntity)
+    .map(ChatEntity, mapChatEntity)
     .map(ChannelEntity, mapChannelEntity)
     .build();
 
   server.register(UserRouter, API_PREFIX_V1);
   server.register(ChannelRouter, API_PREFIX_V1);
+  server.register(ChatRouter, API_PREFIX_V1);
 
   return server.start();
 }

@@ -19,7 +19,7 @@ import {
 import { ControllerHandlerParams, WithUser } from '../../router';
 import { CreateUpdateChannelHandlerParams, WithChannelId } from './types';
 
-export class ChannelController {
+class ChannelController {
   constructor(
     private readonly getChannelsByUserIdQuery: GetChannelsByUserIdQuery,
     private readonly createChannelUseCase: CreateChannelUseCase,
@@ -61,12 +61,13 @@ export class ChannelController {
   }
 }
 
-const repository = new ChannelRepository(db);
+export const createChannelController = (): ChannelController => {
+  const repository = new ChannelRepository(db);
 
-export const createChannelController = (): ChannelController =>
-  new ChannelController(
+  return new ChannelController(
     new GetChannelsByUserIdService(repository),
     new CreateChannelService(repository, new IdGeneratorAdapter()),
     new DeleteChannelService(repository),
     new ChangeChannelNameService(repository, repository),
   );
+};

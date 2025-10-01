@@ -1,1 +1,1 @@
-export { mapChannelEntity } from './user-entity';
+export { mapChannelEntity } from './channel-entity';

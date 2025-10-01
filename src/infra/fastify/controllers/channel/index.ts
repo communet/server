@@ -1,4 +1,1 @@
-export {
-  ChannelController,
-  createChannelController,
-} from './channel.controller';
+export { createChannelController } from './channel.controller';

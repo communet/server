@@ -5,7 +5,7 @@ import { db, UserRepository } from '../../../database';
 import { NotFoundResponse } from '../../responses';
 import { GetUserByIdHandlerParams } from './types';
 
-export class UserController {
+class UserController {
   constructor(private readonly getUserByIdQuery: GetUserByIdQuery) {}
 
   async getUserById({

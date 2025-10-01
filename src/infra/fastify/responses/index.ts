@@ -1,5 +1,6 @@
 export { BadRequestResponse, mapBadRequest } from './bad-request.response';
 export * from './channel';
+export * from './chat';
 export {
   InternalServerResponse,
   mapInternalServer,
