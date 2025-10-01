@@ -2,8 +2,8 @@ import { ResponseBadRequest } from './types';
 
 export class BadRequestResponse {
   constructor(
-    public readonly name: string,
-    public readonly reasons: string[],
+    public name: string,
+    public reasons: string[],
   ) {}
 }
 

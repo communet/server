@@ -17,7 +17,11 @@ export class ChangeChatNameService implements ChangeChatNameUseCase {
     const chat = await this.loadChatPort.load(command.id);
 
     if (!chat) {
-      throw new EntityNotFoundError(`Chat with id ${command.id} not found`);
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw new EntityNotFoundError(
+        `Chat with id ${command.id} not found`,
+        'chat',
+      );
     }
 
     chat.name = command.name;

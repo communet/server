@@ -17,6 +17,7 @@ export class IdRule extends Rule<string> {
   }
 
   private _throwError(message: string): never {
+    // eslint-disable-next-line @typescript-eslint/only-throw-error
     throw new RuleError(this.name, message);
   }
 }

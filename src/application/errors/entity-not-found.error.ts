@@ -1,7 +1,9 @@
-export class EntityNotFoundError extends Error {
-  constructor(message: string) {
-    super(message);
+import { ApplicationError } from './application.error';
 
-    this.name = 'EntityNotFoundError';
+export class EntityNotFoundError extends ApplicationError {
+  constructor(message: string, targetEntity?: string) {
+    super(message, targetEntity);
+
+    this.name = `[${this.name}::EntityNotFound]`;
   }
 }

@@ -1,15 +1,16 @@
-export class RuleError extends Error {
+export class RuleError {
   constructor(
-    public readonly rule: string,
+    public rule: string,
     ...requirements: string[]
   ) {
     const req = requirements.flatMap((v) => (v.length > 0 ? [v] : []));
 
-    super('\n' + req.join(';\n'));
-
     this.name = `[RuleError::${rule}]`;
+    this.message = `${this.name}: ${'\n' + req.join(';\n')}`;
     this.requirements = requirements;
   }
 
-  public readonly requirements: string[];
+  public name: string;
+  public message: string;
+  public requirements: string[];
 }

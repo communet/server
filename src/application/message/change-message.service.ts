@@ -17,7 +17,11 @@ export class ChangeMessageService implements ChangeMessageUseCase {
     const message = await this.loadMessageByIdPort.load(command.id);
 
     if (!message) {
-      throw new EntityNotFoundError(`Message with id ${command.id} not found`);
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw new EntityNotFoundError(
+        `Message with id ${command.id} not found`,
+        'message',
+      );
     }
 
     message.body = command.body;

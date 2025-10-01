@@ -1,3 +1,4 @@
+import { EntityNotFoundError } from '../../application';
 import { ChannelEntity, UserEntity } from '../../core/entities';
 import { makeResponsePlugin, NotFoundPlugin } from './plugins';
 import {
@@ -36,6 +37,15 @@ export function startServer(): Promise<string> {
     .map(NotFoundResponse, mapNotFound)
     .map(BadRequestResponse, mapBadRequest)
     .map(InternalServerResponse, mapInternalServer)
+    .map(EntityNotFoundError, ({ targetEntity }) =>
+      mapNotFound(
+        new NotFoundResponse(
+          ...(targetEntity
+            ? [targetEntity, 'not found']
+            : ['unknown entity', 'not found']),
+        ),
+      ),
+    )
     .map(UserEntity, mapUserEntity)
     .map(ChannelEntity, mapChannelEntity)
     .build();

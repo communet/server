@@ -5,7 +5,7 @@ export class NotFoundResponse {
     this.reason = reason;
   }
 
-  public readonly reason: string[];
+  public reason: string[];
 }
 
 export const mapNotFound = ({

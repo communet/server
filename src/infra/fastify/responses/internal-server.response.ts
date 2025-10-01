@@ -1,7 +1,7 @@
 import { ResponseInternalServer } from './types';
 
 export class InternalServerResponse {
-  constructor(public readonly message: string) {}
+  constructor(public message: string) {}
 }
 
 export const mapInternalServer = ({

@@ -17,7 +17,11 @@ export class ChangeChannelNameService implements ChangeChannelNameUseCase {
     const channel = await this.loadChannelPort.loadById(command.id);
 
     if (!channel) {
-      throw new EntityNotFoundError(`Channel with id ${command.id} not found`);
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
+      throw new EntityNotFoundError(
+        `Channel with id ${command.id} not found`,
+        'channel',
+      );
     }
 
     channel.name = command.name;

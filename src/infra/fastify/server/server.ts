@@ -3,6 +3,7 @@ import fastify, {
   FastifyPluginCallback,
   FastifyServerOptions,
 } from 'fastify';
+import { ApplicationError } from '../../../application';
 import { RuleError } from '../../../core/errors';
 import { BadRequestResponse, InternalServerResponse } from '../responses';
 import { ServerOptions } from './types';
@@ -16,18 +17,17 @@ export class Server {
   ) {
     this.server = fastify(options);
 
-    this.server.setErrorHandler((error, _, reply) => {
-      if (
-        error instanceof RuleError &&
-        'requirements' in error &&
-        'rule' in error
-      ) {
-        return reply.send(
-          new BadRequestResponse(error.rule, error.requirements),
-        );
+    this.server.setErrorHandler((error) => {
+      if (error instanceof RuleError) {
+        return new BadRequestResponse(error.rule, error.requirements);
       }
 
-      return reply.send(new InternalServerResponse(error.message));
+      if (error instanceof ApplicationError) {
+        console.trace('Error catched', error);
+        return error;
+      }
+
+      return new InternalServerResponse(error.message);
     });
   }
 

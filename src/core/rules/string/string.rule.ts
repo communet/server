@@ -24,18 +24,21 @@ export class StringRule extends Rule<string> {
 
   validate(): void {
     if (this._maxLength !== undefined && this._value.length > this._maxLength) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw new RuleError(
         this.name,
         `${RULE_ERRORS.INVALID_LENGTH.SHOULD_BE_LOWER_THAN} ${this._maxLength}`,
       );
     }
     if (this._minLength !== undefined && this._value.length < this._minLength) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw new RuleError(
         this.name,
         `${RULE_ERRORS.INVALID_LENGTH.SHOULD_BE_HIGHER_THAN} ${this._minLength}`,
       );
     }
     if (this._regex !== undefined && !this._regex.test(this._value)) {
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw new RuleError(this.name, RULE_ERRORS.INVALID_FORMAT);
     }
   }

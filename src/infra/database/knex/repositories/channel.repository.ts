@@ -49,7 +49,9 @@ export class ChannelRepository
       : null;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.knex('channels').where({ id }).del();
+  async remove(id: string): Promise<string | undefined> {
+    const result = await this.knex('channels').where({ id }).del('id');
+
+    return result.at(0)?.id;
   }
 }
