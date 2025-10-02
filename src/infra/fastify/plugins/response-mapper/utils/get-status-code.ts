@@ -8,7 +8,6 @@ import {
 } from '../constants';
 
 export const getStatusCode = <T>(value: Response<T>): number => {
-  console.log('value', { value });
   if (!value.error) {
     return SUCCESS_CODE;
   }

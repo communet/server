@@ -27,6 +27,7 @@ export class Server {
         return error;
       }
 
+      console.log(error);
       return new InternalServerResponse(error.message);
     });
   }

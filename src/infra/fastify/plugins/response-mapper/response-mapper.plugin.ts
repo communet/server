@@ -7,8 +7,6 @@ import { getStatusCode } from './utils';
 const handleResponseWithMappers =
   (mappers: MapperCollection): preSerializationHookHandler =>
   (_, reply, payload, done): void => {
-    console.log('payload', { payload });
-
     let [response] = mappers
       .entries()
       .filter(([, mapper]) =>

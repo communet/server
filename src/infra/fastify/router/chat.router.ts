@@ -21,11 +21,11 @@ export const ChatRouter = (fastify: FastifyInstance): void => {
     '/channels/:channelId/chats/:id',
     withPacked(chatController.changeChatName.bind(chatController)),
   );
-  fastify.log.info('Registered PATCH /channels/:channelId/chats');
+  fastify.log.info('Registered PATCH /channels/:channelId/chats/:id');
 
   fastify.delete(
     '/channels/:channelId/chats/:id',
-    withPacked(chatController.changeChatName.bind(chatController)),
+    withPacked(chatController.deleteChat.bind(chatController)),
   );
-  fastify.log.info('Registered DELETE /channels/:channelId/chats');
+  fastify.log.info('Registered DELETE /channels/:channelId/chats/:id');
 };
