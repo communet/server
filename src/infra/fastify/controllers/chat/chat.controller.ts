@@ -18,9 +18,8 @@ import { ChatRepository, db } from '../../../../infra/database';
 import { ControllerHandlerParams } from '../../router';
 import {
   CreateChatHandlerParams,
-  UpdateChatHandlerParams,
+  UpdateDeleteChatHandlerParams,
   WithChannelId,
-  WithChatId,
 } from './types';
 
 class ChatController {
@@ -39,8 +38,9 @@ class ChatController {
     );
   }
 
-  // TODO: check by channel id
-  changeChatName({ request }: UpdateChatHandlerParams): Promise<ChatEntity> {
+  changeChatName({
+    request,
+  }: UpdateDeleteChatHandlerParams): Promise<ChatEntity> {
     return this.changeChatNameUseCase.changeName(
       new ChangeChatNameCommand(request.params.id, request.body.name),
     );
@@ -52,10 +52,7 @@ class ChatController {
     );
   }
 
-  // TODO: check by channel id
-  async deleteChat({
-    request,
-  }: WithChannelId<WithChatId<ControllerHandlerParams>>): Promise<void> {
+  async deleteChat({ request }: UpdateDeleteChatHandlerParams): Promise<void> {
     await this.deleteChatUseCase.delete(request.params.id);
   }
 }

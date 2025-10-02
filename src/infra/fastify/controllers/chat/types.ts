@@ -1,13 +1,9 @@
 import { ControllerHandlerParams, WithBody, WithParam } from '../../router';
 
+type WithChatId<T> = WithParam<T, 'id'>;
+type ChatNameBody = WithBody<ControllerHandlerParams, { name: string }>;
 export type WithChannelId<T> = WithParam<T, 'channelId'>;
-export type WithChatId<T> = WithParam<T, 'id'>;
 
-export type CreateChatHandlerParams = WithBody<
-  WithChannelId<ControllerHandlerParams>,
-  {
-    name: string;
-  }
->;
+export type CreateChatHandlerParams = WithChannelId<ChatNameBody>;
 
-export type UpdateChatHandlerParams = WithChatId<CreateChatHandlerParams>;
+export type UpdateDeleteChatHandlerParams = WithChatId<ChatNameBody>;
