@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify';
-import { createChatController } from '../controllers/chat';
+import { createChatController } from '../controllers';
 import { withPacked } from './common';
 
 export const ChatRouter = (fastify: FastifyInstance): void => {
