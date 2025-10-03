@@ -10,4 +10,10 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
     withPacked(withUser(messageController.sendMessage.bind(messageController))),
   );
   fastify.log.info('Registered POST /chats/:chatId/messages');
+
+  fastify.delete(
+    '/messages/:id',
+    withPacked(messageController.deleteMessage.bind(messageController)),
+  );
+  fastify.log.info('Registered DELETE /messages/:id');
 };
