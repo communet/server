@@ -9,5 +9,5 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
     '/chats/:chatId/messages',
     withPacked(withUser(messageController.sendMessage.bind(messageController))),
   );
-  fastify.log.info('Registerd POST /chats/:chatId/messages');
+  fastify.log.info('Registered POST /chats/:chatId/messages');
 };
