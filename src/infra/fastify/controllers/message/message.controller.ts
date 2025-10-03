@@ -3,22 +3,35 @@ import { MessageEntity } from '../../../../core/entities';
 import {
   DeleteMessageCommand,
   DeleteMessageUseCase,
+  GetMessagesByChatQuery,
   SendMessageCommand,
   SendMessageUseCase,
 } from '../../../../core/ports';
-import { WithUser } from '../../router';
+import { ControllerHandlerParams, WithUser } from '../../router';
 import {
   DeleteMessageService,
+  GetMessagesByChatIdService,
   SendMessageService,
 } from '../../../../application';
 import { IdGeneratorAdapter } from '../../../common';
-import { DeleteMessageHandlerParams, SendMessageHandlerParams } from './types';
+import {
+  DeleteMessageHandlerParams,
+  SendMessageHandlerParams,
+  WithChatId,
+} from './types';
 
 class MessageController {
   constructor(
+    private readonly getMessagesByChatQuery: GetMessagesByChatQuery,
     private readonly createMessageUseCase: SendMessageUseCase,
     private readonly deleteMessageUseCase: DeleteMessageUseCase,
   ) {}
+
+  getMessages({
+    request,
+  }: WithChatId<ControllerHandlerParams>): Promise<MessageEntity[]> {
+    return this.getMessagesByChatQuery.getMessagesByChat(request.params.chatId);
+  }
 
   async sendMessage({
     request,
@@ -46,6 +59,7 @@ export const createMessageController = (): MessageController => {
   const repository = new MessageRepository(db);
 
   return new MessageController(
+    new GetMessagesByChatIdService(repository),
     new SendMessageService(repository, new IdGeneratorAdapter()),
     new DeleteMessageService(repository),
   );
