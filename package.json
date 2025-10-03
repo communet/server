@@ -14,7 +14,7 @@
     "check:types": "tsc --noEmit",
     "check:types-lint-staged": "npm run check:types -- --module commonjs --emitDecoratorMetadata --experimentalDecorators --allowSyntheticDefaultImports --target esnext --strict --baseUrl ./ --skipLibCheck --strictNullChecks --forceConsistentCasingInFileNames --noImplicitAny --noFallthroughCasesInSwitch --strictBindCallApply",
     "check": "npm run check:lint && npm run check:types",
-    "db": "knex --knexfile ./knexfile.ts",
+    "db": "node --import ts-node/esm ./node_modules/knex/bin/cli.js --knexfile ./knexfile.ts",
     "migration:make": "npm run db migrate:make",
     "migration:run": "npm run db migrate:latest",
     "migration:rollback": "npm run db migrate:rollback",
