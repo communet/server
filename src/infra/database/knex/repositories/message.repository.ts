@@ -47,8 +47,10 @@ export class MessageRepository
       : null;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.knex('messages').where({ id }).del();
+  async remove(id: string): Promise<string | undefined> {
+    const result = await this.knex('messages').where({ id }).del('id');
+
+    return result.at(0)?.id;
   }
 
   async save(message: MessageEntity): Promise<MessageEntity> {
