@@ -17,6 +17,12 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
   );
   fastify.log.info('Registered POST /chats/:chatId/messages');
 
+  fastify.patch(
+    '/messages/:id',
+    withPacked(messageController.changeMessage.bind(messageController)),
+  );
+  fastify.log.info('Registered PATCH /messages/:id');
+
   fastify.delete(
     '/messages/:id',
     withPacked(messageController.deleteMessage.bind(messageController)),

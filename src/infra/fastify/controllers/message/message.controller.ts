@@ -1,6 +1,8 @@
 import { db, MessageRepository } from '../../../database';
 import { MessageEntity } from '../../../../core/entities';
 import {
+  ChangeMessageCommand,
+  ChangeMessageUseCase,
   DeleteMessageCommand,
   DeleteMessageUseCase,
   GetMessagesByChatQuery,
@@ -9,12 +11,14 @@ import {
 } from '../../../../core/ports';
 import { ControllerHandlerParams, WithUser } from '../../router';
 import {
+  ChangeMessageService,
   DeleteMessageService,
   GetMessagesByChatIdService,
   SendMessageService,
 } from '../../../../application';
 import { IdGeneratorAdapter } from '../../../common';
 import {
+  ChangeMessageHandlerParams,
   DeleteMessageHandlerParams,
   SendMessageHandlerParams,
   WithChatId,
@@ -24,6 +28,7 @@ class MessageController {
   constructor(
     private readonly getMessagesByChatQuery: GetMessagesByChatQuery,
     private readonly createMessageUseCase: SendMessageUseCase,
+    private readonly changeMessageUseCase: ChangeMessageUseCase,
     private readonly deleteMessageUseCase: DeleteMessageUseCase,
   ) {}
 
@@ -48,6 +53,14 @@ class MessageController {
     return message;
   }
 
+  async changeMessage({
+    request,
+  }: ChangeMessageHandlerParams): Promise<MessageEntity> {
+    return await this.changeMessageUseCase.change(
+      new ChangeMessageCommand(request.params.id, request.body.content),
+    );
+  }
+
   async deleteMessage({ request }: DeleteMessageHandlerParams): Promise<void> {
     await this.deleteMessageUseCase.delete(
       new DeleteMessageCommand(request.params.id),
@@ -61,6 +74,7 @@ export const createMessageController = (): MessageController => {
   return new MessageController(
     new GetMessagesByChatIdService(repository),
     new SendMessageService(repository, new IdGeneratorAdapter()),
+    new ChangeMessageService(repository, repository),
     new DeleteMessageService(repository),
   );
 };
