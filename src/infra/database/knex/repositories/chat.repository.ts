@@ -29,8 +29,10 @@ export class ChatRepository
     return chat;
   }
 
-  async remove(id: string): Promise<void> {
-    await this.knex('chats').where({ id }).del();
+  async remove(id: string): Promise<string | undefined> {
+    const result = await this.knex('chats').where({ id }).del('id');
+
+    return result.at(0)?.id;
   }
 
   async loadByChannelId(channelId: string): Promise<ChatEntity[]> {
