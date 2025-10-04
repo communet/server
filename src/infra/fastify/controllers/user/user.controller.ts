@@ -3,6 +3,7 @@ import { UserEntity } from '../../../../core/entities';
 import { GetUserByIdQuery } from '../../../../core/ports';
 import { db, UserRepository } from '../../../database';
 import { NotFoundResponse } from '../../responses';
+import { ControllerHandlerParams, WithUser } from '../../router';
 import { GetUserByIdHandlerParams } from './types';
 
 class UserController {
@@ -18,6 +19,10 @@ class UserController {
     }
 
     return result;
+  }
+
+  getMe({ user }: WithUser<ControllerHandlerParams>): UserEntity {
+    return user;
   }
 }
 

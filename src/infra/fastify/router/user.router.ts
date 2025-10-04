@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { createUserController } from '../controllers';
-import { withPacked } from './common';
+import { withPacked, withUser } from './common';
 
 export const UserRouter = (fastify: FastifyInstance): void => {
   const userController = createUserController();
@@ -10,4 +10,10 @@ export const UserRouter = (fastify: FastifyInstance): void => {
     withPacked(userController.getUserById.bind(userController)),
   );
   fastify.log.info('Registered GET /users/:id');
+
+  fastify.get(
+    '/users/me',
+    withPacked(withUser(userController.getMe.bind(userController))),
+  );
+  fastify.log.info('Registered GET /users/me');
 };
