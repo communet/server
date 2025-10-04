@@ -23,6 +23,7 @@ import {
 import { ChannelRouter, UserRouter, ChatRouter, MessageRouter } from './router';
 import { Server } from './server';
 import { API_PREFIX_V1 } from './server/constants';
+import cors from '@fastify/cors';
 
 export function startServer(): Promise<string> {
   const server = new Server(
@@ -37,6 +38,7 @@ export function startServer(): Promise<string> {
     { port: 3333 },
   );
 
+  server.register(cors);
   server.register(NotFoundPlugin);
 
   makeResponsePlugin(server.fastify)
