@@ -11,4 +11,6 @@ export type WithChatId<T> = WithParam<T, 'chatId'>;
 
 export type SendMessageHandlerParams = WithChatId<MessageContentBody>;
 
+export type ChangeMessageHandlerParams = WithMessageId<MessageContentBody>;
+
 export type DeleteMessageHandlerParams = WithMessageId<ControllerHandlerParams>;
