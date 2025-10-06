@@ -24,7 +24,7 @@ export class ChangeMessageService implements ChangeMessageUseCase {
       );
     }
 
-    message.body = command.body;
+    message.content = command.content;
 
     return this.saveMessagePort.save(message);
   }

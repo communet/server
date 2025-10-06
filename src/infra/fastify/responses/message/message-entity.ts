@@ -8,7 +8,7 @@ export const mapMessageEntity = (
   error: false,
   data: {
     id: message.id,
-    body: message.body,
+    content: message.content,
     chatId: message.chatId,
     senderId: message.senderId,
     createdAt: message.createdAt,

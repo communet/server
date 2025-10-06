@@ -5,14 +5,14 @@ describe('Entities - MessageEntity', () => {
     const createdAt = new Date();
     const entity = new MessageEntity({
       id: '123456789',
-      body: 'some message body',
+      content: 'some message content',
       senderId: '1234567890',
       chatId: '1234567890',
       createdAt,
     });
 
     expect(entity.id).toBe('123456789');
-    expect(entity.body).toBe('some message body');
+    expect(entity.content).toBe('some message content');
     expect(entity.senderId).toBe('1234567890');
     expect(entity.createdAt).toBe(createdAt);
   });
@@ -20,7 +20,7 @@ describe('Entities - MessageEntity', () => {
   it('MessageEntity can create without provided created at', () => {
     const entity = new MessageEntity({
       id: '123',
-      body: 'some body',
+      content: 'some content',
       senderId: '1234567890',
       chatId: '1234567890',
     });
@@ -28,11 +28,11 @@ describe('Entities - MessageEntity', () => {
     expect(entity.createdAt).toBeDefined();
   });
 
-  it('MessageEntity throws RuleError if provide empty body', () => {
+  it('MessageEntity throws RuleError if provide empty content', () => {
     const entityConstructor = (): MessageEntity =>
       new MessageEntity({
         id: '12345',
-        body: '',
+        content: '',
         senderId: '1234567890',
         chatId: '1234567890',
       });
