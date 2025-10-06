@@ -1,6 +1,6 @@
 export class ChangeMessageCommand {
   constructor(
     public readonly id: string,
-    public readonly body: string,
+    public readonly content: string,
   ) {}
 }

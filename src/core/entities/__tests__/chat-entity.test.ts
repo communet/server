@@ -20,7 +20,7 @@ describe('Entities - ChatEntity', () => {
       messages.push(
         new MessageEntity({
           id: String(i),
-          body: 'Some message body',
+          content: 'Some message content',
           senderId: '1234567890',
           chatId: '1234567890',
         }),

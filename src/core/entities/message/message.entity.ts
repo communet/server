@@ -1,29 +1,43 @@
 import { Entity } from '../../abstracts';
 import { IdRule, StringRule } from '../../rules';
-import { MESSAGE_BODY_OPTIONS } from './constants';
+import { MESSAGE_CONTENT_OPTIONS } from './constants';
 import { MessageEntityPayload } from './types';
 
 export class MessageEntity extends Entity {
-  private _body: StringRule;
+  private _content: StringRule;
   // FIXME: this should be a rule class
   private readonly _createdAt: Date;
   private readonly _senderId: IdRule;
   private readonly _chatId: IdRule;
 
-  constructor({ id, body, senderId, chatId, createdAt }: MessageEntityPayload) {
+  constructor({
+    id,
+    content,
+    senderId,
+    chatId,
+    createdAt,
+  }: MessageEntityPayload) {
     super(id);
-    this._body = new StringRule(body, 'messageBody', MESSAGE_BODY_OPTIONS);
+    this._content = new StringRule(
+      content,
+      'messageContent',
+      MESSAGE_CONTENT_OPTIONS,
+    );
     this._createdAt = createdAt ?? new Date();
     this._senderId = new IdRule(senderId, 'senderId');
     this._chatId = new IdRule(chatId, 'chatId');
   }
 
-  public get body(): string {
-    return this._body.value;
+  public get content(): string {
+    return this._content.value;
   }
 
-  public set body(body: string) {
-    this._body = new StringRule(body, 'messageBody', MESSAGE_BODY_OPTIONS);
+  public set content(content: string) {
+    this._content = new StringRule(
+      content,
+      'messageContent',
+      MESSAGE_CONTENT_OPTIONS,
+    );
   }
 
   public get createdAt(): Date {

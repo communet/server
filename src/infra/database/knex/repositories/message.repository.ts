@@ -25,7 +25,7 @@ export class MessageRepository
       (message) =>
         new MessageEntity({
           id: message.id,
-          body: message.body,
+          content: message.content,
           senderId: message.sender_id,
           chatId: message.chat_id,
           createdAt: message.created_at,
@@ -39,7 +39,7 @@ export class MessageRepository
     return message
       ? new MessageEntity({
           id: message.id,
-          body: message.body,
+          content: message.content,
           senderId: message.sender_id,
           chatId: message.chat_id,
           createdAt: message.created_at,
@@ -57,7 +57,7 @@ export class MessageRepository
     await this.knex('messages')
       .insert({
         id: message.id,
-        body: message.body,
+        content: message.content,
         sender_id: message.senderId,
         chat_id: message.chatId,
         created_at: message.createdAt,

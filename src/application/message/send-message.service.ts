@@ -15,7 +15,7 @@ export class SendMessageService implements SendMessageUseCase {
   send(command: SendMessageCommand): Promise<MessageEntity> {
     const message = new MessageEntity({
       id: this.idGeneratorPort.generate(),
-      body: command.body,
+      content: command.content,
       senderId: command.senderId,
       chatId: command.chatId,
     });

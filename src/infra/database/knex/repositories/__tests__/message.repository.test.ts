@@ -47,7 +47,7 @@ describe('MessageRepository', () => {
     const repository = new MessageRepository(db);
     const message = new MessageEntity({
       id: idGenerator.generate(),
-      body: 'some message body',
+      content: 'some message content',
       senderId: idGenerator.generate(),
       chatId: idGenerator.generate(),
     });
@@ -61,13 +61,13 @@ describe('MessageRepository', () => {
     const repository = new MessageRepository(db);
     const message = new MessageEntity({
       id: idGenerator.generate(),
-      body: 'some message body',
+      content: 'some message content',
       senderId: idGenerator.generate(),
       chatId: idGenerator.generate(),
     });
     const anotherMessage = new MessageEntity({
       id: anotherIdGenerator.generate(),
-      body: 'some another message body',
+      content: 'some another message content',
       senderId: idGenerator.generate(),
       chatId: idGenerator.generate(),
     });
@@ -85,7 +85,7 @@ describe('MessageRepository', () => {
     const repository = new MessageRepository(db);
     const message = new MessageEntity({
       id: idGenerator.generate(),
-      body: 'some message body',
+      content: 'some message content',
       senderId: idGenerator.generate(),
       chatId: idGenerator.generate(),
     });
