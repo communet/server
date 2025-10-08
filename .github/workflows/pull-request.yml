@@ -7,19 +7,8 @@ on:
     branches: ["dev"]
 
 jobs:
-  typecheck:
-    name: Check Types
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
-      - run: npm run check:types
 
-  lint:
+  lint-typecheck-tests:
     name: Check Lint and Format Rules
     runs-on: ubuntu-latest
     steps:
@@ -33,18 +22,8 @@ jobs:
         run: npm run check:lint
       - name: Check Formatting
         run: npm run check:format
-
-  test:
-    name: Test Core and Application Layers
-    runs-on: ubuntu-latest
-    needs: [typecheck, lint]
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-      - run: npm ci
+      - name: Check Types
+        run: npm run check:types
       - name: Test Core
         run: npm run test:core
       - name: Test Application
