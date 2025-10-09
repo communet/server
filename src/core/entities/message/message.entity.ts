@@ -22,7 +22,9 @@ export class MessageEntity extends Entity {
       'messageContent',
       MESSAGE_CONTENT_OPTIONS,
     );
-    this._createdAt = new DateRule(createdAt ?? new Date(), 'createdAt');
+    this._createdAt = new DateRule(createdAt ?? new Date(), 'createdAt', {
+      max: new Date(),
+    });
     this._senderId = new IdRule(senderId, 'senderId');
     this._chatId = new IdRule(chatId, 'chatId');
   }
