@@ -1,12 +1,11 @@
 import { Entity } from '../../abstracts';
-import { IdRule, StringRule } from '../../rules';
+import { DateRule, IdRule, StringRule } from '../../rules';
 import { MESSAGE_CONTENT_OPTIONS } from './constants';
 import { MessageEntityPayload } from './types';
 
 export class MessageEntity extends Entity {
   private _content: StringRule;
-  // FIXME: this should be a rule class
-  private readonly _createdAt: Date;
+  private readonly _createdAt: DateRule;
   private readonly _senderId: IdRule;
   private readonly _chatId: IdRule;
 
@@ -23,7 +22,7 @@ export class MessageEntity extends Entity {
       'messageContent',
       MESSAGE_CONTENT_OPTIONS,
     );
-    this._createdAt = createdAt ?? new Date();
+    this._createdAt = new DateRule(createdAt ?? new Date(), 'createdAt');
     this._senderId = new IdRule(senderId, 'senderId');
     this._chatId = new IdRule(chatId, 'chatId');
   }
@@ -41,7 +40,7 @@ export class MessageEntity extends Entity {
   }
 
   public get createdAt(): Date {
-    return this._createdAt;
+    return this._createdAt.value;
   }
 
   public get senderId(): string {
