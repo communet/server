@@ -16,7 +16,7 @@ export class DateRule extends Rule<Date> {
     this.validate();
   }
 
-  private _max?: Date;
+  private readonly _max?: Date;
 
   validate(): void {
     if (
