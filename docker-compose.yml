@@ -9,7 +9,7 @@ services:
     restart: always
 
   db:
-    image: postgres
+    image: postgres:17-alpine
     container_name: communet_postgres
     env_file:
       - .env
