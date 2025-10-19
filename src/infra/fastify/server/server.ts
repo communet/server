@@ -4,7 +4,7 @@ import fastify, {
   FastifyServerOptions,
 } from 'fastify';
 import { ApplicationError } from '../../../application';
-import { RuleError } from '../../../core/errors';
+import { RuleError } from '../../../core/rules';
 import { BadRequestResponse, InternalServerResponse } from '../responses';
 import { ServerOptions } from './types';
 
@@ -23,11 +23,11 @@ export class Server {
       }
 
       if (error instanceof ApplicationError) {
-        console.trace('Error catched', error);
+        console.trace('Error caught', error);
         return error;
       }
 
-      console.log(error);
+      console.error(error);
       return new InternalServerResponse(error.message);
     });
   }

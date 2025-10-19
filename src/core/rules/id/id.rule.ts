@@ -1,6 +1,6 @@
-import { Rule } from '../../abstracts';
-import { RuleError } from '../../errors';
-import { RULE_ERRORS } from './constatnts';
+import { Rule } from '../abstracts';
+import { RuleError } from '../errors';
+import { RULE_ERRORS } from './constants';
 
 export class IdRule extends Rule<string> {
   constructor(

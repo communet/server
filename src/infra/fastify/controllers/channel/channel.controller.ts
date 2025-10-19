@@ -3,6 +3,7 @@ import {
   CreateChannelService,
   DeleteChannelService,
   GetChannelsByUserIdService,
+  StandardChannelDeletionPolicy,
 } from '../../../../application';
 import { ChannelEntity } from '../../../../core/entities';
 import { IdGeneratorAdapter } from '../../../common';
@@ -46,9 +47,10 @@ class ChannelController {
 
   async deleteChannel({
     request,
-  }: WithChannelId<ControllerHandlerParams>): Promise<void> {
+    user,
+  }: WithUser<WithChannelId<ControllerHandlerParams>>): Promise<void> {
     await this.deleteChannelUseCase.delete(
-      new DeleteChannelCommand(request.params.id),
+      new DeleteChannelCommand(request.params.id, user),
     );
   }
 
@@ -67,7 +69,10 @@ export const createChannelController = (): ChannelController => {
   return new ChannelController(
     new GetChannelsByUserIdService(repository),
     new CreateChannelService(repository, new IdGeneratorAdapter()),
-    new DeleteChannelService(repository),
+    new DeleteChannelService(
+      repository,
+      new StandardChannelDeletionPolicy(repository),
+    ),
     new ChangeChannelNameService(repository, repository),
   );
 };
