@@ -1,5 +1,5 @@
-import { Rule } from '../../abstracts';
-import { RuleError } from '../../errors';
+import { Rule } from '../abstracts';
+import { RuleError } from '../errors';
 import { RULE_ERRORS } from './constants';
 import { DateRuleOptions } from './types';
 

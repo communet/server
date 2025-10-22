@@ -1,4 +1,4 @@
-import { Entity } from '../../abstracts';
+import { Entity } from '../abstracts';
 import { StringRule } from '../../rules';
 import { USERNAME_RULE_OPTIONS } from './constants';
 

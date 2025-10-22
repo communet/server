@@ -46,9 +46,10 @@ class ChannelController {
 
   async deleteChannel({
     request,
-  }: WithChannelId<ControllerHandlerParams>): Promise<void> {
+    user,
+  }: WithUser<WithChannelId<ControllerHandlerParams>>): Promise<void> {
     await this.deleteChannelUseCase.delete(
-      new DeleteChannelCommand(request.params.id),
+      new DeleteChannelCommand(request.params.id, user),
     );
   }
 
@@ -67,7 +68,7 @@ export const createChannelController = (): ChannelController => {
   return new ChannelController(
     new GetChannelsByUserIdService(repository),
     new CreateChannelService(repository, new IdGeneratorAdapter()),
-    new DeleteChannelService(repository),
+    new DeleteChannelService(repository, repository),
     new ChangeChannelNameService(repository, repository),
   );
 };

@@ -1,5 +1,8 @@
+import { Entity } from '../../../../entities';
 import { DeleteChannelCommand } from '../commands';
 
 export abstract class DeleteChannelUseCase {
-  abstract delete(command: DeleteChannelCommand): Promise<void>;
+  abstract delete<T extends Entity>(
+    command: DeleteChannelCommand<T>,
+  ): Promise<void>;
 }

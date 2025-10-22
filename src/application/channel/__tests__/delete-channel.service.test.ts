@@ -1,34 +1,74 @@
-import { EntityNotFoundError } from '../../../application/errors';
-import { DeleteChannelCommand, RemoveChannelPort } from '../../../core/ports';
+import {
+  AccessViolationError,
+  EntityNotFoundError,
+} from '../../../application/errors';
+import { ChannelEntity, UserEntity } from '../../../core/entities';
+import {
+  DeleteChannelCommand,
+  LoadChannelByIdPort,
+  RemoveChannelPort,
+} from '../../../core/ports';
 import { DeleteChannelService } from '../delete-channel.service';
 
-class MetaMockedRemoveChannelPort implements RemoveChannelPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  remove(id: string): Promise<string | undefined> {
-    throw new Error('Method not implemented');
-  }
-}
+const createLoadChannelByIdPortMock = (): jest.Mocked<LoadChannelByIdPort> => {
+  return {
+    loadById: jest.fn(),
+  };
+};
 
-const removeMock = jest
-  .spyOn(MetaMockedRemoveChannelPort.prototype, 'remove')
-  .mockImplementationOnce(() => Promise.resolve('123'))
-  .mockImplementationOnce(() => Promise.resolve(undefined));
+const createRemoveChannelPortMock = (): jest.Mocked<RemoveChannelPort> => {
+  return {
+    remove: jest.fn(),
+  };
+};
+
+const command = new DeleteChannelCommand('123', new UserEntity('123', 'admin'));
 
 describe('DeleteChannelService tests', () => {
-  it('DeleteChannelService can be created by passing mock RemoveChannelPort and return removed channel id or undefined', async () => {
-    const removePort = new MetaMockedRemoveChannelPort();
-    const deleteService = new DeleteChannelService(removePort);
-    const command = new DeleteChannelCommand('123');
+  it('DeleteChannelService returns undefined if deletions succeed', async () => {
+    const loadPort = createLoadChannelByIdPortMock();
+    const removePort = createRemoveChannelPortMock();
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(deleteService.delete(command)).resolves.toBeUndefined();
+    const sameAuthorId = new ChannelEntity('123', 'Channel name', '123', []);
+    loadPort.loadById.mockResolvedValue(sameAuthorId);
+    removePort.remove.mockResolvedValue('123');
 
-    try {
-      await deleteService.delete(command);
-    } catch (error) {
-      expect(error).toBeInstanceOf(EntityNotFoundError);
-    }
+    const deleteService = new DeleteChannelService(removePort, loadPort);
 
-    expect(removeMock).toHaveBeenCalledTimes(2);
+    const result = await deleteService.delete(command);
+
+    expect(result).toBeUndefined();
+  });
+
+  it('DeleteChannelService throws PolicyViolationError if command invoker has no rights', async () => {
+    const loadPort = createLoadChannelByIdPortMock();
+    const removePort = createRemoveChannelPortMock();
+
+    const notSameAuthorId = new ChannelEntity(
+      '123',
+      'Channel name',
+      '1234',
+      [],
+    );
+    loadPort.loadById.mockResolvedValue(notSameAuthorId);
+
+    const deleteService = new DeleteChannelService(removePort, loadPort);
+
+    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+      AccessViolationError,
+    );
+  });
+
+  it('DeleteChannelService throws EntityNotFoundError if entity not found', async () => {
+    const loadPort = createLoadChannelByIdPortMock();
+    const removePort = createRemoveChannelPortMock();
+
+    loadPort.loadById.mockResolvedValue(null);
+
+    const deleteService = new DeleteChannelService(removePort, loadPort);
+
+    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
   });
 });

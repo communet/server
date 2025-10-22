@@ -1,4 +1,4 @@
-import { Entity } from '../../abstracts';
+import { Entity } from '../abstracts';
 import { DateRule, IdRule, StringRule } from '../../rules';
 import { MESSAGE_CONTENT_OPTIONS } from './constants';
 import { MessageEntityPayload } from './types';

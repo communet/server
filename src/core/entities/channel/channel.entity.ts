@@ -1,4 +1,4 @@
-import { Entity } from '../../abstracts';
+import { Entity } from '../abstracts';
 import { IdRule, StringRule } from '../../rules';
 import { ChatEntity } from '../chat';
 import { CHANNEL_NAME_OPTIONS } from './constants';

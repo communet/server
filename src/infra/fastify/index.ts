@@ -1,4 +1,5 @@
-import { EntityNotFoundError } from '../../application';
+import cors from '@fastify/cors';
+import { AccessViolationError, EntityNotFoundError } from '../../application';
 import {
   ChannelEntity,
   ChatEntity,
@@ -8,22 +9,23 @@ import {
 import { makeResponsePlugin, NotFoundPlugin } from './plugins';
 import {
   BadRequestResponse,
+  ForbiddenResponse,
   InternalServerResponse,
   mapBadRequest,
   mapChannelEntity,
   mapChatEntity,
+  mapForbidden,
   mapInternalServer,
+  mapMessageEntity,
   mapNotFound,
   mapUnauthorized,
   mapUserEntity,
-  mapMessageEntity,
   NotFoundResponse,
   UnauthorizedResponse,
 } from './responses';
-import { ChannelRouter, UserRouter, ChatRouter, MessageRouter } from './router';
+import { ChannelRouter, ChatRouter, MessageRouter, UserRouter } from './router';
 import { Server } from './server';
 import { API_PREFIX_V1 } from './server/constants';
-import cors from '@fastify/cors';
 
 export function startServer(): Promise<string> {
   const server = new Server(
@@ -54,6 +56,9 @@ export function startServer(): Promise<string> {
             : ['unknown entity', 'not found']),
         ),
       ),
+    )
+    .map(AccessViolationError, ({ targetEntity }) =>
+      mapForbidden(new ForbiddenResponse(targetEntity ?? 'unknown entity')),
     )
     .map(UserEntity, mapUserEntity)
     .map(ChatEntity, mapChatEntity)

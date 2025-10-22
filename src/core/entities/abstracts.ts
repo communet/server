@@ -1,4 +1,4 @@
-import { IdRule } from '../../rules';
+import { IdRule } from '../rules';
 
 export abstract class Entity {
   protected constructor(id: string) {

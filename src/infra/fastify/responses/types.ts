@@ -21,6 +21,12 @@ export type ResponseBadRequest = {
   code: 'bad_request';
 };
 
+export type ResponseForbidden = {
+  error: true;
+  reason: string[];
+  code: 'forbidden';
+};
+
 export type ResponseInternalServer = {
   error: true;
   reason: string[];
@@ -32,6 +38,7 @@ export type ResponseError =
   | ResponseNotFound
   | ResponseUnauthorized
   | ResponseBadRequest
+  | ResponseForbidden
   | {
       error: true;
       reason: string[];
