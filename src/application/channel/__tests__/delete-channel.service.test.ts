@@ -1,6 +1,6 @@
 import {
+  AccessViolationError,
   EntityNotFoundError,
-  PolicyViolationError,
 } from '../../../application/errors';
 import { ChannelEntity, UserEntity } from '../../../core/entities';
 import {
@@ -9,7 +9,6 @@ import {
   RemoveChannelPort,
 } from '../../../core/ports';
 import { DeleteChannelService } from '../delete-channel.service';
-import { StandardChannelDeletionPolicy } from '../policies';
 
 const createLoadChannelByIdPortMock = (): jest.Mocked<LoadChannelByIdPort> => {
   return {
@@ -34,10 +33,7 @@ describe('DeleteChannelService tests', () => {
     loadPort.loadById.mockResolvedValue(sameAuthorId);
     removePort.remove.mockResolvedValue('123');
 
-    const deleteService = new DeleteChannelService(
-      removePort,
-      new StandardChannelDeletionPolicy(loadPort),
-    );
+    const deleteService = new DeleteChannelService(removePort, loadPort);
 
     const result = await deleteService.delete(command);
 
@@ -56,13 +52,10 @@ describe('DeleteChannelService tests', () => {
     );
     loadPort.loadById.mockResolvedValue(notSameAuthorId);
 
-    const deleteService = new DeleteChannelService(
-      removePort,
-      new StandardChannelDeletionPolicy(loadPort),
-    );
+    const deleteService = new DeleteChannelService(removePort, loadPort);
 
     await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
-      PolicyViolationError,
+      AccessViolationError,
     );
   });
 
@@ -72,10 +65,7 @@ describe('DeleteChannelService tests', () => {
 
     loadPort.loadById.mockResolvedValue(null);
 
-    const deleteService = new DeleteChannelService(
-      removePort,
-      new StandardChannelDeletionPolicy(loadPort),
-    );
+    const deleteService = new DeleteChannelService(removePort, loadPort);
 
     await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
       EntityNotFoundError,

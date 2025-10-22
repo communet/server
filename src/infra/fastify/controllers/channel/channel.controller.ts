@@ -3,7 +3,6 @@ import {
   CreateChannelService,
   DeleteChannelService,
   GetChannelsByUserIdService,
-  StandardChannelDeletionPolicy,
 } from '../../../../application';
 import { ChannelEntity } from '../../../../core/entities';
 import { IdGeneratorAdapter } from '../../../common';
@@ -69,10 +68,7 @@ export const createChannelController = (): ChannelController => {
   return new ChannelController(
     new GetChannelsByUserIdService(repository),
     new CreateChannelService(repository, new IdGeneratorAdapter()),
-    new DeleteChannelService(
-      repository,
-      new StandardChannelDeletionPolicy(repository),
-    ),
+    new DeleteChannelService(repository, repository),
     new ChangeChannelNameService(repository, repository),
   );
 };

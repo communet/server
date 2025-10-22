@@ -1,6 +1,6 @@
 import { ApplicationError } from './application.error';
 
-export class PolicyViolationError extends ApplicationError {
+export class AccessViolationError extends ApplicationError {
   constructor(message: string, targetEntity?: string) {
     super(message, targetEntity);
 

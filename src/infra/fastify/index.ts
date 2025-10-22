@@ -1,5 +1,5 @@
 import cors from '@fastify/cors';
-import { EntityNotFoundError, PolicyViolationError } from '../../application';
+import { AccessViolationError, EntityNotFoundError } from '../../application';
 import {
   ChannelEntity,
   ChatEntity,
@@ -57,7 +57,7 @@ export function startServer(): Promise<string> {
         ),
       ),
     )
-    .map(PolicyViolationError, ({ targetEntity }) =>
+    .map(AccessViolationError, ({ targetEntity }) =>
       mapForbidden(new ForbiddenResponse(targetEntity ?? 'unknown entity')),
     )
     .map(UserEntity, mapUserEntity)
