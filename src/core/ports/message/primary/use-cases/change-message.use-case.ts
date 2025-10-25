@@ -1,6 +1,8 @@
 import { ChangeMessageCommand } from '../commands';
-import { MessageEntity } from '../../../../entities';
+import { Entity, MessageEntity } from '../../../../entities';
 
 export abstract class ChangeMessageUseCase {
-  abstract change(command: ChangeMessageCommand): Promise<MessageEntity>;
+  abstract change<T extends Entity>(
+    command: ChangeMessageCommand<T>,
+  ): Promise<MessageEntity>;
 }

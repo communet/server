@@ -55,9 +55,10 @@ class MessageController {
 
   async changeMessage({
     request,
-  }: ChangeMessageHandlerParams): Promise<MessageEntity> {
+    user,
+  }: WithUser<ChangeMessageHandlerParams>): Promise<MessageEntity> {
     return await this.changeMessageUseCase.change(
-      new ChangeMessageCommand(request.params.id, request.body.content),
+      new ChangeMessageCommand(request.params.id, request.body.content, user),
     );
   }
 

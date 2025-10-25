@@ -4,76 +4,102 @@ import {
   SaveMessagePort,
 } from '../../../core/ports';
 import { ChangeMessageService } from '../change-message.service';
-import { MessageEntity } from '../../../core/entities';
-import { EntityNotFoundError } from '../../../application/errors';
+import { MessageEntity, UserEntity } from '../../../core/entities';
+import {
+  AccessViolationError,
+  EntityNotFoundError,
+} from '../../../application/errors';
 
-class MetaMockedLoadMessageByIdPort implements LoadMessageByIdPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  load(id: string): Promise<MessageEntity | null> {
-    throw new Error('Method not implemented');
-  }
-}
+const createLoadMessageByIdPort = (): jest.Mocked<LoadMessageByIdPort> => {
+  return {
+    load: jest.fn(),
+  };
+};
 
-const createdAt = new Date();
-
-const loadMock = jest
-  .spyOn(MetaMockedLoadMessageByIdPort.prototype, 'load')
-  .mockImplementationOnce(() =>
-    Promise.resolve(
-      new MessageEntity({
-        id: '123',
-        content: 'Message content',
-        senderId: '123',
-        chatId: '123',
-        createdAt: createdAt,
-      }),
-    ),
-  )
-  .mockImplementationOnce(() => Promise.resolve(null));
-
-class MetaMockedSaveMessagePort implements SaveMessagePort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  save(message: MessageEntity): Promise<MessageEntity> {
-    throw new Error('Method not implemented');
-  }
-}
-
-const updatedMessageEntity = new MessageEntity({
-  id: '123',
-  content: 'New message content',
-  senderId: '123',
-  chatId: '123',
-  createdAt: createdAt,
-});
-
-const saveMock = jest
-  .spyOn(MetaMockedSaveMessagePort.prototype, 'save')
-  .mockImplementationOnce(() => Promise.resolve(updatedMessageEntity));
+const createSaveMessagePort = (): jest.Mocked<SaveMessagePort> => {
+  return {
+    save: jest.fn(),
+  };
+};
 
 describe('ChangeMessageService tests', () => {
-  it('ChangeMessageService can be created by passing mock LoadMessageByIdPort and SaveMessage port and return modified message', async () => {
-    const loadMessageByIdPort = new MetaMockedLoadMessageByIdPort();
-    const saveMessagePort = new MetaMockedSaveMessagePort();
+  it('ChangeMessageService returns updated message if changes succeed', () => {
+    const loadPort = createLoadMessageByIdPort();
+    const savePort = createSaveMessagePort();
 
-    const changeService = new ChangeMessageService(
-      loadMessageByIdPort,
-      saveMessagePort,
+    const messageCreatedAt = new Date();
+
+    const loadMessage = new MessageEntity({
+      id: '123',
+      content: 'content',
+      senderId: '123',
+      chatId: '123',
+      createdAt: messageCreatedAt,
+    });
+    loadPort.load.mockResolvedValue(loadMessage);
+
+    const updatedMessage = new MessageEntity({
+      id: '123',
+      content: 'new content',
+      senderId: '123',
+      chatId: '123',
+      createdAt: messageCreatedAt,
+    });
+    savePort.save.mockResolvedValue(updatedMessage);
+
+    const changeService = new ChangeMessageService(loadPort, savePort);
+    const command = new ChangeMessageCommand(
+      '123',
+      'new content',
+      new UserEntity('123', 'Admin'),
     );
-
-    const command = new ChangeMessageCommand('123', 'New message content');
-
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     expect(changeService.change(command)).resolves.toStrictEqual(
-      updatedMessageEntity,
+      updatedMessage,
+    );
+  });
+
+  it('ChangeMessageService throws PolicyViolationError if command invoker has no rights', async () => {
+    const loadPort = createLoadMessageByIdPort();
+    const savePort = createSaveMessagePort();
+
+    const message = new MessageEntity({
+      id: '123',
+      content: 'content',
+      senderId: '123',
+      chatId: '123',
+      createdAt: new Date(),
+    });
+
+    loadPort.load.mockResolvedValue(message);
+
+    const changeService = new ChangeMessageService(loadPort, savePort);
+    const command = new ChangeMessageCommand(
+      '123',
+      'new content',
+      new UserEntity('321', 'Admin'),
     );
 
-    try {
-      await changeService.change(command);
-    } catch (error) {
-      expect(error).toBeInstanceOf(EntityNotFoundError);
-    }
+    await expect(changeService.change(command)).rejects.toBeInstanceOf(
+      AccessViolationError,
+    );
+  });
 
-    expect(loadMock).toHaveBeenCalledTimes(2);
-    expect(saveMock).toHaveBeenCalledTimes(1);
+  it('ChangeMessageService throws EntityNotFoundError if entity not found', async () => {
+    const loadPort = createLoadMessageByIdPort();
+    const savePort = createSaveMessagePort();
+
+    loadPort.load.mockResolvedValue(null);
+
+    const changeService = new ChangeMessageService(loadPort, savePort);
+    const command = new ChangeMessageCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    await expect(changeService.change(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
   });
 });

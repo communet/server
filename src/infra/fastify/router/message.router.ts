@@ -19,7 +19,9 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
 
   fastify.patch(
     '/messages/:id',
-    withPacked(messageController.changeMessage.bind(messageController)),
+    withPacked(
+      withUser(messageController.changeMessage.bind(messageController)),
+    ),
   );
   fastify.log.info('Registered PATCH /messages/:id');
 
