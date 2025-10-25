@@ -29,7 +29,9 @@ export const ChannelRouter = (fastify: FastifyInstance): void => {
 
   fastify.patch(
     '/channels/:id',
-    withPacked(channelController.updateChannel.bind(channelController)),
+    withPacked(
+      withUser(channelController.updateChannel.bind(channelController)),
+    ),
   );
   fastify.log.info('Registered PATCH /channels/:id');
 };

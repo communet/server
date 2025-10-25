@@ -55,9 +55,12 @@ class ChannelController {
 
   async updateChannel({
     request,
-  }: WithChannelId<CreateUpdateChannelHandlerParams>): Promise<ChannelEntity> {
+    user,
+  }: WithUser<
+    WithChannelId<CreateUpdateChannelHandlerParams>
+  >): Promise<ChannelEntity> {
     return this.changeChannelNameUseCase.changeName(
-      new ChangeChannelNameCommand(request.params.id, request.body.name),
+      new ChangeChannelNameCommand(request.params.id, request.body.name, user),
     );
   }
 }
