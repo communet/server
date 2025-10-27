@@ -7,10 +7,21 @@ type MessageContentBody = WithBody<
   { content: string }
 >;
 
+export type WithChannelId<T> = WithParam<T, 'channelId'>;
+
 export type WithChatId<T> = WithParam<T, 'chatId'>;
 
-export type SendMessageHandlerParams = WithChatId<MessageContentBody>;
+export type WithChannelChatIds<T> = WithChannelId<WithChatId<T>>;
 
-export type ChangeMessageHandlerParams = WithMessageId<MessageContentBody>;
+export type WithChannelChatMessageIds<T> = WithChannelChatIds<WithMessageId<T>>;
 
-export type DeleteMessageHandlerParams = WithMessageId<ControllerHandlerParams>;
+export type GetMessagesHandlerParams =
+  WithChannelChatIds<ControllerHandlerParams>;
+
+export type SendMessageHandlerParams = WithChannelChatIds<MessageContentBody>;
+
+export type ChangeMessageHandlerParams =
+  WithChannelChatMessageIds<MessageContentBody>;
+
+export type DeleteMessageHandlerParams =
+  WithChannelChatMessageIds<ControllerHandlerParams>;

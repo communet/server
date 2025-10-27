@@ -9,7 +9,7 @@ import {
   SendMessageCommand,
   SendMessageUseCase,
 } from '../../../../core/ports';
-import { ControllerHandlerParams, WithUser } from '../../router';
+import { WithUser } from '../../router';
 import {
   ChangeMessageService,
   DeleteMessageService,
@@ -20,8 +20,8 @@ import { IdGeneratorAdapter } from '../../../common';
 import {
   ChangeMessageHandlerParams,
   DeleteMessageHandlerParams,
+  GetMessagesHandlerParams,
   SendMessageHandlerParams,
-  WithChatId,
 } from './types';
 
 class MessageController {
@@ -34,7 +34,7 @@ class MessageController {
 
   getMessages({
     request,
-  }: WithChatId<ControllerHandlerParams>): Promise<MessageEntity[]> {
+  }: WithUser<GetMessagesHandlerParams>): Promise<MessageEntity[]> {
     return this.getMessagesByChatQuery.getMessagesByChat(request.params.chatId);
   }
 
