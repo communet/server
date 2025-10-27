@@ -59,7 +59,7 @@ describe('ChangeMessageService tests', () => {
     );
   });
 
-  it('ChangeMessageService throws PolicyViolationError if command invoker has no rights', async () => {
+  it('ChangeMessageService throws PolicyViolationError if command invoker has no rights', () => {
     const loadPort = createLoadMessageByIdPort();
     const savePort = createSaveMessagePort();
 
@@ -80,12 +80,13 @@ describe('ChangeMessageService tests', () => {
       new UserEntity('321', 'Admin'),
     );
 
-    await expect(changeService.change(command)).rejects.toBeInstanceOf(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(changeService.change(command)).rejects.toBeInstanceOf(
       AccessViolationError,
     );
   });
 
-  it('ChangeMessageService throws EntityNotFoundError if entity not found', async () => {
+  it('ChangeMessageService throws EntityNotFoundError if entity not found', () => {
     const loadPort = createLoadMessageByIdPort();
     const savePort = createSaveMessagePort();
 
@@ -98,7 +99,8 @@ describe('ChangeMessageService tests', () => {
       new UserEntity('123', '123'),
     );
 
-    await expect(changeService.change(command)).rejects.toBeInstanceOf(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(changeService.change(command)).rejects.toBeInstanceOf(
       EntityNotFoundError,
     );
   });

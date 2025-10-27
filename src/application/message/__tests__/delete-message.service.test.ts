@@ -104,7 +104,7 @@ describe('DeleteMessageService tests', () => {
     expect(result).toBeUndefined();
   });
 
-  it('DeleteMessageService throws PolicyViolationError if command invoker has no rights', async () => {
+  it('DeleteMessageService throws PolicyViolationError if command invoker has no rights', () => {
     const loadChannelPort = createLoadChannelByIdPort();
     const loadMessagePort = createLoadMessageByIdPort();
     const removeMessagePort = createRemoveMessagePort();
@@ -135,12 +135,13 @@ describe('DeleteMessageService tests', () => {
       new UserEntity('312', '123'),
     );
 
-    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(deleteService.delete(command)).rejects.toBeInstanceOf(
       AccessViolationError,
     );
   });
 
-  it('DeleteMessageService throws EntityNotFoundError if channel entity not found', async () => {
+  it('DeleteMessageService throws EntityNotFoundError if channel entity not found', () => {
     const loadChannelPort = createLoadChannelByIdPort();
     const loadMessagePort = createLoadMessageByIdPort();
     const removeMessagePort = createRemoveMessagePort();
@@ -159,12 +160,13 @@ describe('DeleteMessageService tests', () => {
       new UserEntity('123', '123'),
     );
 
-    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(deleteService.delete(command)).rejects.toBeInstanceOf(
       EntityNotFoundError,
     );
   });
 
-  it('DeleteMessageService throws EntityNotFoundError if message entity not found', async () => {
+  it('DeleteMessageService throws EntityNotFoundError if message entity not found', () => {
     const loadChannelPort = createLoadChannelByIdPort();
     const loadMessagePort = createLoadMessageByIdPort();
     const removeMessagePort = createRemoveMessagePort();
@@ -186,7 +188,8 @@ describe('DeleteMessageService tests', () => {
       new UserEntity('123', '123'),
     );
 
-    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(deleteService.delete(command)).rejects.toBeInstanceOf(
       EntityNotFoundError,
     );
   });
