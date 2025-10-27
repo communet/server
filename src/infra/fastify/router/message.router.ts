@@ -6,28 +6,36 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
   const messageController = createMessageController();
 
   fastify.get(
-    '/chats/:chatId/messages',
-    withPacked(messageController.getMessages.bind(messageController)),
+    '/channels/:channelId/chats/:chatId/messages',
+    withPacked(withUser(messageController.getMessages.bind(messageController))),
   );
-  fastify.log.info('Registered GET /chats/:chatId/messages');
+  fastify.log.info(
+    'Registered GET /channels/:channelId/chats/:chatId/messages',
+  );
 
   fastify.post(
-    '/chats/:chatId/messages',
+    '/channels/:channelId/chats/:chatId/messages',
     withPacked(withUser(messageController.sendMessage.bind(messageController))),
   );
-  fastify.log.info('Registered POST /chats/:chatId/messages');
+  fastify.log.info(
+    'Registered POST /channels/:channelId/chats/:chatId/messages',
+  );
 
   fastify.patch(
-    '/messages/:id',
+    '/channels/:channelId/chats/:chatId/messages/:id',
     withPacked(
       withUser(messageController.changeMessage.bind(messageController)),
     ),
   );
-  fastify.log.info('Registered PATCH /messages/:id');
+  fastify.log.info(
+    'Registered PATCH /channels/:channelId/chats/:chatId/messages/:id',
+  );
 
   fastify.delete(
-    '/messages/:id',
+    '/channels/:channelId/chats/:chatId/messages/:id',
     withPacked(messageController.deleteMessage.bind(messageController)),
   );
-  fastify.log.info('Registered DELETE /messages/:id');
+  fastify.log.info(
+    'Registered DELETE /channels/:channelId/chats/:chatId/messages/:id',
+  );
 };
