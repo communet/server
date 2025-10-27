@@ -1,59 +1,150 @@
 import {
   ChangeChatNameCommand,
+  LoadChannelByIdPort,
   LoadChatByIdPort,
   SaveChatPort,
 } from '../../../core/ports';
-import { EntityNotFoundError } from '../../../application/errors';
+import {
+  AccessViolationError,
+  EntityNotFoundError,
+} from '../../../application/errors';
 import { ChangeChatNameService } from '../change-chat-name.service';
-import { ChatEntity } from '../../../core/entities';
+import { ChannelEntity, ChatEntity, UserEntity } from '../../../core/entities';
 
-class MetaMockedLoadChatPort implements LoadChatByIdPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  load(id: string): Promise<ChatEntity | null> {
-    throw new Error('Method not implemented');
-  }
-}
+const createLoadChatPort = (): jest.Mocked<LoadChatByIdPort> => {
+  return {
+    load: jest.fn(),
+  };
+};
 
-const loadMock = jest
-  .spyOn(MetaMockedLoadChatPort.prototype, 'load')
-  .mockImplementationOnce(() =>
-    Promise.resolve(new ChatEntity('123', 'Chat name', '123', [])),
-  )
-  .mockImplementationOnce(() => Promise.resolve(null));
+const createSaveChatPort = (): jest.Mocked<SaveChatPort> => {
+  return {
+    save: jest.fn(),
+  };
+};
 
-class MetaMockedSaveChatPort implements SaveChatPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  save(chat: ChatEntity): Promise<ChatEntity> {
-    throw new Error('Method not implemented');
-  }
-}
-
-const updateChatEntity = new ChatEntity('123', 'New chat name', '123', []);
-
-const saveMock = jest
-  .spyOn(MetaMockedSaveChatPort.prototype, 'save')
-  .mockImplementationOnce(() => Promise.resolve(updateChatEntity));
+const createLoadChannelPort = (): jest.Mocked<LoadChannelByIdPort> => {
+  return {
+    loadById: jest.fn(),
+  };
+};
 
 describe('ChangeChatNameService tests', () => {
-  it('ChangeChatNameService can be created by passing mock LoadChatByIdPort and SaveChatPort port and return modified chat', async () => {
-    const loadChatPort = new MetaMockedLoadChatPort();
-    const saveChatPort = new MetaMockedSaveChatPort();
+  it('ChangeChatNameService successfully update chat entity', () => {
+    const loadChatPort = createLoadChatPort();
+    const saveChatPort = createSaveChatPort();
+    const loadChannelPort = createLoadChannelPort();
 
-    const changeService = new ChangeChatNameService(loadChatPort, saveChatPort);
-    const command = new ChangeChatNameCommand('123', 'New chat name');
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', '123', '123', []),
+    );
+
+    loadChatPort.load.mockResolvedValue(
+      new ChatEntity('123', '123', '123', []),
+    );
+
+    const updatedChatEntity = new ChatEntity('123', 'UpdatedName', '123', []);
+    saveChatPort.save.mockResolvedValue(updatedChatEntity);
+
+    const changeService = new ChangeChatNameService(
+      loadChatPort,
+      saveChatPort,
+      loadChannelPort,
+    );
+
+    const command = new ChangeChatNameCommand(
+      '123',
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
     expect(changeService.changeName(command)).resolves.toStrictEqual(
-      updateChatEntity,
+      updatedChatEntity,
+    );
+  });
+
+  it('ChangeChatNameService throws AccessViolationError if invoker id does not equals channel creator id', () => {
+    const loadChatPort = createLoadChatPort();
+    const saveChatPort = createSaveChatPort();
+    const loadChannelPort = createLoadChannelPort();
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', '123', '123', []),
     );
 
-    try {
-      await changeService.changeName(command);
-    } catch (error) {
-      expect(error).toBeInstanceOf(EntityNotFoundError);
-    }
+    const changeService = new ChangeChatNameService(
+      loadChatPort,
+      saveChatPort,
+      loadChannelPort,
+    );
 
-    expect(loadMock).toHaveBeenCalledTimes(2);
-    expect(saveMock).toHaveBeenCalledTimes(1);
+    const command = new ChangeChatNameCommand(
+      '123',
+      '123',
+      '123',
+      new UserEntity('312', '123'),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(changeService.changeName(command)).rejects.toBeInstanceOf(
+      AccessViolationError,
+    );
+  });
+
+  it('ChangeChatNameService throws EntityNotFoundEntityError if chat entity not found', () => {
+    const loadChatPort = createLoadChatPort();
+    const saveChatPort = createSaveChatPort();
+    const loadChannelPort = createLoadChannelPort();
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', '123', '123', []),
+    );
+    loadChatPort.load.mockResolvedValue(null);
+
+    const changeService = new ChangeChatNameService(
+      loadChatPort,
+      saveChatPort,
+      loadChannelPort,
+    );
+
+    const command = new ChangeChatNameCommand(
+      '123',
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(changeService.changeName(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
+  });
+
+  it('ChangeChatNameService throws EntityNotFoundEntityError if channel entity not not found', () => {
+    const loadChatPort = createLoadChatPort();
+    const saveChatPort = createSaveChatPort();
+    const loadChannelPort = createLoadChannelPort();
+
+    loadChannelPort.loadById.mockResolvedValue(null);
+
+    const changeService = new ChangeChatNameService(
+      loadChatPort,
+      saveChatPort,
+      loadChannelPort,
+    );
+
+    const command = new ChangeChatNameCommand(
+      '123',
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(changeService.changeName(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
   });
 });

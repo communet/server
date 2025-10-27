@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { createChatController } from '../controllers';
-import { withPacked } from './common';
+import { withPacked, withUser } from './common';
 
 export const ChatRouter = (fastify: FastifyInstance): void => {
   const chatController = createChatController();
@@ -13,19 +13,19 @@ export const ChatRouter = (fastify: FastifyInstance): void => {
 
   fastify.post(
     '/channels/:channelId/chats',
-    withPacked(chatController.createChat.bind(chatController)),
+    withPacked(withUser(chatController.createChat.bind(chatController))),
   );
   fastify.log.info('Registered POST /channels/:channelId/chats');
 
   fastify.patch(
     '/channels/:channelId/chats/:id',
-    withPacked(chatController.changeChatName.bind(chatController)),
+    withPacked(withUser(chatController.changeChatName.bind(chatController))),
   );
   fastify.log.info('Registered PATCH /channels/:channelId/chats/:id');
 
   fastify.delete(
     '/channels/:channelId/chats/:id',
-    withPacked(chatController.deleteChat.bind(chatController)),
+    withPacked(withUser(chatController.deleteChat.bind(chatController))),
   );
   fastify.log.info('Registered DELETE /channels/:channelId/chats/:id');
 };
