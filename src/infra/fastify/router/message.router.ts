@@ -33,7 +33,9 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
 
   fastify.delete(
     '/channels/:channelId/chats/:chatId/messages/:id',
-    withPacked(messageController.deleteMessage.bind(messageController)),
+    withPacked(
+      withUser(messageController.deleteMessage.bind(messageController)),
+    ),
   );
   fastify.log.info(
     'Registered DELETE /channels/:channelId/chats/:chatId/messages/:id',

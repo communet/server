@@ -1,35 +1,193 @@
-import { EntityNotFoundError } from '../../../application/errors';
-import { DeleteMessageCommand, RemoveMessagePort } from '../../../core/ports';
+import {
+  ChannelEntity,
+  MessageEntity,
+  UserEntity,
+} from '../../../core/entities';
+import {
+  AccessViolationError,
+  EntityNotFoundError,
+} from '../../../application/errors';
+import {
+  DeleteMessageCommand,
+  LoadChannelByIdPort,
+  LoadMessageByIdPort,
+  RemoveMessagePort,
+} from '../../../core/ports';
 import { DeleteMessageService } from '../delete-message.service';
 
-class MetaMockedRemoveMessagePort implements RemoveMessagePort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  remove(id: string): Promise<string | undefined> {
-    throw new Error('Method not implemented');
-  }
-}
+const createLoadChannelByIdPort = (): jest.Mocked<LoadChannelByIdPort> => {
+  return {
+    loadById: jest.fn(),
+  };
+};
 
-const removeMock = jest
-  .spyOn(MetaMockedRemoveMessagePort.prototype, 'remove')
-  .mockImplementationOnce(() => Promise.resolve('123'))
-  .mockImplementationOnce(() => Promise.resolve(undefined));
+const createLoadMessageByIdPort = (): jest.Mocked<LoadMessageByIdPort> => {
+  return {
+    load: jest.fn(),
+  };
+};
+
+const createRemoveMessagePort = (): jest.Mocked<RemoveMessagePort> => {
+  return {
+    remove: jest.fn(),
+  };
+};
 
 describe('DeleteMessageService tests', () => {
-  it('DeleteMessageService can be created by passing mock RemoveMessagePort and return removed message id or undefined', async () => {
-    const deleteCommand = new DeleteMessageCommand('123');
+  it('DeleteMessageService successfully delete message if invoker if equals message sender id', async () => {
+    const loadChannelPort = createLoadChannelByIdPort();
+    const loadMessagePort = createLoadMessageByIdPort();
+    const removeMessagePort = createRemoveMessagePort();
 
-    const removePort = new MetaMockedRemoveMessagePort();
-    const deleteService = new DeleteMessageService(removePort);
+    loadMessagePort.load.mockResolvedValue(
+      new MessageEntity({
+        id: '123',
+        content: 'Message content',
+        senderId: '123',
+        chatId: '123',
+        createdAt: new Date(),
+      }),
+    );
 
-    // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(deleteService.delete(deleteCommand)).resolves.toBeUndefined();
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', 'ChannelName', '321', []),
+    );
 
-    try {
-      await deleteService.delete(deleteCommand);
-    } catch (error) {
-      expect(error).toBeInstanceOf(EntityNotFoundError);
-    }
+    const deleteService = new DeleteMessageService(
+      loadMessagePort,
+      removeMessagePort,
+      loadChannelPort,
+    );
 
-    expect(removeMock).toHaveBeenCalledTimes(2);
+    const command = new DeleteMessageCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    const result = await deleteService.delete(command);
+    expect(result).toBeUndefined();
+  });
+
+  it('DeleteMessageService successfully delete message if invoker id equals channel creator id', async () => {
+    const loadChannelPort = createLoadChannelByIdPort();
+    const loadMessagePort = createLoadMessageByIdPort();
+    const removeMessagePort = createRemoveMessagePort();
+
+    loadMessagePort.load.mockResolvedValue(
+      new MessageEntity({
+        id: '123',
+        content: 'Message content',
+        senderId: '321',
+        chatId: '123',
+        createdAt: new Date(),
+      }),
+    );
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', 'ChannelName', '123', []),
+    );
+
+    const deleteService = new DeleteMessageService(
+      loadMessagePort,
+      removeMessagePort,
+      loadChannelPort,
+    );
+
+    const command = new DeleteMessageCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    const result = await deleteService.delete(command);
+    expect(result).toBeUndefined();
+  });
+
+  it('DeleteMessageService throws PolicyViolationError if command invoker has no rights', async () => {
+    const loadChannelPort = createLoadChannelByIdPort();
+    const loadMessagePort = createLoadMessageByIdPort();
+    const removeMessagePort = createRemoveMessagePort();
+
+    loadMessagePort.load.mockResolvedValue(
+      new MessageEntity({
+        id: '123',
+        content: 'Message content',
+        senderId: '321',
+        chatId: '123',
+        createdAt: new Date(),
+      }),
+    );
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', 'ChannelName', '123', []),
+    );
+
+    const deleteService = new DeleteMessageService(
+      loadMessagePort,
+      removeMessagePort,
+      loadChannelPort,
+    );
+
+    const command = new DeleteMessageCommand(
+      '123',
+      '123',
+      new UserEntity('312', '123'),
+    );
+
+    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+      AccessViolationError,
+    );
+  });
+
+  it('DeleteMessageService throws EntityNotFoundError if channel entity not found', async () => {
+    const loadChannelPort = createLoadChannelByIdPort();
+    const loadMessagePort = createLoadMessageByIdPort();
+    const removeMessagePort = createRemoveMessagePort();
+
+    loadChannelPort.loadById.mockResolvedValue(null);
+
+    const deleteService = new DeleteMessageService(
+      loadMessagePort,
+      removeMessagePort,
+      loadChannelPort,
+    );
+
+    const command = new DeleteMessageCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
+  });
+
+  it('DeleteMessageService throws EntityNotFoundError if message entity not found', async () => {
+    const loadChannelPort = createLoadChannelByIdPort();
+    const loadMessagePort = createLoadMessageByIdPort();
+    const removeMessagePort = createRemoveMessagePort();
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('321', 'ChannelName', '123', []),
+    );
+    loadMessagePort.load.mockResolvedValue(null);
+
+    const deleteService = new DeleteMessageService(
+      loadMessagePort,
+      removeMessagePort,
+      loadChannelPort,
+    );
+
+    const command = new DeleteMessageCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    await expect(deleteService.delete(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
   });
 });
