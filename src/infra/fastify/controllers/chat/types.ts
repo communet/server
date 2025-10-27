@@ -6,4 +6,6 @@ export type WithChannelId<T> = WithParam<T, 'channelId'>;
 
 export type CreateChatHandlerParams = WithChannelId<ChatNameBody>;
 
-export type UpdateDeleteChatHandlerParams = WithChatId<ChatNameBody>;
+export type UpdateDeleteChatHandlerParams = WithChannelId<
+  WithChatId<ChatNameBody>
+>;
