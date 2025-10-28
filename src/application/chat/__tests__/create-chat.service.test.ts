@@ -1,46 +1,115 @@
-import { ChatEntity } from '../../../core/entities';
+import {
+  AccessViolationError,
+  EntityNotFoundError,
+} from '../../../application/errors';
+import { ChannelEntity, ChatEntity, UserEntity } from '../../../core/entities';
 import {
   CreateChatCommand,
   IdGeneratorPort,
+  LoadChannelByIdPort,
   SaveChatPort,
 } from '../../../core/ports';
 import { CreateChatService } from '../create-chat.service';
 
-class MetaMockedSaveChatPort implements SaveChatPort {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  save(chat: ChatEntity): Promise<ChatEntity> {
-    throw new Error('Method not implemented');
-  }
-}
+const createLoadChannelPort = (): jest.Mocked<LoadChannelByIdPort> => {
+  return {
+    loadById: jest.fn(),
+  };
+};
 
-const chatEntity = new ChatEntity('123', 'Chat name', '123', []);
+const createSaveChatPort = (): jest.Mocked<SaveChatPort> => {
+  return {
+    save: jest.fn(),
+  };
+};
 
-const saveMock = jest
-  .spyOn(MetaMockedSaveChatPort.prototype, 'save')
-  .mockImplementationOnce(() => Promise.resolve(chatEntity));
-
-class MetaMockedIdGeneratorPort implements IdGeneratorPort {
-  generate(): string {
-    throw new Error('Method not implemented');
-  }
-}
-
-const idGeneratorMock = jest
-  .spyOn(MetaMockedIdGeneratorPort.prototype, 'generate')
-  .mockImplementationOnce(() => '123');
+const createIdGeneratorPort = (): jest.Mocked<IdGeneratorPort> => {
+  return {
+    generate: jest.fn(),
+  };
+};
 
 describe('CreateChatService tests', () => {
-  it('CreateChatService can be created by passing mock SeveChatPort and IdGeneratorPort and return chat entity', () => {
-    const savePort = new MetaMockedSaveChatPort();
-    const idGeneratorPort = new MetaMockedIdGeneratorPort();
+  it('CreateChatService successfully create a new chat', () => {
+    const loadChannelPort = createLoadChannelPort();
+    const saveChatPort = createSaveChatPort();
+    const idGeneratorPort = createIdGeneratorPort();
 
-    const createService = new CreateChatService(savePort, idGeneratorPort);
-    const command = new CreateChatCommand('Chat name', '123');
+    idGeneratorPort.generate.mockReturnValue('123');
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', '123', '123', []),
+    );
+
+    const createdChatEntity = new ChatEntity('123', 'Chat name', '123', []);
+    saveChatPort.save.mockResolvedValue(createdChatEntity);
+
+    const createService = new CreateChatService(
+      saveChatPort,
+      loadChannelPort,
+      idGeneratorPort,
+    );
+
+    const command = new CreateChatCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
 
     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-    expect(createService.create(command)).resolves.toStrictEqual(chatEntity);
+    expect(createService.create(command)).resolves.toStrictEqual(
+      createdChatEntity,
+    );
+  });
 
-    expect(saveMock).toHaveBeenCalledTimes(1);
-    expect(idGeneratorMock).toHaveBeenCalledTimes(1);
+  it('CreateChatService throws AccessViolationError if invoker id does not equals channel creator id', () => {
+    const loadChannelPort = createLoadChannelPort();
+    const saveChatPort = createSaveChatPort();
+    const idGeneratorPort = createIdGeneratorPort();
+
+    loadChannelPort.loadById.mockResolvedValue(
+      new ChannelEntity('123', '123', '123', []),
+    );
+
+    const createService = new CreateChatService(
+      saveChatPort,
+      loadChannelPort,
+      idGeneratorPort,
+    );
+
+    const command = new CreateChatCommand(
+      '123',
+      '123',
+      new UserEntity('321', '123'),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(createService.create(command)).rejects.toBeInstanceOf(
+      AccessViolationError,
+    );
+  });
+
+  it('CreateChatService throws EntityNotFoundError if channel entity not found', () => {
+    const loadChannelPort = createLoadChannelPort();
+    const saveChatPort = createSaveChatPort();
+    const idGeneratorPort = createIdGeneratorPort();
+
+    loadChannelPort.loadById.mockResolvedValue(null);
+
+    const createService = new CreateChatService(
+      saveChatPort,
+      loadChannelPort,
+      idGeneratorPort,
+    );
+
+    const command = new CreateChatCommand(
+      '123',
+      '123',
+      new UserEntity('123', '123'),
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
+    expect(createService.create(command)).rejects.toBeInstanceOf(
+      EntityNotFoundError,
+    );
   });
 });

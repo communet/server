@@ -1,3 +1,8 @@
+import { Entity } from '../../../../../core/entities';
+import { DeleteChatCommand } from '../commands';
+
 export abstract class DeleteChatUseCase {
-  abstract delete(id: string): Promise<void>;
+  abstract delete<T extends Entity>(
+    command: DeleteChatCommand<T>,
+  ): Promise<void>;
 }

@@ -10,12 +10,17 @@ import {
   ChangeChatNameUseCase,
   CreateChatCommand,
   CreateChatUseCase,
+  DeleteChatCommand,
   DeleteChatUseCase,
   GetAllChatsByChannelIdQuery,
 } from '../../../../core/ports';
 import { IdGeneratorAdapter } from '../../../../infra/common';
-import { ChatRepository, db } from '../../../../infra/database';
-import { ControllerHandlerParams } from '../../router';
+import {
+  ChannelRepository,
+  ChatRepository,
+  db,
+} from '../../../../infra/database';
+import { ControllerHandlerParams, WithUser } from '../../router';
 import {
   CreateChatHandlerParams,
   UpdateDeleteChatHandlerParams,
@@ -40,30 +45,53 @@ class ChatController {
 
   changeChatName({
     request,
-  }: UpdateDeleteChatHandlerParams): Promise<ChatEntity> {
+    user,
+  }: WithUser<UpdateDeleteChatHandlerParams>): Promise<ChatEntity> {
     return this.changeChatNameUseCase.changeName(
-      new ChangeChatNameCommand(request.params.id, request.body.name),
+      new ChangeChatNameCommand(
+        request.params.id,
+        request.body.name,
+        request.params.channelId,
+        user,
+      ),
     );
   }
 
-  createChat({ request }: CreateChatHandlerParams): Promise<ChatEntity> {
+  createChat({
+    request,
+    user,
+  }: WithUser<CreateChatHandlerParams>): Promise<ChatEntity> {
     return this.createChatUseCase.create(
-      new CreateChatCommand(request.body.name, request.params.channelId),
+      new CreateChatCommand(request.body.name, request.params.channelId, user),
     );
   }
 
-  async deleteChat({ request }: UpdateDeleteChatHandlerParams): Promise<void> {
-    await this.deleteChatUseCase.delete(request.params.id);
+  async deleteChat({
+    request,
+    user,
+  }: WithUser<UpdateDeleteChatHandlerParams>): Promise<void> {
+    await this.deleteChatUseCase.delete(
+      new DeleteChatCommand(request.params.id, request.params.channelId, user),
+    );
   }
 }
 
 export const createChatController = (): ChatController => {
-  const repository = new ChatRepository(db);
+  const chatRepository = new ChatRepository(db);
+  const channelRepository = new ChannelRepository(db);
 
   return new ChatController(
-    new GetAllChatsByChannelIdService(repository),
-    new ChangeChatNameService(repository, repository),
-    new CreateChatService(repository, new IdGeneratorAdapter()),
-    new DeleteChatService(repository),
+    new GetAllChatsByChannelIdService(chatRepository),
+    new ChangeChatNameService(
+      chatRepository,
+      chatRepository,
+      channelRepository,
+    ),
+    new CreateChatService(
+      chatRepository,
+      channelRepository,
+      new IdGeneratorAdapter(),
+    ),
+    new DeleteChatService(chatRepository, channelRepository),
   );
 };
