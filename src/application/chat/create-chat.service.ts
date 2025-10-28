@@ -38,6 +38,6 @@ export class CreateChatService implements CreateChatUseCase {
       command.channelId,
     );
 
-    return await this.saveChatPort.save(chat);
+    return this.saveChatPort.save(chat);
   }
 }
