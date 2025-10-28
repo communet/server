@@ -23,7 +23,9 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
 
   fastify.patch(
     '/channels/:channelId/chats/:chatId/messages/:id',
-    withPacked(messageController.changeMessage.bind(messageController)),
+    withPacked(
+      withUser(messageController.changeMessage.bind(messageController)),
+    ),
   );
   fastify.log.info(
     'Registered PATCH /channels/:channelId/chats/:chatId/messages/:id',
@@ -31,7 +33,9 @@ export const MessageRouter = (fastify: FastifyInstance): void => {
 
   fastify.delete(
     '/channels/:channelId/chats/:chatId/messages/:id',
-    withPacked(messageController.deleteMessage.bind(messageController)),
+    withPacked(
+      withUser(messageController.deleteMessage.bind(messageController)),
+    ),
   );
   fastify.log.info(
     'Registered DELETE /channels/:channelId/chats/:chatId/messages/:id',

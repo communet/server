@@ -1,4 +1,4 @@
-import { db, MessageRepository } from '../../../database';
+import { ChannelRepository, db, MessageRepository } from '../../../database';
 import { MessageEntity } from '../../../../core/entities';
 import {
   ChangeMessageCommand,
@@ -55,26 +55,39 @@ class MessageController {
 
   async changeMessage({
     request,
-  }: ChangeMessageHandlerParams): Promise<MessageEntity> {
+    user,
+  }: WithUser<ChangeMessageHandlerParams>): Promise<MessageEntity> {
     return await this.changeMessageUseCase.change(
-      new ChangeMessageCommand(request.params.id, request.body.content),
+      new ChangeMessageCommand(request.params.id, request.body.content, user),
     );
   }
 
-  async deleteMessage({ request }: DeleteMessageHandlerParams): Promise<void> {
+  async deleteMessage({
+    request,
+    user,
+  }: WithUser<DeleteMessageHandlerParams>): Promise<void> {
     await this.deleteMessageUseCase.delete(
-      new DeleteMessageCommand(request.params.id),
+      new DeleteMessageCommand(
+        request.params.id,
+        request.params.channelId,
+        user,
+      ),
     );
   }
 }
 
 export const createMessageController = (): MessageController => {
-  const repository = new MessageRepository(db);
+  const messageRepository = new MessageRepository(db);
+  const channelRepository = new ChannelRepository(db);
 
   return new MessageController(
-    new GetMessagesByChatIdService(repository),
-    new SendMessageService(repository, new IdGeneratorAdapter()),
-    new ChangeMessageService(repository, repository),
-    new DeleteMessageService(repository),
+    new GetMessagesByChatIdService(messageRepository),
+    new SendMessageService(messageRepository, new IdGeneratorAdapter()),
+    new ChangeMessageService(messageRepository, messageRepository),
+    new DeleteMessageService(
+      messageRepository,
+      messageRepository,
+      channelRepository,
+    ),
   );
 };
