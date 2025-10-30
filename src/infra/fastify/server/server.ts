@@ -1,16 +1,10 @@
-import fastify, {
-  FastifyInstance,
-  FastifyPluginCallback,
-  FastifyServerOptions,
-} from 'fastify';
+import fastify, { FastifyInstance, FastifyServerOptions } from 'fastify';
 import { ApplicationError } from '../../../application';
 import { RuleError } from '../../../core/rules';
 import { BadRequestResponse, InternalServerResponse } from '../responses';
 import { ServerOptions } from './types';
 
 export class Server {
-  private readonly server: FastifyInstance;
-
   constructor(
     options: FastifyServerOptions,
     private readonly serverOptions: ServerOptions,
@@ -30,11 +24,13 @@ export class Server {
       console.error(error);
       return new InternalServerResponse(error.message);
     });
+
+    this.register = this.server.register.bind(this.server);
   }
 
-  register(plugin: FastifyPluginCallback, prefix?: string): void {
-    this.server.register(plugin, { prefix });
-  }
+  private readonly server: FastifyInstance;
+
+  public readonly register: FastifyInstance['register'];
 
   async start(): Promise<string> {
     let result: string;

@@ -40,8 +40,10 @@ export function startServer(): Promise<string> {
     { port: 3333 },
   );
 
-  server.register(cors);
-  server.register(NotFoundPlugin);
+  server.register(cors, {
+    methods: ['GET', 'POST', 'HEAD', 'OPTIONS', 'DELETE', 'PUT', 'PATCH'],
+  });
+  server.register(NotFoundPlugin, {});
 
   makeResponsePlugin(server.fastify)
     .map(UnauthorizedResponse, mapUnauthorized)
@@ -66,10 +68,10 @@ export function startServer(): Promise<string> {
     .map(MessageEntity, mapMessageEntity)
     .build();
 
-  server.register(UserRouter, API_PREFIX_V1);
-  server.register(ChannelRouter, API_PREFIX_V1);
-  server.register(ChatRouter, API_PREFIX_V1);
-  server.register(MessageRouter, API_PREFIX_V1);
+  server.register(UserRouter, { prefix: API_PREFIX_V1 });
+  server.register(ChannelRouter, { prefix: API_PREFIX_V1 });
+  server.register(ChatRouter, { prefix: API_PREFIX_V1 });
+  server.register(MessageRouter, { prefix: API_PREFIX_V1 });
 
   return server.start();
 }
