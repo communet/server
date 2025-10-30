@@ -4,9 +4,9 @@ import { MessageEntity } from '../message';
 import { CHAT_NAME_OPTIONS } from './constants';
 
 export class ChatEntity extends Entity {
-  private _name: StringRule;
-  private readonly _messages: MessageEntity[];
-  private readonly _channelId: IdRule;
+  #name: StringRule;
+  readonly #messages: MessageEntity[];
+  readonly #channelId: IdRule;
 
   constructor(
     id: string,
@@ -15,24 +15,24 @@ export class ChatEntity extends Entity {
     messages?: MessageEntity[],
   ) {
     super(id);
-    this._name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
-    this._messages = messages ?? [];
-    this._channelId = new IdRule(channelId, 'channelId');
+    this.#name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
+    this.#messages = messages ?? [];
+    this.#channelId = new IdRule(channelId, 'channelId');
   }
 
   public get name(): string {
-    return this._name.value;
+    return this.#name.value;
   }
 
   public set name(name: string) {
-    this._name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
+    this.#name = new StringRule(name, 'chatName', CHAT_NAME_OPTIONS);
   }
 
   public get messages(): MessageEntity[] {
-    return this._messages;
+    return this.#messages;
   }
 
   public get channelId(): string {
-    return this._channelId.value;
+    return this.#channelId.value;
   }
 }

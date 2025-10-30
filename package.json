@@ -22,10 +22,10 @@
     "migration:list": "npm run db migrate:list",
     "seed:make": "npm run db seed:make",
     "seed:run": "npm run db seed:run",
-    "test": "jest --runInBand",
+    "test": "jest",
     "test:core": "jest --testPathPatterns=src/core",
     "test:application": "jest --testPathPatterns=src/application",
-    "test:infrastructure": "jest --runInBand --testPathPatterns=src/infrastructure",
+    "test:infra": "jest --testPathPatterns=src/infra",
     "prepare": "husky"
   },
   "devDependencies": {
