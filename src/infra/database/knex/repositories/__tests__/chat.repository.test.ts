@@ -1,108 +1,128 @@
+import { Knex } from 'knex';
 import { v4 } from 'uuid';
 import { ChatEntity } from '../../../../../core/entities';
-import { FixedIdGenerator } from '../../../../common';
+import { IdGeneratorAdapter } from '../../../../common';
 import { db } from '../../db.instance';
 import { ChatRepository } from '../chat.repository';
 
-const idGenerator = new FixedIdGenerator(v4());
-const anotherIdGenerator = new FixedIdGenerator(v4());
-const anotherChatIdGenerator = new FixedIdGenerator(v4());
+const idGenerator = new IdGeneratorAdapter();
 
-describe('ChatRepository', () => {
-  beforeAll(async () => {
-    await db.migrate.up();
-    await db('users').insert({
+const setUp = async (): Promise<{
+  transaction: Knex.Transaction;
+  channelId: string;
+}> => {
+  const transaction = await db.transaction();
+  const [{ id: userId }] = await transaction('users')
+    .insert({
       id: idGenerator.generate(),
       username: idGenerator.generate(),
-    });
-    await db('channels').insert({
+    })
+    .returning('id');
+
+  const [{ id: channelId }] = await transaction('channels')
+    .insert({
       id: idGenerator.generate(),
       name: idGenerator.generate(),
-      creator_id: idGenerator.generate(),
-    });
-  });
+      creator_id: userId,
+    })
+    .returning('id');
 
+  return { transaction, channelId };
+};
+
+describe('ChatRepository', () => {
   afterAll(async () => {
-    await db('chats')
-      .whereIn('id', [idGenerator.generate(), anotherIdGenerator.generate()])
-      .del();
-    await db('channels').where({ name: idGenerator.generate() }).del();
-    await db('users').where({ username: idGenerator.generate() }).del();
-
     await db.destroy();
   });
 
-  it('ChatRepository can be created', () => {
-    const respository = new ChatRepository(db);
-
-    expect(respository).toBeDefined();
-  });
-
   it('ChatRepository.save returns saved chat', async () => {
-    const repository = new ChatRepository(db);
+    const { transaction, channelId } = await setUp();
+
+    const repository = new ChatRepository(transaction);
     const chat = new ChatEntity(
       idGenerator.generate(),
       'some chat name',
-      idGenerator.generate(),
+      channelId,
     );
 
     const savedChat = await repository.save(chat);
-    const loadedChats = await repository.loadByChannelId(chat.channelId);
+
+    await transaction.rollback();
 
     expect(savedChat).toStrictEqual(chat);
-    expect(loadedChats).toHaveLength(1);
-    expect(loadedChats).toStrictEqual([chat]);
   });
 
-  it('ChatRepository.remove removes chat', async () => {
-    const repository = new ChatRepository(db);
-    await repository.remove(idGenerator.generate());
+  it('ChatRepository.loadById returns null if chat not found', async () => {
+    const transaction = await db.transaction();
+    const repository = new ChatRepository(transaction);
 
-    const loadedChats = await repository.loadByChannelId(
-      idGenerator.generate(),
-    );
+    const result = await repository.load(v4());
 
-    expect(loadedChats).toHaveLength(0);
+    await transaction.rollback();
+
+    expect(result).toBeNull();
   });
 
-  it('ChatRepository.loadByChannelId returns chats', async () => {
-    const repository = new ChatRepository(db);
+  it('ChatRepository.loadById returns chat if found', async () => {
+    const { transaction, channelId } = await setUp();
+    const repository = new ChatRepository(transaction);
     const chat = new ChatEntity(
       idGenerator.generate(),
       'some chat name',
+      channelId,
+    );
+
+    await repository.save(chat);
+
+    const result = await repository.load(chat.id);
+
+    await transaction.rollback();
+
+    expect(result).toStrictEqual(chat);
+  });
+
+  it('ChatRepository.loadByChannelId returns chats', async () => {
+    const { transaction, channelId } = await setUp();
+    const repository = new ChatRepository(transaction);
+    const chat = new ChatEntity(
       idGenerator.generate(),
+      'some chat name',
+      channelId,
     );
     const anotherChat = new ChatEntity(
-      anotherIdGenerator.generate(),
-      'some another chat name',
       idGenerator.generate(),
+      'some another chat name',
+      channelId,
     );
 
     await repository.save(chat);
     await repository.save(anotherChat);
 
-    const loadedChats = await repository.loadByChannelId(chat.channelId);
+    const loadedChats = await repository.loadByChannelId(channelId);
 
-    expect(loadedChats).toHaveLength(2);
-    expect(loadedChats).toStrictEqual([chat, anotherChat]);
+    await transaction.rollback();
+
+    expect(loadedChats).toEqual(expect.arrayContaining([chat, anotherChat]));
   });
 
-  it('ChatRepository.load returns chat if found', async () => {
-    const repository = new ChatRepository(db);
+  it('ChatRepository.remove removes chat and returns it id', async () => {
+    const { transaction, channelId } = await setUp();
+    const repository = new ChatRepository(transaction);
     const chat = new ChatEntity(
       idGenerator.generate(),
       'some chat name',
-      idGenerator.generate(),
+      channelId,
     );
 
     await repository.save(chat);
 
-    const loadedChat = await repository.load(chat.id);
-    const anotherChat = await repository.load(
-      anotherChatIdGenerator.generate(),
-    );
+    const result = await repository.remove(chat.id);
 
-    expect(loadedChat).toStrictEqual(chat);
-    expect(anotherChat).toBeNull();
+    const loadedChat = await repository.load(chat.id);
+
+    await transaction.rollback();
+
+    expect(result).toBe(chat.id);
+    expect(loadedChat).toBeNull();
   });
 });

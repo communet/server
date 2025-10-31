@@ -4,9 +4,9 @@ import { ChatEntity } from '../chat';
 import { CHANNEL_NAME_OPTIONS } from './constants';
 
 export class ChannelEntity extends Entity {
-  private _name: StringRule;
-  private readonly _chats: ChatEntity[];
-  private readonly _creatorId: IdRule;
+  #name: StringRule;
+  readonly #chats: ChatEntity[];
+  readonly #creatorId: IdRule;
   // TODO: добавить идентификатор создателя
 
   constructor(
@@ -16,24 +16,24 @@ export class ChannelEntity extends Entity {
     chats?: ChatEntity[],
   ) {
     super(id);
-    this._name = new StringRule(name, 'channelName', CHANNEL_NAME_OPTIONS);
-    this._creatorId = new IdRule(creatorId, 'creatorId');
-    this._chats = chats ?? [];
+    this.#name = new StringRule(name, 'channelName', CHANNEL_NAME_OPTIONS);
+    this.#creatorId = new IdRule(creatorId, 'creatorId');
+    this.#chats = chats ?? [];
   }
 
   public get name(): string {
-    return this._name.value;
+    return this.#name.value;
   }
 
   public set name(name: string) {
-    this._name = new StringRule(name, 'channelName', CHANNEL_NAME_OPTIONS);
+    this.#name = new StringRule(name, 'channelName', CHANNEL_NAME_OPTIONS);
   }
 
   public get chats(): ChatEntity[] {
-    return this._chats;
+    return this.#chats;
   }
 
   public get creatorId(): string {
-    return this._creatorId.value;
+    return this.#creatorId.value;
   }
 }

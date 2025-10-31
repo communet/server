@@ -1,112 +1,151 @@
+import { Knex } from 'knex';
 import { v4 } from 'uuid';
 import { MessageEntity } from '../../../../../core/entities';
-import { FixedIdGenerator } from '../../../../common';
+import { IdGeneratorAdapter } from '../../../../common';
 import { db } from '../../db.instance';
 import { MessageRepository } from '../message.repository';
 
-const idGenerator = new FixedIdGenerator(v4());
-const anotherIdGenerator = new FixedIdGenerator(v4());
-
-describe('MessageRepository', () => {
-  beforeAll(async () => {
-    await db.migrate.up();
-    await db('users').insert({
+const idGenerator = new IdGeneratorAdapter();
+const setUp = async (): Promise<{
+  transaction: Knex.Transaction;
+  chatId: string;
+  userId: string;
+}> => {
+  const transaction = await db.transaction();
+  const [{ id: userId }] = await transaction('users')
+    .insert({
       id: idGenerator.generate(),
       username: idGenerator.generate(),
-    });
-    await db('channels').insert({
-      id: idGenerator.generate(),
-      name: idGenerator.generate(),
-      creator_id: idGenerator.generate(),
-    });
-    await db('chats').insert({
-      id: idGenerator.generate(),
-      name: idGenerator.generate(),
-      channel_id: idGenerator.generate(),
-    });
-  });
+    })
+    .returning('id');
 
+  const [{ id: channelId }] = await transaction('channels')
+    .insert({
+      id: idGenerator.generate(),
+      name: idGenerator.generate(),
+      creator_id: userId,
+    })
+    .returning('id');
+
+  const [{ id: chatId }] = await transaction('chats')
+    .insert({
+      id: idGenerator.generate(),
+      name: idGenerator.generate(),
+      channel_id: channelId,
+    })
+    .returning('id');
+
+  return { transaction, chatId, userId };
+};
+
+describe('MessageRepository', () => {
   afterAll(async () => {
-    await db('messages')
-      .whereIn('id', [idGenerator.generate(), anotherIdGenerator.generate()])
-      .del();
-    await db('chats').where({ name: idGenerator.generate() }).del();
-    await db('channels').where({ name: idGenerator.generate() }).del();
-    await db('users').where({ username: idGenerator.generate() }).del();
-
     await db.destroy();
   });
 
-  it('MessageRepository can be created', () => {
-    const respository = new MessageRepository(db);
-
-    expect(respository).toBeDefined();
-  });
-
   it('MessageRepository.save returns saved message', async () => {
-    const repository = new MessageRepository(db);
+    const { transaction, chatId, userId } = await setUp();
+
+    const repository = new MessageRepository(transaction);
     const message = new MessageEntity({
       id: idGenerator.generate(),
-      content: 'some message content',
-      senderId: idGenerator.generate(),
-      chatId: idGenerator.generate(),
+      content: 'some content',
+      senderId: userId,
+      chatId,
+      createdAt: new Date(),
     });
 
     const savedMessage = await repository.save(message);
 
+    await transaction.rollback();
+
     expect(savedMessage).toStrictEqual(message);
   });
 
-  it('MessageRepository.loadByChatId returns messages', async () => {
-    const repository = new MessageRepository(db);
-    const message = new MessageEntity({
-      id: idGenerator.generate(),
-      content: 'some message content',
-      senderId: idGenerator.generate(),
-      chatId: idGenerator.generate(),
-    });
-    const anotherMessage = new MessageEntity({
-      id: anotherIdGenerator.generate(),
-      content: 'some another message content',
-      senderId: idGenerator.generate(),
-      chatId: idGenerator.generate(),
-    });
+  it('MessageRepository.loadById returns null if message not found', async () => {
+    const transaction = await db.transaction();
+    const repository = new MessageRepository(transaction);
 
-    await repository.save(message);
-    await repository.save(anotherMessage);
+    const result = await repository.load(v4());
 
-    const loadedMessages = await repository.loadByChatId(message.chatId);
+    await transaction.rollback();
 
-    expect(loadedMessages).toHaveLength(2);
-    expect(loadedMessages).toStrictEqual([message, anotherMessage]);
+    expect(result).toBeNull();
+  });
+
+  it('MessageRepository.loadById returns message if found', async () => {
+    const { transaction, chatId, userId } = await setUp();
+    const repository = new MessageRepository(transaction);
+
+    const message = await repository.save(
+      new MessageEntity({
+        id: idGenerator.generate(),
+        content: 'some content',
+        senderId: userId,
+        chatId,
+        createdAt: new Date(),
+      }),
+    );
+
+    const result = await repository.load(message.id);
+
+    await transaction.rollback();
+
+    expect(result).toStrictEqual(message);
+  });
+
+  it('MessageRepository.loadByChatId returns messages for chat', async () => {
+    const { transaction, chatId, userId } = await setUp();
+    const repository = new MessageRepository(transaction);
+
+    const message1 = await repository.save(
+      new MessageEntity({
+        id: idGenerator.generate(),
+        content: 'some content 1',
+        senderId: userId,
+        chatId,
+        createdAt: new Date(Date.now() - 1000),
+      }),
+    );
+
+    const message2 = await repository.save(
+      new MessageEntity({
+        id: idGenerator.generate(),
+        content: 'some content 2',
+        senderId: userId,
+        chatId,
+        createdAt: new Date(),
+      }),
+    );
+
+    const result = await repository.loadByChatId(chatId);
+
+    await transaction.rollback();
+
+    expect(result).toStrictEqual([message1, message2]);
   });
 
   it('MessageRepository.remove removes message', async () => {
-    const repository = new MessageRepository(db);
-    const message = new MessageEntity({
-      id: idGenerator.generate(),
-      content: 'some message content',
-      senderId: idGenerator.generate(),
-      chatId: idGenerator.generate(),
-    });
+    const { transaction, chatId, userId } = await setUp();
+    const repository = new MessageRepository(transaction);
 
-    await repository.save(message);
+    const message = await repository.save(
+      new MessageEntity({
+        id: idGenerator.generate(),
+        content: 'some content',
+        senderId: userId,
+        chatId,
+        createdAt: new Date(),
+      }),
+    );
 
-    await repository.remove(message.id);
+    const result = await repository.remove(message.id);
 
-    const loadedMessages = await repository.loadByChatId(message.chatId);
+    const loadedMessage = await repository.load(message.id);
 
-    // NOTE: because in previous test we're added another message
-    expect(loadedMessages).toHaveLength(1);
-  });
+    await transaction.rollback();
 
-  it('MessageRepository.load returns message or null', async () => {
-    const repository = new MessageRepository(db);
-
-    const message = await repository.load(idGenerator.generate());
-    const anotherMessage = await repository.load(anotherIdGenerator.generate());
-
-    expect(message).toBeNull();
-    expect(anotherMessage).not.toBeNull();
+    expect(result).toBe(message.id);
+    expect(loadedMessage).toBeNull();
   });
 });
