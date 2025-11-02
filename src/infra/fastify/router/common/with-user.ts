@@ -1,6 +1,5 @@
 import { RouteGenericInterface } from 'fastify';
 import { GetUserByIdService } from '../../../../application';
-import { UserEntity } from '../../../../core/entities';
 import { db, UserRepository } from '../../../database';
 import { UnauthorizedResponse } from '../../responses/unauthorized.response';
 import { ControllerHandlerParams, WithUser } from './types';
@@ -20,5 +19,5 @@ export const withUser =
       return new UnauthorizedResponse();
     }
 
-    return fn({ ...params, user: new UserEntity('123', 'admin') });
+    return fn({ ...params, user: user });
   };
