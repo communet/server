@@ -19,5 +19,5 @@ export const withUser =
       return new UnauthorizedResponse();
     }
 
-    return fn({ ...params, user: user });
+    return fn({ ...params, user });
   };
