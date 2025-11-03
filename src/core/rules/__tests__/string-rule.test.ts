@@ -25,7 +25,7 @@ describe('Rules - StringRule', () => {
     const stringRuleConstructor = (): StringRule =>
       new StringRule('string', undefined, { regex: /test/ });
 
-    expect(stringRuleConstructor).toThrow(/invalid string format/);
+    expect(stringRuleConstructor).toThrow(/invalid format/);
   });
 
   it('StringRule throws RuleError with message length should be <= N with maxLength and regex options', () => {
