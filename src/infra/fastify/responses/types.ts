@@ -1,6 +1,6 @@
 export type ResponseOk<T> = {
   error: false;
-  data: T;
+  data?: T;
 };
 
 export type ResponseNotFound = {
