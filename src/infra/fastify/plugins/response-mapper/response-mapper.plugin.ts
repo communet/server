@@ -78,6 +78,8 @@ export const makeResponsePlugin = (fastify: FastifyInstance): PluginBuilder => {
           reply.statusCode === SUCCESS_CODE &&
           (payload === undefined || payload === null)
         ) {
+          reply.header('Content-Type', 'application/json');
+
           return JSON.stringify({ error: false });
         }
 
