@@ -22,8 +22,6 @@ const handleResponseWithMappers =
       )
       .toArray();
 
-    console.log(response);
-
     if (payload instanceof Array && payload.length === 0) {
       reply.code(SUCCESS_CODE);
       response = { data: [], error: false };
