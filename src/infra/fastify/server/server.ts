@@ -4,12 +4,14 @@ import { RuleError } from '../../../core/rules';
 import { BadRequestResponse, InternalServerResponse } from '../responses';
 import { ServerOptions } from './types';
 
+const BODY_LIMIT = 30 * 1024 * 1024; // 30 MB
+
 export class Server {
   constructor(
     options: FastifyServerOptions,
     private readonly serverOptions: ServerOptions,
   ) {
-    this.server = fastify(options);
+    this.server = fastify({ ...options, bodyLimit: BODY_LIMIT });
 
     this.server.setErrorHandler((error) => {
       if (error instanceof RuleError) {
